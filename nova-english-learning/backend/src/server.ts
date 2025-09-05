@@ -676,6 +676,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Nova English Learning Server listening on port ${PORT}`);
   console.log(`Open http://localhost:${PORT} to access the application`);
+  console.log(`Test Nova Canvas at http://localhost:${PORT}/test-canvas`);
 });
 
 // 종료 처리
