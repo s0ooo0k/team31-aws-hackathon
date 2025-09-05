@@ -2,577 +2,521 @@
 
 **작성자**: CloudOps Agent  
 **작성일**: 2025년 1월  
-**버전**: 1.0
+**버전**: 3.0 (Nova Sonic 기반)
 
 ---
 
 ## 1. 전체 시스템 아키텍처
 
-### 1.1 아키텍처 개요
+### 1.1 시스템 개요
+Amazon Nova 서비스를 활용한 AI 기반 영어 학습 플랫폼으로 React 프론트엔드와 Express.js 백엔드로 구성
+
+### 1.2 아키텍처 다이어그램
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   CDN/WAF       │    │   API Gateway   │
-│   (React SPA)   │◄──►│   CloudFront    │◄──►│   REST APIs     │
-│                 │    │   + WAF         │    │                 │
+│   React Web     │    │   CloudFront    │    │   Application   │
+│   Page          │◄──►│   CDN           │◄──►│   Load Balancer │
+│   (S3 Hosting)  │    │                 │    │   (ALB)         │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                                         │
                                                         ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Authentication│    │   Load Balancer │    │   Lambda        │
-│   Cognito       │◄──►│   ALB           │◄──►│   Functions     │
-│                 │    │                 │    │                 │
+│   Authentication│    │   ECS Fargate   │    │   Container     │
+│   Cognito       │◄──►│   Cluster       │◄──►│   Registry      │
+│                 │    │                 │    │   (ECR)         │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                        │
-                                                        ▼
+                                │                       
+                                ▼                       
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   File Storage  │    │   AI Services   │    │   Database      │
-│   S3 Buckets    │◄──►│   Bedrock Nova  │◄──►│   DynamoDB      │
-│                 │    │   + Sonic       │    │   + ElastiCache │
+│   AI Services   │    │   S3 Image      │    │   S3 Conversation│
+│   Nova Sonic    │◄──►│   Storage       │    │   Storage        │
+│                 │    │   (Primary)     │    │                  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                        │
-                                                        ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Monitoring    │    │   Messaging     │    │   Analytics     │
-│   CloudWatch    │◄──►│   SQS + SNS     │◄──►│   Kinesis       │
-│   + X-Ray       │    │                 │    │   + QuickSight  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │                       
+                                ▼                       
+                       ┌─────────────────┐              
+                       │   DynamoDB      │              
+                       │   Image-Text    │              
+                       │   Mapping       │              
+                       └─────────────────┘              
 ```
 
-### 1.2 핵심 설계 원칙
-- **서버리스 우선**: Lambda, DynamoDB, S3 중심 설계
-- **마이크로서비스**: 기능별 독립적인 Lambda 함수
-- **확장성**: Auto Scaling 및 관리형 서비스 활용
-- **보안**: 최소 권한 원칙 및 암호화 적용
-- **비용 최적화**: Pay-as-you-use 모델 활용
+### 1.3 핵심 설계 원칙
+- **컨테이너 기반**: ECS Fargate로 확장 가능한 백엔드 서비스
+- **AI 중심**: Nova Sonic을 활용한 대화형 학습
+- **이미지-텍스트 연계**: DynamoDB로 이미지와 설명 매핑
+- **대화 지속성**: S3에 대화 기록 저장으로 진도 추적
+- **최적화된 전송**: CloudFront로 전 세계 빠른 이미지 로딩
+- **단순화된 배포**: 단일 AZ 배포로 비용 최적화
 
 ---
 
-## 2. 상세 컴포넌트 설계
+## 2. 아키텍처 컴포넌트
 
 ### 2.1 프론트엔드 계층
 
-#### 2.1.1 CloudFront CDN
+#### 2.1.1 React Web Page
 ```yaml
-Distribution:
+React_Application:
+  Purpose: 영어 학습 서비스 사용자 인터페이스
+  Features:
+    - 대화형 학습 인터페이스
+    - 대화 기반 학습 콘텐츠
+    - 실시간 AI 대화
+    - 진도 추적 대시보드
+  Hosting: S3 Static Website
+```
+
+#### 2.1.2 CloudFront CDN
+```yaml
+CloudFront_Distribution:
+  Purpose: 최적화된 이미지 서빙을 위한 콘텐츠 전송 네트워크
   Origins:
     - S3 Static Website (React App)
-    - API Gateway (Dynamic Content)
+    - Express API Server (Dynamic Content)
   Behaviors:
-    - /api/* → API Gateway
-    - /* → S3 Static Website
-  Security:
-    - WAF Rules (DDoS, SQL Injection 방어)
-    - SSL/TLS Certificate
-    - CORS Configuration
+    - /api/* → Express Server
+    - /images/* → S3 Image Storage
+    - /* → React Web Page
+  Features:
+    - 전 세계 빠른 콘텐츠 전송
+    - 이미지 캐싱 최적화
+    - SSL/TLS 보안
 ```
 
-#### 2.1.2 S3 Static Website
+### 2.2 백엔드 서비스
+
+#### 2.2.1 Application Load Balancer (ALB)
 ```yaml
-Buckets:
-  - nova-english-frontend:
-      Purpose: React SPA 호스팅
-      Features:
-        - Static Website Hosting
-        - CloudFront Integration
-        - Versioning Enabled
-  - nova-english-assets:
-      Purpose: 이미지, 오디오 파일 저장
-      Features:
-        - Lifecycle Policies (30일 후 IA, 90일 후 Glacier)
-        - CORS Configuration
-        - Encryption at Rest
+ALB:
+  Purpose: Fargate 서비스로 트래픽 분산 및 고가용성 제공
+  Configuration:
+    - Listeners: Port 80 (HTTP) → 443 (HTTPS)
+    - Target Group: ECS Fargate Tasks
+    - Health Check: /health endpoint
+    - SSL/TLS Termination
+  Features:
+    - 자동 트래픽 분산
+    - 장애 감지 및 복구
+    - HTTPS 보안 연결
 ```
 
-### 2.2 API 계층
-
-#### 2.2.1 API Gateway
+#### 2.2.2 ECS Fargate Cluster
 ```yaml
-APIs:
-  - NovaEnglishAPI:
-      Type: REST API
-      Endpoints:
-        - POST /auth/login
-        - POST /auth/register
-        - GET /user/profile
-        - POST /learning/session
-        - POST /audio/process
-        - GET /learning/progress
-        - POST /image/generate
-      Features:
-        - Request Validation
-        - Rate Limiting (100 req/min per user)
-        - API Keys for Mobile Apps
-        - CORS Headers
-        - CloudWatch Logging
+ECS_Fargate:
+  Purpose: 컨테이너 기반 Express API 서버 실행 (서버리스 컨테이너)
+  Configuration:
+    - Cluster: nova-english-cluster
+    - Service: nova-english-api
+    - Task Definition:
+      - CPU: 512 (0.5 vCPU)
+      - Memory: 1024 MB (1 GB)
+      - Container Port: 3000
+  Auto_Scaling:
+    - Min Tasks: 1
+    - Max Tasks: 4
+    - Target CPU Utilization: 70%
+  Features:
+    - 서버리스 컨테이너 실행
+    - 자동 스케일링
+    - 단일 AZ 배포 (비용 최적화)
+    - 관리 오버헤드 최소화
 ```
 
-#### 2.2.2 Lambda Functions
+#### 2.2.3 ECR (Container Registry)
 ```yaml
-Functions:
-  - AuthHandler:
-      Runtime: Node.js 18.x
-      Memory: 256MB
-      Timeout: 10s
-      Environment:
-        - COGNITO_USER_POOL_ID
-        - JWT_SECRET
-      
-  - AudioProcessor:
-      Runtime: Node.js 18.x
-      Memory: 1024MB
-      Timeout: 30s
-      Environment:
-        - BEDROCK_REGION
-        - S3_AUDIO_BUCKET
-      
-  - ImageGenerator:
-      Runtime: Python 3.11
-      Memory: 512MB
-      Timeout: 60s
-      Environment:
-        - NOVA_MODEL_ID
-        - S3_IMAGE_BUCKET
-      
-  - LearningManager:
-      Runtime: Node.js 18.x
-      Memory: 512MB
-      Timeout: 15s
-      Environment:
-        - DYNAMODB_TABLE_NAME
-        - ELASTICACHE_ENDPOINT
+ECR:
+  Purpose: Docker 이미지 저장소
+  Repository: nova-english-api
+  Features:
+    - 컨테이너 이미지 버전 관리
+    - 보안 스캔
+    - 자동 이미지 빌드 통합
 ```
 
-### 2.3 AI 서비스 계층
-
-#### 2.3.1 Amazon Bedrock Integration
+#### 2.2.4 Express API Application
 ```yaml
-Models:
-  - Nova Canvas (Image Generation):
-      Model ID: amazon.nova-canvas-v1:0
-      Use Cases:
-        - 학습 시나리오 이미지 생성
-        - 사용자 맞춤형 콘텐츠 이미지
-      Configuration:
-        - Max Tokens: 4096
-        - Temperature: 0.7
-        
-  - Nova Sonic (Speech-to-Speech):
-      Model ID: amazon.nova-micro-v1:0
-      Use Cases:
-        - 실시간 음성 대화
-        - 발음 교정 피드백
-      Configuration:
-        - Audio Format: WAV, 16kHz
-        - Max Duration: 60s
-        
-  - Nova Pro (Text Generation):
-      Model ID: amazon.nova-pro-v1:0
-      Use Cases:
-        - 학습 콘텐츠 생성
-        - 피드백 메시지 작성
-      Configuration:
-        - Max Tokens: 2048
-        - Temperature: 0.5
+Express_Application:
+  Technology: Node.js + Express.js
+  Container_Image: node:18-alpine
+  Responsibilities:
+    - 사용자 인증 및 세션 관리
+    - Nova Sonic과의 AI 대화 중개
+    - 이미지-텍스트 매핑 관리
+    - 학습 진도 추적
+  API_Endpoints:
+    - /auth/* : 사용자 인증
+    - /conversation/* : AI 대화 처리
+    - /images/* : 이미지 관리
+    - /progress/* : 학습 진도
+    - /health : ALB 헬스체크
 ```
 
-### 2.4 데이터 계층
-
-#### 2.4.1 DynamoDB Tables
+#### 2.2.5 Amazon Cognito
 ```yaml
-Tables:
-  - Users:
-      PartitionKey: userId (String)
-      Attributes:
-        - email, name, level, preferences
-        - createdAt, lastLoginAt
-      GSI:
-        - email-index (for login)
-      
-  - LearningSessions:
-      PartitionKey: userId (String)
-      SortKey: sessionId (String)
-      Attributes:
-        - sessionType, startTime, endTime
-        - score, accuracy, feedback
-      TTL: 90 days
-      
-  - UserProgress:
-      PartitionKey: userId (String)
-      SortKey: date (String)
-      Attributes:
-        - dailyScore, streakDays, completedLessons
-        - weakAreas, strengths
-      
-  - GeneratedContent:
-      PartitionKey: contentType (String)
-      SortKey: contentId (String)
-      Attributes:
-        - s3Key, metadata, tags
-        - generatedAt, usageCount
-      TTL: 30 days
+Cognito_Service:
+  Purpose: 사용자 인증 및 권한 부여 서비스
+  Features:
+    - 사용자 등록/로그인
+    - JWT 토큰 발급 및 검증
+    - 세션 관리
+  Integration:
+    - React → ALB → Fargate → Cognito 인증 플로우
 ```
 
-#### 2.4.2 ElastiCache Redis
+### 2.3 AI 서비스
+
+#### 2.3.1 Amazon Nova Sonic
 ```yaml
-Clusters:
-  - SessionCache:
-      Node Type: cache.t3.micro
-      Nodes: 2 (Multi-AZ)
-      Use Cases:
-        - 사용자 세션 데이터
-        - 임시 학습 상태
-        - API 응답 캐싱
-      TTL: 1 hour
-      
-  - ContentCache:
-      Node Type: cache.r6g.large
-      Nodes: 3 (Cluster Mode)
-      Use Cases:
-        - 생성된 이미지 메타데이터
-        - 자주 사용되는 프롬프트
-        - 사용자 선호도 데이터
-      TTL: 24 hours
+Nova_Sonic:
+  Purpose: 대화형 AI로 인터랙티브 영어 학습 대화 제공
+  Model: amazon.nova-sonic-v1:0
+  Capabilities:
+    - 개인화된 학습 시나리오 생성
+    - 실시간 영어 대화 상대
+    - 학습자 수준별 맞춤 응답
+    - 발음 및 문법 피드백
+  Integration:
+    - Express Server → Nova Sonic API
+    - 저장된 이미지 설명 활용
+    - 대화 기록 S3 저장
 ```
 
-### 2.5 보안 및 인증
+### 2.4 스토리지 서비스
 
-#### 2.5.1 Amazon Cognito
+#### 2.4.1 S3 Image Storage (Primary)
 ```yaml
-UserPool:
-  - NovaEnglishUsers:
-      Features:
-        - Email/Password Authentication
-        - Social Login (Google, Facebook)
-        - MFA Optional
-        - Password Policy (8+ chars, mixed case)
-      Triggers:
-        - PreSignUp: Email validation
-        - PostConfirmation: Create DynamoDB record
-        
-IdentityPool:
-  - NovaEnglishIdentity:
-      AuthenticatedRole:
-        - DynamoDB: Read/Write own data
-        - S3: Upload to user folder
-        - Bedrock: Invoke Nova models
-      UnauthenticatedRole:
-        - Limited API access for demo
+S3_Image_Storage:
+  Purpose: 학습 콘텐츠용 처리된 이미지 저장
+  Bucket: nova-english-images
+  Features:
+    - 원본 이미지 저장
+    - 최적화된 이미지 버전
+    - CloudFront 연동
+  Organization:
+    - /original/ : 원본 이미지
+    - /processed/ : 학습용 처리된 이미지
+    - /thumbnails/ : 썸네일 이미지
 ```
 
-#### 2.5.2 IAM Roles & Policies
+#### 2.4.2 S3 Conversation Storage
 ```yaml
-Roles:
-  - LambdaExecutionRole:
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy
-        - S3AccessPolicy
-        - BedrockInvokePolicy
-        
-  - APIGatewayRole:
-      Policies:
-        - CloudWatchLogsPolicy
-        - LambdaInvokePolicy
-        
-  - CognitoAuthenticatedRole:
-      Policies:
-        - UserDataAccessPolicy
-        - S3UserFolderPolicy
+S3_Conversation_Storage:
+  Purpose: 대화 기록 및 대화 데이터 저장
+  Bucket: nova-english-conversations
+  Features:
+    - 사용자별 대화 기록
+    - 학습 진도 추적 데이터
+    - AI 응답 히스토리
+  Organization:
+    - /users/{userId}/conversations/
+    - /sessions/{sessionId}/
+    - /progress/{userId}/
 ```
 
----
-
-## 3. 네트워킹 및 보안
-
-### 3.1 VPC 설계
+#### 2.4.3 DynamoDB
 ```yaml
-VPC:
-  - NovaEnglishVPC:
-      CIDR: 10.0.0.0/16
-      Subnets:
-        - Public Subnets: 10.0.1.0/24, 10.0.2.0/24
-        - Private Subnets: 10.0.10.0/24, 10.0.20.0/24
-      
-      Components:
-        - Internet Gateway
-        - NAT Gateway (Multi-AZ)
-        - Route Tables
-        - Security Groups
-```
-
-### 3.2 보안 그룹
-```yaml
-SecurityGroups:
-  - ALB-SG:
-      Inbound: 80, 443 from 0.0.0.0/0
-      Outbound: All to Lambda-SG
-      
-  - Lambda-SG:
-      Inbound: All from ALB-SG
-      Outbound: 443 to 0.0.0.0/0 (AWS APIs)
-      
-  - ElastiCache-SG:
-      Inbound: 6379 from Lambda-SG
-      Outbound: None
-```
-
-### 3.3 데이터 암호화
-```yaml
-Encryption:
-  - At Rest:
-      - DynamoDB: AWS KMS
-      - S3: SSE-S3
-      - ElastiCache: In-transit and at-rest
-      
-  - In Transit:
-      - All API calls: TLS 1.2+
-      - CloudFront: SSL/TLS certificates
-      - Internal: VPC endpoints for AWS services
-```
-
----
-
-## 4. 모니터링 및 로깅
-
-### 4.1 CloudWatch 설정
-```yaml
-Metrics:
-  - Custom Metrics:
-      - Learning session duration
-      - AI model response time
-      - User engagement rate
-      - Error rates by function
-      
-  - Alarms:
-      - Lambda error rate > 5%
-      - API Gateway latency > 2s
-      - DynamoDB throttling
-      - S3 4xx/5xx errors
-```
-
-### 4.2 X-Ray 트레이싱
-```yaml
-Tracing:
-  - Services:
-      - API Gateway: All requests
-      - Lambda: All functions
-      - DynamoDB: All operations
-      
-  - Sampling Rules:
-      - 10% of successful requests
-      - 100% of error requests
-      - Custom rules for critical paths
-```
-
-### 4.3 로그 관리
-```yaml
-LogGroups:
-  - /aws/lambda/nova-english-*
-  - /aws/apigateway/nova-english
-  - /aws/cloudfront/nova-english
+DynamoDB_Tables:
+  ImageTextMapping:
+    Purpose: 이미지와 텍스트 설명 매핑 저장
+    PartitionKey: imageId (String)
+    Attributes:
+      - s3ImageKey: 이미지 S3 경로
+      - description: 이미지 설명 텍스트
+      - difficulty: 난이도 레벨
+      - category: 학습 카테고리
+      - keywords: 핵심 어휘
+      - createdAt: 생성 시간
   
-  Retention: 30 days
-  Export: S3 for long-term storage
+  UserProgress:
+    Purpose: 사용자 학습 진도 관리
+    PartitionKey: userId (String)
+    SortKey: date (String)
+    Attributes:
+      - sessionsCompleted: 완료한 세션 수
+      - totalScore: 총 점수
+      - conversationCount: 대화 횟수
+      - lastActivity: 마지막 활동 시간
+```
+
+### 2.5 데이터 플로우
+
+#### 2.5.1 사용자 인증 플로우
+```
+사용자 → React → CloudFront → ALB → Fargate → Cognito
+1. 사용자가 React 웹페이지에서 로그인 요청
+2. CloudFront CDN을 통해 ALB로 라우팅
+3. ALB가 ECS Fargate 태스크로 요청 전달
+4. Fargate의 Express 서버가 Cognito 인증 처리
+5. JWT 토큰 발급 및 클라이언트 반환
+```
+
+#### 2.5.2 학습 콘텐츠 플로우
+```
+Fargate → Nova Sonic → S3 Conversation Storage
+1. Fargate Express 서버가 학습 세션 시작
+2. Nova Sonic이 개인화된 학습 시나리오 생성
+3. 대화 데이터가 S3 Conversation Storage에 저장
+4. 진도 추적을 위한 대화 기록 유지
+```
+
+#### 2.5.3 이미지 처리 플로우
+```
+원본 이미지 → S3 Image Storage → DynamoDB 매핑
+Fargate → Nova Sonic → 저장된 설명 활용
+1. 원본 이미지를 S3 Image Storage에 업로드
+2. 이미지 설명을 DynamoDB에 매핑하여 저장
+3. Fargate 서버가 Nova Sonic API 호출
+4. Nova Sonic이 저장된 설명을 활용하여 학습 대화 생성
+```
+
+#### 2.5.4 동적 콘텐츠 생성 플로우
+```
+대화 데이터 → 이미지 생성 → S3 저장
+1. Fargate에서 사용자 대화 데이터 분석
+2. Nova Sonic이 맞춤형 학습 이미지 생성
+3. 생성된 이미지를 S3에 저장
+4. DynamoDB에 새로운 이미지-텍스트 매핑 추가
+```
+
+#### 2.5.5 콘텐츠 전송 플로우
+```
+S3 → CloudFront → React 웹페이지
+ALB Health Check → Fargate Tasks
+1. S3에서 CloudFront를 통해 최적화된 콘텐츠 전송
+2. ALB가 Fargate 태스크 상태 모니터링
+3. React 웹페이지에서 빠른 이미지 로딩
+4. 장애 시 자동 트래픽 재라우팅
 ```
 
 ---
 
-## 5. 성능 최적화
+## 3. 주요 기능
 
-### 5.1 캐싱 전략
+### 3.1 AI 생성 학습 콘텐츠
 ```yaml
-Levels:
-  - CloudFront:
-      - Static assets: 1 year
-      - API responses: 5 minutes
-      - Dynamic content: No cache
-      
-  - ElastiCache:
-      - User sessions: 1 hour
-      - Generated content metadata: 24 hours
-      - Frequently accessed data: 6 hours
-      
-  - Lambda:
-      - Connection pooling for DynamoDB
-      - Warm-up strategies
-      - Memory optimization
+AI_Generated_Content:
+  - Nova Sonic이 개인화된 학습 시나리오 생성
+  - 사용자 수준과 관심사에 맞춤형 대화 주제
+  - 실시간 피드백 및 교정 제안
+  - 동적 난이도 조절
 ```
 
-### 5.2 Auto Scaling
+### 3.2 이미지-텍스트 연관성
 ```yaml
-Scaling:
-  - Lambda:
-      - Concurrent executions: 1000
-      - Reserved concurrency for critical functions
-      
-  - DynamoDB:
-      - On-demand billing mode
-      - Auto scaling for provisioned tables
-      
-  - ElastiCache:
-      - Cluster mode for horizontal scaling
-      - Read replicas for read-heavy workloads
+Image_Text_Association:
+  - DynamoDB가 이미지와 설명 텍스트 매핑
+  - 학습 연습용 이미지-설명 쌍 관리
+  - 카테고리별 이미지 분류 (일상, 여행, 비즈니스)
+  - 난이도별 어휘 및 표현 매핑
 ```
 
----
-
-## 6. 비용 최적화
-
-### 6.1 비용 구조
+### 3.3 대화 지속성
 ```yaml
-Monthly Estimates (1000 MAU):
-  - Lambda: $50 (2M requests)
-  - DynamoDB: $25 (On-demand)
-  - S3: $30 (100GB storage + transfer)
-  - CloudFront: $20 (1TB transfer)
-  - Bedrock Nova: $200 (10K image generations)
-  - ElastiCache: $50 (t3.micro cluster)
-  - API Gateway: $35 (2M requests)
-  
-  Total: ~$410/month
+Conversation_Persistence:
+  - S3에 대화 기록 저장으로 진도 추적
+  - 사용자별 학습 히스토리 관리
+  - 세션 간 연속성 유지
+  - 장기 학습 패턴 분석
 ```
 
-### 6.2 최적화 전략
+### 3.4 최적화된 전송
 ```yaml
-Strategies:
-  - Reserved Instances:
-      - ElastiCache: 1-year term (30% savings)
-      - CloudFront: Committed usage (20% savings)
-      
-  - Lifecycle Policies:
-      - S3: IA after 30 days, Glacier after 90 days
-      - CloudWatch Logs: 30-day retention
-      
-  - Resource Optimization:
-      - Lambda memory tuning
-      - DynamoDB capacity planning
-      - S3 intelligent tiering
+Optimized_Delivery:
+  - CloudFront로 전 세계 빠른 이미지 로딩
+  - 지역별 캐싱으로 지연 시간 최소화
+  - 대역폭 최적화
+  - 모바일 친화적 이미지 압축
+```
+
+### 3.5 보안 인증
+```yaml
+Secure_Authentication:
+  - Cognito가 사용자 관리 및 보안 처리
+  - JWT 토큰 기반 세션 관리
+  - 개인정보 보호 및 데이터 암호화
+  - 안전한 API 접근 제어
 ```
 
 ---
 
-## 7. 재해 복구 및 백업
+## 4. 기술 스택
 
-### 7.1 백업 전략
+### 4.1 프론트엔드
 ```yaml
-Backups:
-  - DynamoDB:
-      - Point-in-time recovery: Enabled
-      - Daily backups: 35-day retention
-      - Cross-region replication: Optional
-      
-  - S3:
-      - Versioning: Enabled
-      - Cross-region replication: Critical buckets
-      - MFA delete: Enabled for production
-      
-  - ElastiCache:
-      - Daily snapshots: 7-day retention
-      - Multi-AZ deployment
+Frontend_Stack:
+  - Framework: React
+  - Language: JavaScript/TypeScript
+  - Styling: CSS Modules / Styled Components
+  - State Management: React Context / Redux
+  - Build Tool: Create React App / Vite
 ```
 
-### 7.2 재해 복구 계획
+### 4.2 백엔드
 ```yaml
-DR Strategy:
-  - RTO (Recovery Time Objective): 4 hours
-  - RPO (Recovery Point Objective): 1 hour
-  
-  Procedures:
-    1. Route 53 health checks
-    2. Cross-region failover
-    3. Database restoration
-    4. Application deployment
-    
-  Testing:
-    - Monthly DR drills
-    - Automated failover testing
+Backend_Stack:
+  - Runtime: Node.js
+  - Framework: Express.js
+  - Language: JavaScript/TypeScript
+  - Middleware: CORS, Body Parser, Authentication
 ```
 
----
-
-## 8. 배포 및 CI/CD
-
-### 8.1 배포 파이프라인
+### 4.3 인증
 ```yaml
-Pipeline:
-  - Source: GitHub
-  - Build: CodeBuild
-  - Test: Automated testing
-  - Deploy: CodeDeploy + CloudFormation
-  
-  Environments:
-    - Development: Auto-deploy on commit
-    - Staging: Manual approval required
-    - Production: Blue/green deployment
+Authentication_Stack:
+  - Service: Amazon Cognito
+  - Token Type: JWT
+  - Session Management: Cognito User Pools
 ```
 
-### 8.2 Infrastructure as Code
+### 4.4 AI 서비스
 ```yaml
-Tools:
-  - AWS CDK (TypeScript)
-  - CloudFormation templates
-  - Parameter Store for configuration
-  
-  Structure:
-    - /infrastructure/stacks/
-    - /infrastructure/constructs/
-    - /infrastructure/config/
+AI_Stack:
+  - Primary AI: Amazon Nova Sonic
+  - Use Cases: Conversational Learning, Personalization
+  - Integration: AWS SDK for JavaScript
+```
+
+### 4.5 스토리지
+```yaml
+Storage_Stack:
+  - Object Storage: Amazon S3
+  - Database: Amazon DynamoDB
+  - CDN: Amazon CloudFront
 ```
 
 ---
 
-## 9. 보안 및 컴플라이언스
+## 5. 배포 아키텍처
 
-### 9.1 보안 체크리스트
+### 5.1 웹 애플리케이션 호스팅
+```yaml
+Web_Hosting:
+  - React 프론트엔드 호스팅
+  - S3 Static Website Hosting
+  - CloudFront CDN 통합
+  - 자동 HTTPS 인증서
+```
+
+### 5.2 ECS Fargate 배포
+```yaml
+Fargate_Deployment:
+  - 컨테이너 기반 Express API 서버
+  - 서버리스 컨테이너 실행
+  - 단일 AZ 배포로 비용 최적화
+  - 자동 스케일링 및 로드 밸런싱
+  - Docker 이미지 ECR 저장
+  - ALB를 통한 트래픽 분산
+```
+
+### 5.3 AWS 서비스 통합
+```yaml
+AWS_Integration:
+  - 확장성과 성능을 위한 AWS 서비스 활용
+  - 관리형 서비스로 운영 부담 최소화
+  - 자동 스케일링 및 고가용성
+  - 보안 및 컴플라이언스 준수
+```
+
+### 5.4 CDN 배포
+```yaml
+CDN_Distribution:
+  - 전 세계 콘텐츠 전송
+  - 이미지 및 정적 자산 캐싱
+  - 지연 시간 최소화
+  - 대역폭 비용 최적화
+```
+
+---
+
+## 6. 시스템 특징
+
+### 6.1 확장성
+```yaml
+Scalability:
+  - ECS Fargate 자동 스케일링 (CPU 기반)
+  - ALB를 통한 트래픽 분산
+  - 단일 AZ 배포로 비용 효율성
+  - 글로벌 CDN 배포
+  - 컨테이너 기반 마이크로서비스 준비
+```
+
+### 6.2 성능
+```yaml
+Performance:
+  - ALB Health Check로 장애 태스크 자동 교체
+  - Fargate 태스크 병렬 처리
+  - CloudFront CDN으로 빠른 로딩
+  - DynamoDB 고성능 데이터베이스
+  - S3 최적화된 스토리지
+  - Nova Sonic 실시간 AI 응답
+```
+
+### 6.3 보안
 ```yaml
 Security:
-  - ✅ All data encrypted at rest and in transit
-  - ✅ IAM roles follow least privilege principle
-  - ✅ API Gateway has rate limiting
-  - ✅ WAF rules configured for common attacks
-  - ✅ VPC endpoints for AWS service communication
-  - ✅ Security groups restrict unnecessary access
-  - ✅ CloudTrail logging enabled
-  - ✅ GuardDuty threat detection enabled
+  - Cognito 사용자 인증
+  - IAM 역할 기반 접근 제어
+  - HTTPS/TLS 암호화
+  - 데이터 암호화 (저장 및 전송)
 ```
 
-### 9.2 컴플라이언스
+### 6.4 비용 효율성
 ```yaml
-Standards:
-  - GDPR: User data handling and deletion
-  - COPPA: Age verification for users under 13
-  - SOC 2: AWS compliance inheritance
-  - ISO 27001: Security management practices
+Cost_Efficiency:
+  - Fargate 사용량 기반 과금 (실행 시간만)
+  - ALB 요청 기반 과금
+  - 자동 스케일링으로 리소스 최적화
+  - 관리형 서비스로 운영 비용 절감
+  - 개발 및 배포 복잡도 감소
 ```
 
 ---
 
-## 10. 운영 및 유지보수
+## 7. 사용된 AWS 리소스 목록
 
-### 10.1 운영 절차
+### 7.1 핵심 서비스 (8개)
 ```yaml
-Procedures:
-  - Daily health checks
-  - Weekly performance reviews
-  - Monthly cost optimization
-  - Quarterly security audits
+AWS_Resources:
+  Compute:
+    - ECS Fargate: 컨테이너 기반 백엔드 실행
+    - ALB: 로드 밸런싱 및 트래픽 분산
+    - ECR: Docker 이미지 저장소
   
-  Automation:
-    - Automated scaling
-    - Self-healing systems
-    - Proactive monitoring
+  AI_ML:
+    - Amazon Nova Sonic: 대화형 AI 학습 서비스
+  
+  Authentication:
+    - Amazon Cognito: 사용자 인증 및 권한 관리
+  
+  Storage:
+    - S3 Image Storage: 학습 이미지 저장
+    - S3 Conversation Storage: 대화 기록 저장
+    - S3 Static Website: React 앱 호스팅
+  
+  Database:
+    - DynamoDB: 이미지-텍스트 매핑 및 사용자 진도
+  
+  Networking:
+    - CloudFront CDN: 글로벌 콘텐츠 전송
 ```
 
-### 10.2 업데이트 전략
+### 7.2 예상 월간 비용 (MVP - 단일 AZ)
 ```yaml
-Updates:
-  - Lambda functions: Blue/green deployment
-  - Database schema: Migration scripts
-  - Frontend: Rolling updates via CloudFront
-  - Infrastructure: CloudFormation stack updates
+Cost_Breakdown:
+  - ECS Fargate: $25 (0.5 vCPU, 1GB, 단일 AZ, 평균 1-2 tasks)
+  - ALB: $16 (기본 요금 + 처리량)
+  - ECR: $2 (이미지 저장)
+  - Nova Sonic: $50 (예상 API 호출)
+  - Cognito: $0 (50,000 MAU 이하 무료)
+  - S3: $8 (저장 + 전송)
+  - DynamoDB: $5 (On-demand)
+  - CloudFront: $5 (CDN 전송)
+  
+  Total: ~$111/month (단일 AZ로 약 10% 비용 절감)
 ```
 
 ---
 
 **문서 승인**: ProjectLead Agent 검토 필요  
-**다음 문서**: API 명세서 작성
+**다음 문서**: API 명세서 작성 (ECS Fargate + Nova Sonic 기반으로 수정 필요)

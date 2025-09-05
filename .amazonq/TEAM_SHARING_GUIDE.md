@@ -1,4 +1,4 @@
-# Amazon Q Agent 팀 공유 가이드
+# Nova 영어 학습 서비스 Amazon Q Agent 팀 공유 가이드
 
 ## 현재 제약사항
 - Amazon Q Agent는 **IDE 환경에서만** 작동 (VS Code, IntelliJ 등)
@@ -11,7 +11,7 @@
 ```bash
 # 현재 Agent 설정을 GitHub에 푸시
 git add .amazonq/
-git commit -m "Add Amazon Q Agents for Nova English Learning Service"
+git commit -m "Add Amazon Q Agents for Nova Sonic English Learning Service"
 git push origin main
 ```
 
@@ -38,8 +38,9 @@ cd team31_0905
 #### A. 표준 프롬프트 템플릿 생성
 ```markdown
 # prompts/product-manager.md
-당신은 8년차 영어 회화 교육 서비스 기획자입니다.
-[Agent 설정 내용을 일반 프롬프트로 변환]
+당신은 Nova Sonic 대화형 AI를 활용한 영어 학습 서비스 기획자입니다.
+ECS Fargate 기반 아키텍처에서 대화형 학습 경험을 설계합니다.
+[Agent 설정 내용을 Nova Sonic 중심으로 변환]
 ```
 
 #### B. CLI 도구 개발
@@ -80,7 +81,7 @@ class AgentCLI {
 ```bash
 # 팀 전체 개발 환경 설정 스크립트
 #!/bin/bash
-echo "Nova English Learning Team Setup"
+echo "Nova Sonic English Learning Team Setup"
 
 # 1. 저장소 클론
 git clone https://github.com/s0ooo0k/team31_0905.git
@@ -95,7 +96,7 @@ echo "Please configure your .env file"
 
 # 4. Amazon Q 설정 안내
 echo "Install Amazon Q extension in your IDE"
-echo "Agents available: @ProductManager @Developer @CloudOps @QATester @ProjectLead"
+echo "Nova Sonic Agents: @ProductManager @Developer @CloudOps @QATester @ProjectLead"
 ```
 
 ### 2. Agent 사용 가이드라인
@@ -103,29 +104,29 @@ echo "Agents available: @ProductManager @Developer @CloudOps @QATester @ProjectL
 ## 팀 협업 규칙
 
 ### 역할별 책임
-- **@ProductManager**: 요구사항 정의, UX 설계
-- **@Developer**: 코드 구현, API 설계  
-- **@CloudOps**: 인프라 구축, 배포
-- **@QATester**: 테스트 전략, 품질 검증
-- **@ProjectLead**: 일정 관리, 팀 조율
+- **@ProductManager**: Nova Sonic 대화 시나리오 설계, 학습 UX 설계
+- **@Developer**: ECS Fargate 기반 API 구현, Nova Sonic 연동  
+- **@CloudOps**: ECS Fargate + ALB 인프라 구축, 단일 AZ 배포
+- **@QATester**: 대화형 AI 테스트 전략, 프롬프트 품질 검증
+- **@ProjectLead**: 4명 팀 일정 관리, 단일 AZ 비용 최적화
 
 ### 작업 순서
-1. @ProjectLead → 스프린트 계획 수립
-2. @ProductManager → 기능 요구사항 정의
-3. @Developer → 구현 방법 제시
-4. @CloudOps → 인프라 요구사항 검토
-5. @QATester → 테스트 계획 수립
-6. 구현 → 테스트 → 배포 → 회고
+1. @ProjectLead → Nova Sonic 중심 스프린트 계획 수립
+2. @ProductManager → 대화형 학습 기능 요구사항 정의
+3. @Developer → ECS Fargate + Nova Sonic 구현 방법 제시
+4. @CloudOps → 단일 AZ 인프라 요구사항 검토
+5. @QATester → 대화형 AI 테스트 계획 수립
+6. Docker 컨테이너 구현 → 테스트 → ECS 배포 → 회고
 ```
 
 ### 3. 결과물 공유 시스템
 ```bash
 # 각 Agent 결과물을 문서화
-mkdir -p docs/agents-output/
-echo "ProductManager 결과물" > docs/agents-output/product-requirements.md
-echo "Developer 결과물" > docs/agents-output/technical-specs.md
-echo "CloudOps 결과물" > docs/agents-output/infrastructure.md
-echo "QATester 결과물" > docs/agents-output/test-plans.md
+mkdir -p docs/nova-sonic-agents-output/
+echo "Nova Sonic 대화 시나리오" > docs/nova-sonic-agents-output/conversation-scenarios.md
+echo "ECS Fargate API 명세" > docs/nova-sonic-agents-output/ecs-api-specs.md
+echo "단일 AZ 인프라 설계" > docs/nova-sonic-agents-output/single-az-infrastructure.md
+echo "대화형 AI 테스트 계획" > docs/nova-sonic-agents-output/ai-test-plans.md
 ```
 
 ## 팀원별 설정 체크리스트
@@ -157,22 +158,22 @@ echo "QATester 결과물" > docs/agents-output/test-plans.md
 
 ## 향후 개선 계획
 
-### Phase 1: 현재 (IDE 기반)
-- [x] Agent 설정 파일 생성
-- [x] GitHub 공유
-- [ ] 팀원 온보딩
+### Phase 1: 현재 (Nova Sonic IDE 기반)
+- [x] Nova Sonic 중심 Agent 설정 파일 생성
+- [x] ECS Fargate 아키텍처 반영 GitHub 공유
+- [ ] 4명 팀원 온보딩
 
-### Phase 2: CLI 도구 개발
-- [ ] Node.js CLI 도구 개발
-- [ ] 프롬프트 템플릿 시스템
-- [ ] 결과물 자동 저장
+### Phase 2: Nova Sonic CLI 도구 개발
+- [ ] Nova Sonic 연동 Node.js CLI 도구 개발
+- [ ] 대화형 프롬프트 템플릿 시스템
+- [ ] ECS Fargate 환경 결과물 자동 저장
 
-### Phase 3: 웹 인터페이스
-- [ ] 웹 기반 Agent 인터페이스
-- [ ] 팀 협업 대시보드
-- [ ] 실시간 결과 공유
+### Phase 3: Nova Sonic 웹 인터페이스
+- [ ] Nova Sonic 대화형 웹 Agent 인터페이스
+- [ ] ECS Fargate 기반 팀 협업 대시보드
+- [ ] 대화 시나리오 실시간 공유
 
-### Phase 4: 통합 플랫폼
-- [ ] Slack/Teams 봇 연동
-- [ ] 자동화된 워크플로우
-- [ ] 프로젝트 관리 통합
+### Phase 4: Nova Sonic 통합 플랫폼
+- [ ] Nova Sonic Slack/Teams 봇 연동
+- [ ] ECS Fargate 기반 자동화 워크플로우
+- [ ] 대화형 학습 프로젝트 관리 통합

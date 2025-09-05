@@ -76,16 +76,14 @@ AWS_PROFILE=default
 
 # Amazon Bedrock Nova 설정
 BEDROCK_REGION=us-east-1
-NOVA_IMAGE_MODEL_ID=amazon.nova-canvas-v1:0
-NOVA_TEXT_MODEL_ID=amazon.nova-pro-v1:0
-NOVA_SONIC_MODEL_ID=amazon.nova-micro-v1:0
+NOVA_SONIC_MODEL_ID=amazon.nova-sonic-v1:0
 
 # 데이터베이스 설정
 DYNAMODB_TABLE_PREFIX=nova-english-dev-
 DYNAMODB_ENDPOINT=https://dynamodb.us-east-1.amazonaws.com
 
-# API 설정
-API_GATEWAY_STAGE=dev
+# API 설정 (ECS Fargate + ALB)
+ALB_DNS_NAME=nova-english-dev-alb.us-east-1.elb.amazonaws.com
 CORS_ORIGIN=http://localhost:3000
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRES_IN=24h
@@ -107,7 +105,7 @@ LOG_LEVEL=debug
 ### 2.1 디렉토리 구조
 ```
 nova-english-learning/
-├── frontend/                 # React 애플리케이션
+├── frontend/                 # React 애플리케이션 (S3 호스팅)
 │   ├── src/
 │   │   ├── components/       # 재사용 가능한 컴포넌트
 │   │   ├── pages/           # 페이지 컴포넌트
@@ -117,20 +115,22 @@ nova-english-learning/
 │   │   └── types/           # TypeScript 타입 정의
 │   ├── public/              # 정적 파일
 │   └── package.json
-├── backend/                 # Express 서버 (개발용)
+├── backend/                 # Express 서버 (ECS Fargate)
 │   ├── src/
 │   │   ├── routes/          # API 라우트
 │   │   ├── middleware/      # 미들웨어
 │   │   ├── services/        # 비즈니스 로직
 │   │   └── utils/           # 유틸리티
+│   ├── Dockerfile           # Docker 컨테이너 설정
 │   └── package.json
-├── lambda/                  # AWS Lambda 함수들
-│   ├── auth/               # 인증 관련 함수
-│   ├── learning/           # 학습 관련 함수
-│   ├── content/            # 콘텐츠 관리 함수
-│   └── shared/             # 공통 라이브러리
+├── docker/                  # Docker 관련 파일
+│   ├── docker-compose.yml   # 로컬 개발용
+│   └── .dockerignore        # Docker 빌드 제외
 ├── infrastructure/         # AWS CDK 코드
 │   ├── lib/                # CDK 스택 정의
+│   │   ├── ecs-stack.ts     # ECS Fargate 스택
+│   │   ├── alb-stack.ts     # ALB 스택
+│   │   └── ecr-stack.ts     # ECR 스택
 │   ├── bin/                # CDK 앱 진입점
 │   └── config/             # 환경별 설정
 ├── docs/                   # 프로젝트 문서
@@ -144,18 +144,20 @@ frontend/src/index.tsx        # React 앱 진입점
 frontend/src/App.tsx          # 메인 앱 컴포넌트
 frontend/src/router.tsx       # 라우팅 설정
 
-# 백엔드 진입점
+# 백엔드 진입점 (ECS Fargate)
 backend/src/server.ts         # Express 서버
 backend/src/app.ts           # 앱 설정
+backend/Dockerfile           # Docker 컨테이너 설정
 
-# Lambda 함수
-lambda/auth/handler.ts        # 인증 처리
-lambda/learning/handler.ts    # 학습 세션 처리
-lambda/content/handler.ts     # 콘텐츠 관리
+# Docker 설정
+docker/docker-compose.yml     # 로컬 개발 환경
+docker/.dockerignore         # Docker 빌드 제외
 
-# 인프라 코드
+# 인프라 코드 (ECS Fargate)
 infrastructure/bin/app.ts     # CDK 앱
-infrastructure/lib/nova-stack.ts  # 메인 스택
+infrastructure/lib/ecs-stack.ts   # ECS Fargate 스택
+infrastructure/lib/alb-stack.ts   # ALB 스택
+infrastructure/lib/ecr-stack.ts   # ECR 스택
 ```
 
 ---
@@ -325,19 +327,22 @@ npm test           # 테스트 실행
 npm run test:watch # 테스트 감시 모드
 ```
 
-### 4.3 Lambda 함수 로컬 테스트
+### 4.3 Docker 컨테이너 로컬 테스트
 
-#### SAM CLI 설치 및 사용
+#### Docker Compose 사용
 ```bash
-# SAM CLI 설치
-pip install aws-sam-cli
+# Docker Compose로 로컬 환경 실행
+cd docker
+docker-compose up -d
 
-# Lambda 함수 로컬 실행
-cd lambda
-sam local start-api --port 3002
+# 백엔드 컨테이너만 실행
+docker-compose up backend
 
-# 특정 함수 테스트
-sam local invoke AuthFunction --event events/login.json
+# 로그 확인
+docker-compose logs -f backend
+
+# 컨테이너 중지
+docker-compose down
 ```
 
 #### 로컬 DynamoDB 설정
@@ -464,7 +469,7 @@ test('user can login and access dashboard', async ({ page }) => {
 
 ### 6.1 개발 환경 배포
 
-#### AWS CDK 배포
+#### ECS Fargate 배포
 ```bash
 # CDK 설치
 npm install -g aws-cdk
@@ -474,8 +479,15 @@ cd infrastructure
 npm install
 cdk bootstrap
 
-# 개발 환경 배포
-cdk deploy NovaEnglishDevStack
+# ECR 리포지토리 생성
+cdk deploy NovaEnglishECRStack
+
+# Docker 이미지 빌드 및 푸시
+./scripts/build-and-push.sh
+
+# ECS Fargate 및 ALB 배포
+cdk deploy NovaEnglishECSStack
+cdk deploy NovaEnglishALBStack
 ```
 
 #### 환경별 배포 스크립트
@@ -486,15 +498,20 @@ set -e
 
 echo "🚀 Deploying to Development Environment"
 
-# 프론트엔드 빌드
+# 프론트엔드 빌드 및 S3 업로드
 cd frontend
 npm run build
 aws s3 sync build/ s3://nova-english-dev-frontend --delete
 
-# Lambda 함수 배포
-cd ../lambda
-sam build
-sam deploy --config-env dev
+# Docker 이미지 빌드 및 ECR 푸시
+cd ../backend
+docker build -t nova-english-api .
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+docker tag nova-english-api:latest $ECR_REGISTRY/nova-english-api:latest
+docker push $ECR_REGISTRY/nova-english-api:latest
+
+# ECS 서비스 업데이트
+aws ecs update-service --cluster nova-english-dev --service nova-english-api --force-new-deployment
 
 # CDK 스택 업데이트
 cd ../infrastructure
@@ -584,16 +601,17 @@ export class MonitoringStack extends Stack {
       dashboardName: 'nova-english-metrics'
     });
 
-    // Lambda 메트릭
+    // ECS Fargate 메트릭
     dashboard.addWidgets(
       new cloudwatch.GraphWidget({
-        title: 'Lambda Invocations',
+        title: 'ECS Service CPU Utilization',
         left: [
           new cloudwatch.Metric({
-            namespace: 'AWS/Lambda',
-            metricName: 'Invocations',
+            namespace: 'AWS/ECS',
+            metricName: 'CPUUtilization',
             dimensionsMap: {
-              FunctionName: 'nova-english-auth'
+              ServiceName: 'nova-english-api',
+              ClusterName: 'nova-english-cluster'
             }
           })
         ]

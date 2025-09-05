@@ -10,12 +10,12 @@
 
 ### 1.1 프롬프트 분류 체계
 ```
-프롬프트 모음
-├── 이미지 생성 프롬프트 (Nova Canvas)
-├── 음성 대화 프롬프트 (Nova Sonic)
-├── 텍스트 생성 프롬프트 (Nova Pro)
+프롬프트 모음 (ECS Fargate 기반)
+├── 음성 대화 프롬프트 (Nova Sonic - 주요 기능)
+├── 대화 데이터 처리 프롬프트
 ├── 학습 평가 프롬프트
-└── 피드백 생성 프롬프트
+├── 피드백 생성 프롬프트
+└── 컨테이너 모니터링 프롬프트
 ```
 
 ### 1.2 난이도 체계
@@ -32,7 +32,7 @@
 
 ---
 
-## 2. 이미지 생성 프롬프트 (Nova Canvas)
+## 2. 대화 데이터 처리 프롬프트
 
 ### 2.1 일상생활 시나리오
 
@@ -45,7 +45,7 @@
     {
       "id": "daily_001",
       "title": "아침 식사",
-      "prompt": "A family having breakfast together at a dining table. Show a mother, father, and child sitting around a wooden table with cereal bowls, milk, toast, and orange juice. Bright morning sunlight coming through the window. Realistic style, warm and cozy atmosphere.",
+      "conversationContext": "Family breakfast scenario for English conversation practice",
       "expectedVocabulary": ["breakfast", "cereal", "milk", "toast", "family", "morning"],
       "learningObjectives": ["식사 관련 어휘", "가족 구성원 표현", "시간 표현"],
       "sampleQuestions": [
@@ -253,33 +253,32 @@ Example responses:
 
 ## 4. 텍스트 생성 프롬프트 (Nova Pro)
 
-### 4.1 학습 콘텐츠 생성
+### 4.1 ECS Fargate 기반 콘텐츠 생성
 
-#### 4.1.1 어휘 설명 생성
+#### 4.1.1 대화 데이터 처리 프롬프트
 ```
-Generate a vocabulary explanation for English learners:
+Process conversation data for ECS Fargate backend:
 
-Word: {target_word}
-User Level: {user_level}
-Context: {usage_context}
+Conversation Input:
+- User Audio: {audio_transcription}
+- Session Context: {session_data}
+- User Level: {user_level}
+- Container Instance: {ecs_task_id}
 
-Please provide:
-1. Simple definition in English
-2. Example sentence using the word
-3. Korean translation
-4. Common collocations or phrases
-5. Similar words (synonyms)
-6. Memory tip or mnemonic
+Generate response including:
+1. Nova Sonic conversation response
+2. Learning assessment scores
+3. S3 storage metadata
+4. Container performance metrics
+5. Next conversation suggestions
 
-Format the response in a clear, educational manner suitable for {user_level} learners.
+Ensure response is optimized for:
+- ECS Fargate container processing
+- ALB health check compatibility
+- Single AZ deployment efficiency
+- S3 conversation storage format
 
-Example for "delicious":
-Definition: Something that tastes very good
-Example: "The pizza was delicious!"
-Korean: 맛있는
-Collocations: delicious food, delicious meal
-Similar words: tasty, yummy
-Memory tip: Think of "delicious" when you want to say food is really, really good!
+Output format suitable for containerized microservice architecture.
 ```
 
 #### 4.1.2 문법 설명 생성
@@ -387,8 +386,8 @@ Generate a comprehensive evaluation including:
 4. Areas for Improvement:
    - [List 2-3 specific areas with actionable advice]
 
-5. Achievements Unlocked:
-   - [Any badges or milestones reached]
+5. Learning Milestones:
+   - [Any progress markers reached]
 
 6. Next Session Recommendations:
    - Suggested difficulty level
@@ -594,13 +593,6 @@ Safety:
 ### 7.2 프롬프트 라이브러리 구조
 ```
 prompts/
-├── image_generation/
-│   ├── daily_life/
-│   │   ├── beginner/
-│   │   ├── intermediate/
-│   │   └── advanced/
-│   ├── travel/
-│   └── business/
 ├── conversation/
 │   ├── system_prompts/
 │   ├── scenario_starters/
@@ -608,11 +600,15 @@ prompts/
 ├── evaluation/
 │   ├── feedback_generation/
 │   ├── progress_assessment/
-│   └── achievement_recognition/
-└── content_generation/
-    ├── vocabulary_explanations/
-    ├── grammar_lessons/
-    └── exercise_creation/
+│   └── milestone_tracking/
+├── content_generation/
+│   ├── vocabulary_explanations/
+│   ├── grammar_lessons/
+│   └── exercise_creation/
+└── conversation_data/
+    ├── daily_life/
+    ├── travel/
+    └── business/
 ```
 
 ---
@@ -626,8 +622,8 @@ import { PromptLibrary } from './prompts/PromptLibrary';
 
 const promptLib = new PromptLibrary();
 
-// 이미지 생성 프롬프트 가져오기
-const imagePrompt = promptLib.getImagePrompt({
+// 대화 데이터 프롬프트 가져오기
+const conversationPrompt = promptLib.getConversationPrompt({
   category: 'daily_life',
   difficulty: 'beginner',
   scenario: 'breakfast'
@@ -648,32 +644,33 @@ const feedbackPrompt = promptLib.generateFeedbackPrompt({
 });
 ```
 
-### 8.2 콘텐츠 제작자를 위한 가이드
+### 8.2 ECS Fargate 기반 프롬프트 작성 가이드
 ```markdown
-## 새로운 프롬프트 작성 가이드
+## ECS Fargate 컨테이너용 프롬프트 작성 가이드
 
-### 1. 목적 정의
-- 학습 목표 명확히 설정
-- 대상 사용자 레벨 확인
-- 예상 결과물 정의
+### 1. 컨테이너 환경 고려사항
+- ECS Fargate 메모리 제한 (1GB)
+- ALB 헬스체크 호환성
+- 단일 AZ 배포 최적화
+- 컨테이너 시작 시간 최소화
 
-### 2. 구조 설계
-- 명확한 지시사항 작성
-- 컨텍스트 정보 포함
-- 출력 형식 지정
-- 변수 위치 표시
+### 2. 성능 최적화
+- 짧고 효율적인 프롬프트 작성
+- 컨텍스트 위도우 최소화
+- 배치 처리 가능한 구조
+- 캐시 친화적 응답 형식
 
-### 3. 테스트 및 검증
-- 다양한 입력으로 테스트
-- 교육적 효과 검증
-- 사용자 피드백 수집
-- 지속적 개선
+### 3. 모니터링 및 로깅
+- CloudWatch 메트릭 호환성
+- 컨테이너 로그 최적화
+- 에러 추적 가능한 구조
+- 성능 지표 수집 지원
 
-### 4. 문서화
-- 사용 목적 기록
-- 예시 입출력 제공
-- 주의사항 명시
-- 버전 히스토리 관리
+### 4. 스케일링 고려사항
+- 자동 스케일링 친화적 설계
+- 로드 밸런싱 최적화
+- 리소스 효율적 사용
+- 비용 최적화 고려
 ```
 
 ---

@@ -3,7 +3,7 @@
 **작성자**: Developer Agent  
 **작성일**: 2025년 1월  
 **버전**: 1.0  
-**Base URL**: `https://api.nova-english.com/v1`
+**Base URL**: `https://api.nova-english.com/v1` (ALB 경유)
 
 ---
 
@@ -253,6 +253,7 @@ Content-Type: application/json
 POST /learning/session/{sessionId}/audio
 Authorization: Bearer <token>
 Content-Type: multipart/form-data
+X-Forwarded-For: <client-ip> # ALB에서 자동 추가
 ```
 
 **Request Body:**
@@ -303,9 +304,9 @@ timestamp: 1642234567
 }
 ```
 
-### 4.3 이미지 생성 요청
+### 4.3 대화 데이터 저장
 ```http
-POST /learning/content/generate-image
+POST /learning/session/{sessionId}/conversation
 Authorization: Bearer <token>
 Content-Type: application/json
 ```
@@ -313,10 +314,15 @@ Content-Type: application/json
 **Request Body:**
 ```json
 {
-  "prompt": "A family having breakfast in a modern kitchen",
-  "style": "realistic",
-  "difficulty": "intermediate",
-  "tags": ["family", "breakfast", "kitchen"]
+  "conversationData": {
+    "userInput": "I can see a family cooking together",
+    "aiResponse": "Great! Can you tell me more about what they're doing?",
+    "timestamp": "2025-01-15T10:30:00Z"
+  },
+  "metadata": {
+    "accuracy": 88,
+    "duration": 30
+  }
 }
 ```
 
@@ -325,18 +331,17 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "imageId": "img_345678",
-    "imageUrl": "https://cdn.nova-english.com/generated/img_345678.jpg",
-    "thumbnailUrl": "https://cdn.nova-english.com/generated/thumb_345678.jpg",
+    "conversationId": "conv_345678",
+    "s3Key": "conversations/user_123456/session_789012/conv_345678.json",
+    "storedAt": "2025-01-15T10:30:00Z",
     "metadata": {
-      "prompt": "A family having breakfast in a modern kitchen",
-      "style": "realistic",
-      "generatedAt": "2025-01-15T10:30:00Z",
-      "tags": ["family", "breakfast", "kitchen"],
-      "expectedVocabulary": ["breakfast", "cereal", "milk", "table", "morning"]
+      "sessionId": "session_789012",
+      "userId": "user_123456",
+      "accuracy": 88,
+      "duration": 30
     }
   },
-  "message": "Image generated successfully"
+  "message": "Conversation data stored successfully"
 }
 ```
 
@@ -371,7 +376,7 @@ Content-Type: application/json
       "averageAccuracy": 85,
       "wordsLearned": 8,
       "pronunciationImprovement": 12,
-      "achievements": ["first_perfect_sentence", "vocabulary_master"]
+      "milestones": ["first_complete_conversation", "vocabulary_improvement"]
     },
     "nextRecommendation": {
       "sessionType": "conversation",
@@ -442,13 +447,12 @@ Authorization: Bearer <token>
         "accuracy": 88
       }
     ],
-    "achievements": [
+    "milestones": [
       {
-        "id": "streak_7",
-        "name": "Week Warrior",
-        "description": "Study for 7 consecutive days",
-        "earnedAt": "2025-01-15T10:30:00Z",
-        "iconUrl": "https://cdn.nova-english.com/badges/streak_7.png"
+        "id": "week_consistent",
+        "name": "Consistent Learner",
+        "description": "Completed 7 consecutive days of study",
+        "earnedAt": "2025-01-15T10:30:00Z"
       }
     ]
   }
@@ -482,7 +486,7 @@ Authorization: Bearer <token>
         "accuracy": 85,
         "topic": "daily_life",
         "difficulty": "intermediate",
-        "achievements": ["vocabulary_master"]
+        "progress_notes": ["vocabulary_improved"]
       }
     ],
     "pagination": {
@@ -652,7 +656,6 @@ Authorization: Bearer <token>
   "RATE_LIMIT_EXCEEDED": "요청 한도 초과",
   "NOVA_API_ERROR": "Nova API 호출 실패",
   "AUDIO_PROCESSING_FAILED": "음성 처리 실패",
-  "IMAGE_GENERATION_FAILED": "이미지 생성 실패",
   "SESSION_EXPIRED": "세션 만료",
   "INVALID_AUDIO_FORMAT": "지원하지 않는 오디오 형식",
   "FILE_TOO_LARGE": "파일 크기 초과",
@@ -667,7 +670,7 @@ Authorization: Bearer <token>
 ### 9.1 Rate Limiting
 - **일반 API**: 100 requests/minute per user
 - **음성 처리**: 20 requests/minute per user  
-- **이미지 생성**: 10 requests/minute per user
+- **대화 데이터 저장**: 10 requests/minute per user
 - **파일 업로드**: 5 requests/minute per user
 
 ### 9.2 파일 크기 제한
@@ -685,12 +688,13 @@ import NovaEnglishAPI from 'nova-english-sdk';
 
 const client = new NovaEnglishAPI({
   apiKey: 'your-api-key',
-  baseURL: 'https://api.nova-english.com/v1'
+  baseURL: 'https://api.nova-english.com/v1', // ALB 엔드포인트
+  timeout: 30000 // ECS Fargate 응답 대기
 });
 
 // 학습 세션 시작
 const session = await client.learning.startSession({
-  sessionType: 'image_description',
+  sessionType: 'conversation',
   difficulty: 'intermediate'
 });
 
