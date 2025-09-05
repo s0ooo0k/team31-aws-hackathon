@@ -390,6 +390,7 @@ io.on("connection", (socket) => {
     let isUserSpeaking = false;
     let isAISpeaking = false;
     let accumulatedUserText = ""; // 누적된 사용자 발화
+    let sentMessages = new Set(); // 중복 메시지 방지용 Set
 
     // Nova Sonic 세션 생성
     const session = bedrockClient.createStreamSession(sessionId);
@@ -474,6 +475,20 @@ io.on("connection", (socket) => {
         "role:",
         data.role
       );
+
+      // 중복 메시지 방지
+      const messageKey = `${data.role}:${data.content}`;
+      if (sentMessages.has(messageKey)) {
+        console.log("🚫 Duplicate message blocked:", messageKey);
+        return;
+      }
+      sentMessages.add(messageKey);
+      
+      // Set 크기 제한 (메모리 절약)
+      if (sentMessages.size > 50) {
+        const firstKey = Array.from(sentMessages)[0];
+        sentMessages.delete(firstKey);
+      }
 
       // 역할 기반으로 사용자/AI 구분
       if (data.role === "USER" && data.content) {
@@ -680,6 +695,7 @@ io.on("connection", (socket) => {
       accumulatedUserText = "";
       isUserSpeaking = false;
       isAISpeaking = false;
+      sentMessages.clear(); // Set 초기화
 
       if (bedrockClient.isSessionActive(sessionId)) {
         try {
