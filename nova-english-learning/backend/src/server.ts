@@ -208,18 +208,91 @@ io.on('connection', (socket) => {
   const sessionId = socket.id;
 
   try {
+    // 사용자 텍스트 추적을 위한 변수 (이벤트 핸들러보다 먼저 선언)
+    let userTextBuffer = '';
+    let isUserSpeaking = false;
+    let isAISpeaking = false;
+    let accumulatedUserText = ''; // 누적된 사용자 발화
+
     // Nova Sonic 세션 생성
     const session = bedrockClient.createStreamSession(sessionId);
     bedrockClient.initiateSession(sessionId);
 
     // 이벤트 핸들러 설정
     session.onEvent('contentStart', (data) => {
-      console.log('contentStart:', data);
+      console.log('🎬 contentStart:', data);
+      console.log('🔍 Current state - isUserSpeaking:', isUserSpeaking, 'isAISpeaking:', isAISpeaking);
+      
+      // AI가 말하기 시작할 때 - 사용자 발화 종료 처리 먼저
+      if (data.type === 'TEXT' && data.role === 'ASSISTANT') {
+        console.log('🔍 Checking if user was speaking - isUserSpeaking:', isUserSpeaking, 'bufferLength:', userTextBuffer.trim().length);
+        
+        // 사용자가 말하고 있었다면 먼저 이미지 생성 처리
+        if (isUserSpeaking && userTextBuffer.trim().length > 3) {
+          const currentUserText = userTextBuffer.trim();
+          console.log('🎨 User finished speaking:', currentUserText);
+          
+          // 인사말과 의미없는 단어 제거
+          const cleanedText = filterAndCleanText(currentUserText);
+          
+          if (cleanedText.trim().length === 0) {
+            console.log('❌ All text was filtered out (greetings/fillers only), skipping image generation');
+          } else if (cleanedText.trim().length > 2) {
+            // 의미있는 내용이 남아있으면 누적하고 이미지 생성
+            accumulatedUserText += ' ' + cleanedText;
+            accumulatedUserText = accumulatedUserText.trim();
+            
+            console.log('📝 Accumulated user text:', accumulatedUserText);
+            const imagePrompt = createImagePrompt(accumulatedUserText);
+            console.log('🖼️ Generated image prompt:', imagePrompt);
+            
+            generateImageFromUserText(socket, imagePrompt, cleanedText);
+          } else {
+            console.log('❌ Cleaned text too short, skipping image generation. Length:', cleanedText.length);
+          }
+          
+          userTextBuffer = '';
+          console.log('🗑️ User text buffer cleared');
+        } else {
+          console.log('❌ No image generation - isUserSpeaking:', isUserSpeaking, 'bufferLength:', userTextBuffer.trim().length);
+        }
+        
+        isAISpeaking = true;
+        isUserSpeaking = false;
+        console.log('🤖 AI started speaking - isAISpeaking set to true, isUserSpeaking set to false');
+      }
+      
       socket.emit('contentStart', data);
     });
 
     session.onEvent('textOutput', (data) => {
-      console.log('Text output:', data);
+      console.log('💬 Text output:', data.content);
+      console.log('🔍 State check - isUserSpeaking:', isUserSpeaking, 'isAISpeaking:', isAISpeaking, 'role:', data.role);
+      
+      // 역할 기반으로 사용자/AI 구분
+      if (data.role === 'USER' && data.content) {
+        userTextBuffer += data.content + ' ';
+        console.log('👤 User text detected:', data.content);
+        console.log('📝 Current userTextBuffer:', userTextBuffer.trim());
+        console.log('📝 Current accumulated text:', accumulatedUserText);
+        
+        // 사용자가 말하고 있음을 표시
+        if (!isUserSpeaking) {
+          isUserSpeaking = true;
+          console.log('🎤 Setting isUserSpeaking to true');
+        }
+        
+        // 사용자 텍스트를 클라이언트에 전송
+        socket.emit('userTextDetected', {
+          text: data.content,
+          fullBuffer: userTextBuffer.trim()
+        });
+      } else if (data.role === 'ASSISTANT') {
+        console.log('🤖 AI text output, ignoring for image generation');
+      } else {
+        console.log('❌ Text ignored - role:', data.role, 'hasContent:', !!data.content);
+      }
+      
       socket.emit('textOutput', data);
     });
 
@@ -234,11 +307,22 @@ io.on('connection', (socket) => {
     });
 
     session.onEvent('contentEnd', (data) => {
-      console.log('Content end received: ', data);
+      console.log('🏁 Content end received:', data);
+      console.log('🔍 State at contentEnd - isUserSpeaking:', isUserSpeaking, 'isAISpeaking:', isAISpeaking);
+      console.log('📝 Current userTextBuffer:', userTextBuffer.trim());
       
-      // barge-in 처리: INTERRUPTED 상태일 때 클라이언트에 알림
-      if (data.type === 'TEXT' && data.stopReason === 'INTERRUPTED') {
-        console.log('AI speech was interrupted by user (barge-in)');
+      if (data.type === 'TEXT') {
+        if (isAISpeaking && data.role === 'ASSISTANT') {
+          // AI 발화 종료
+          isAISpeaking = false;
+          console.log('🤖 AI finished speaking - isAISpeaking set to false');
+        }
+        
+        // barge-in 처리
+        if (data.stopReason === 'INTERRUPTED') {
+          console.log('⚡ Speech was interrupted (barge-in)');
+          isAISpeaking = false;
+        }
       }
       
       socket.emit('contentEnd', data);
@@ -256,9 +340,15 @@ io.on('connection', (socket) => {
           ? Buffer.from(audioData, 'base64')
           : Buffer.from(audioData);
 
+        // 사용자가 말하기 시작
+        if (!isUserSpeaking && !isAISpeaking) {
+          isUserSpeaking = true;
+          console.log('🎤 User started speaking - isUserSpeaking set to true');
+        }
+        
         await session.streamAudio(audioBuffer);
       } catch (error) {
-        console.error('Error processing audio:', error);
+        console.error('❌ Error processing audio:', error);
         socket.emit('error', {
           message: 'Error processing audio',
           details: error instanceof Error ? error.message : String(error)
@@ -351,39 +441,8 @@ io.on('connection', (socket) => {
         const { prompt } = data;
         console.log('Socket image generation request:', prompt);
         
-        const command = new InvokeModelCommand({
-          modelId: 'amazon.nova-canvas-v1:0',
-          body: JSON.stringify({
-            taskType: 'TEXT_IMAGE',
-            textToImageParams: {
-              text: prompt,
-              negativeText: 'blurry, low quality, distorted',
-            },
-            imageGenerationConfig: {
-              numberOfImages: 1,
-              height: 512,
-              width: 512,
-              cfgScale: 8.0,
-              seed: Math.floor(Math.random() * 1000000)
-            }
-          })
-        });
-
-        const response = await bedrockRuntimeClient.send(command);
-        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-        
-        if (responseBody.images && responseBody.images.length > 0) {
-          const imageBase64 = responseBody.images[0];
-          const imageUrl = `data:image/png;base64,${imageBase64}`;
-          
-          socket.emit('imageGenerated', {
-            success: true,
-            imageUrl: imageUrl,
-            prompt: prompt
-          });
-        } else {
-          throw new Error('No image generated');
-        }
+        const imagePrompt = createImagePrompt(prompt);
+        await generateImageFromUserText(socket, imagePrompt, prompt);
         
       } catch (error) {
         console.error('Error generating image via socket:', error);
@@ -397,6 +456,12 @@ io.on('connection', (socket) => {
     // 연결 해제 처리
     socket.on('disconnect', async () => {
       console.log('Client disconnected:', socket.id);
+
+      // 세션 변수 초기화
+      userTextBuffer = '';
+      accumulatedUserText = '';
+      isUserSpeaking = false;
+      isAISpeaking = false;
 
       if (bedrockClient.isSessionActive(sessionId)) {
         try {
@@ -435,6 +500,108 @@ io.on('connection', (socket) => {
     socket.disconnect();
   }
 });
+
+// 이미지 생성 헬퍼 함수들
+function createImagePrompt(userText: string): string {
+  // 사용자 텍스트를 이미지 생성에 적합한 프롬프트로 변환
+  const cleanText = filterImageText(userText.toLowerCase().trim());
+  
+  // 기본 스타일과 품질 향상 키워드 추가
+  return `${cleanText}, realistic style, clear details, good lighting, high quality, photographic, detailed`;
+}
+
+function filterAndCleanText(text: string): string {
+  // 인사말과 의미없는 단어들 제거
+  const skipWords = [
+    'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening',
+    'um', 'uh', 'er', 'ah', 'oh', 'hmm', 'hm', 'erm', 'ehm',
+    'thank you', 'thanks', 'please', 'excuse me', 'sorry',
+    'yes', 'no', 'yeah', 'yep', 'nope', 'okay', 'ok', 'alright'
+  ];
+  
+  let cleanedText = text;
+  
+  // 각 스킵 단어를 제거
+  skipWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    cleanedText = cleanedText.replace(regex, '').trim();
+  });
+  
+  // 여러 공백을 하나로 정리
+  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+  // 문장부호 정리
+  cleanedText = cleanedText.replace(/[,.!?]+/g, '').trim();
+  
+  console.log('🧙 Original text:', text);
+  console.log('🧙 Cleaned text:', cleanedText);
+  
+  return cleanedText;
+}
+
+function createImagePrompt(userText: string): string {
+  // 사용자 텍스트를 이미지 생성에 적합한 프롬프트로 변환
+  const cleanText = userText.toLowerCase().trim();
+  
+  // 기본 스타일과 품질 향상 키워드 추가
+  return `${cleanText}, realistic style, clear details, good lighting, high quality, photographic, detailed`;
+}
+
+async function generateImageFromUserText(socket: any, imagePrompt: string, originalText: string) {
+  try {
+    console.log('🎨 Starting image generation...');
+    console.log('🖼️ Enhanced prompt:', imagePrompt);
+    console.log('📝 Original text:', originalText);
+    
+    const command = new InvokeModelCommand({
+      modelId: 'amazon.nova-canvas-v1:0',
+      body: JSON.stringify({
+        taskType: 'TEXT_IMAGE',
+        textToImageParams: {
+          text: imagePrompt,
+          negativeText: 'blurry, low quality, distorted, text, words, letters',
+        },
+        imageGenerationConfig: {
+          numberOfImages: 1,
+          height: 512,
+          width: 512,
+          cfgScale: 8.0,
+          seed: Math.floor(Math.random() * 1000000)
+        }
+      })
+    });
+
+    console.log('📡 Sending request to Nova Canvas...');
+    const response = await bedrockRuntimeClient.send(command);
+    console.log('✅ Received response from Nova Canvas');
+    
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    
+    if (responseBody.images && responseBody.images.length > 0) {
+      const imageBase64 = responseBody.images[0];
+      const imageUrl = `data:image/png;base64,${imageBase64}`;
+      
+      console.log('🎉 Image generated successfully! Sending to client...');
+      socket.emit('imageGenerated', {
+        success: true,
+        imageUrl: imageUrl,
+        prompt: imagePrompt,
+        originalText: originalText,
+        isAutoGenerated: true
+      });
+    } else {
+      console.log('❌ No images in response body');
+      throw new Error('No image generated');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error in generateImageFromUserText:', error);
+    socket.emit('imageGenerated', {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      originalText: originalText
+    });
+  }
+}
 
 // 서버 시작
 const PORT = process.env.PORT || 3000;
