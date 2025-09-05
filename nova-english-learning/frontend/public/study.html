@@ -395,6 +395,7 @@
       let imageGenerationTimer;
       let isGeneratingImage = false;
           
+      // Set을 이용한 중복 메시지 방지
       let lastProcessedMessages = new Set();
 
       console.log("🔧 Frontend: Image generation variables initialized");
@@ -424,38 +425,38 @@
         startTimer();
       });
 
-//       async function initializeStudySession(categoryId) {
-//         try {
-//           // 랜덤 이미지 가져오기
-//           const response = await fetch("/api/images/random");
-//           const result = await response.json();
+      async function initializeStudySession(categoryId) {
+        try {
+          // 랜덤 이미지 가져오기
+          const response = await fetch("/api/images/random");
+          const result = await response.json();
 
-//           if (result.success) {
-//             currentImage = result.data;
-//             displayImage(currentImage);
+          if (result.success) {
+            currentImage = result.data;
+            displayImage(currentImage);
 
-//             // Socket.IO 연결
-//             socket = io();
-//             setupSocketEvents();
+            // Socket.IO 연결
+            socket = io();
+            setupSocketEvents();
 
-//             // 오디오 초기화
-//             await initAudio();
+            // 오디오 초기화
+            await initAudio();
 
-//             // 공식 AudioPlayer 초기화
-//             const { AudioPlayer } = await import("/js/AudioPlayer.js");
-//             window.audioPlayer = new AudioPlayer();
-//             await window.audioPlayer.start();
-//             console.log("Official AudioPlayer initialized");
-//           } else {
-//             throw new Error("Failed to load image");
-//           }
-//         } catch (error) {
-//           console.error("Error initializing study session:", error);
-//           document.getElementById("status").textContent =
-//             "Error loading study session";
-//           document.getElementById("status").className = "status error";
-//         }
-//       }
+            // 공식 AudioPlayer 초기화
+            const { AudioPlayer } = await import("/js/AudioPlayer.js");
+            window.audioPlayer = new AudioPlayer();
+            await window.audioPlayer.start();
+            console.log("Official AudioPlayer initialized");
+          } else {
+            throw new Error("Failed to load image");
+          }
+        } catch (error) {
+          console.error("Error initializing study session:", error);
+          document.getElementById("status").textContent =
+            "Error loading study session";
+          document.getElementById("status").className = "status error";
+        }
+      }
 
       function displayImage(imageData) {
         const img = document.getElementById("original-image");
@@ -501,6 +502,7 @@
           }
 
           // AI 메시지만 추가 (사용자 메시지는 userTextDetected에서 처리)
+          // Set을 이용한 중복 방지는 addMessageToChat 내부에서 처리
           if (data.role === "ASSISTANT") {
             addMessageToChat("assistant", data.content);
           }
@@ -546,20 +548,13 @@
           document.getElementById("status").className = "status error";
         });
 
-        // 사용자 텍스트 감지 수신 (중복 방지)
-        let lastUserMessage = "";
+        // 사용자 텍스트 감지 수신 (Set을 이용한 중복 방지)
         socket.on("userTextDetected", (data) => {
           console.log("👤 Frontend: User text detected:", data.text);
           console.log("📝 Frontend: Full buffer:", data.fullBuffer);
 
-          // 중복 메시지 방지
-          if (data.text !== lastUserMessage) {
-            addMessageToChat("user", data.text);
-            lastUserMessage = data.text;
-            console.log("💬 Frontend: Added user message to chat");
-          } else {
-            console.log("❌ Frontend: Duplicate message ignored");
-          }
+          // Set을 이용한 중복 방지는 addMessageToChat 내부에서 처리
+          addMessageToChat("user", data.text);
         });
 
         // 이미지 생성 결과 수신
@@ -749,45 +744,6 @@ Start by encouraging them to describe what they see.`;
           socket.emit("systemPrompt", contextualPrompt);
           socket.emit("audioStart");
 
-        function addMessageToChat(role, message) {
-            // 빈 메시지나 interrupted 메시지 필터링
-            if (!message || message.trim() === '' || 
-                message.toLowerCase().includes('interrupted') ||
-                message === '{ "interrupted" : true }' ||
-                message === '{"interrupted":true}') {
-                console.log('Filtered message:', message);
-                return;
-            }
-            
-            // 중복 메시지 방지
-            const messageKey = `${role}:${message}`;
-            if (lastProcessedMessages.has(messageKey)) {
-                console.log('Duplicate message filtered:', messageKey);
-                return;
-            }
-            lastProcessedMessages.add(messageKey);
-            
-            // 최근 10개 메시지만 기록 유지 (메모리 절약)
-            if (lastProcessedMessages.size > 10) {
-                const firstKey = lastProcessedMessages.values().next().value;
-                lastProcessedMessages.delete(firstKey);
-            }
-            
-            const chatContainer = document.getElementById('chat-container');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            
-            const roleLabel = document.createElement('div');
-            roleLabel.className = 'role-label';
-            roleLabel.textContent = role === 'assistant' ? 'NOVA TUTOR' : 'YOU';
-            
-            const content = document.createElement('div');
-            content.textContent = message;
-            
-            messageDiv.appendChild(roleLabel);
-            messageDiv.appendChild(content);
-            chatContainer.appendChild(messageDiv);
-            
           sessionInitialized = true;
           document.getElementById("status").textContent =
             "Session initialized! Ready to start.";
@@ -798,12 +754,8 @@ Start by encouraging them to describe what they see.`;
         } catch (error) {
           console.error("Failed to initialize Nova session:", error);
           throw error;
-
         }
       }
-
-      // 중복 메시지 방지를 위한 변수
-      let lastAssistantMessage = "";
 
       function addMessageToChat(role, message) {
         // 빈 메시지나 interrupted 메시지 필터링
@@ -818,16 +770,25 @@ Start by encouraging them to describe what they see.`;
           return;
         }
 
-        // ASSISTANT 메시지 중복 방지
-        if (role === "assistant" && message === lastAssistantMessage) {
-          console.log("Duplicate assistant message filtered:", message);
+        // Set을 이용한 중복 메시지 방지
+        const messageKey = `${role}:${message.trim()}`;
+        if (lastProcessedMessages.has(messageKey)) {
+          console.log("Duplicate message filtered with Set:", messageKey);
           return;
+        }
+        
+        // 메시지 키를 Set에 추가
+        lastProcessedMessages.add(messageKey);
+        
+        // Set 크기 제한 (메모리 절약)
+        if (lastProcessedMessages.size > 20) {
+          const firstKey = Array.from(lastProcessedMessages)[0];
+          lastProcessedMessages.delete(firstKey);
         }
 
         const chatContainer = document.getElementById("chat-container");
         const messageDiv = document.createElement("div");
         messageDiv.className = `message ${role}`;
-
 
         const roleLabel = document.createElement("div");
         roleLabel.className = "role-label";
@@ -850,10 +811,7 @@ Start by encouraging them to describe what they see.`;
           timestamp: new Date().toISOString(),
         });
 
-        // 마지막 ASSISTANT 메시지 저장
-        if (role === "assistant") {
-          lastAssistantMessage = message;
-        }
+        console.log(`✅ Message added to chat: ${role} - ${message.substring(0, 50)}...`);
       }
 
       // 자동 이미지 생성 시작 (서버에서 사용자 발화 종료 시 자동 처리)

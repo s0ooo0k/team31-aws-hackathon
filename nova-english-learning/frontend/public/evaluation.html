@@ -598,7 +598,42 @@
         function displayResults() {
             // 이미지 표시
             document.getElementById('original-image').src = sessionData.image.url;
-            document.getElementById('generated-image').src = sessionData.image.generatedImageUrl || sessionData.image.url;
+            
+            // 생성된 이미지가 있으면 표시, 없으면 플레이스홀더
+            const generatedImg = document.getElementById('generated-image');
+            if (sessionData.image.generatedImageUrl) {
+                generatedImg.src = sessionData.image.generatedImageUrl;
+                generatedImg.style.display = 'block';
+            } else {
+                // 생성된 이미지가 없는 경우 플레이스홀더 표시
+                generatedImg.style.display = 'none';
+                const container = generatedImg.parentElement;
+                if (!container.querySelector('.no-image-placeholder')) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'no-image-placeholder';
+                    placeholder.style.cssText = `
+                        width: 100%;
+                        height: 200px;
+                        background: #f1f5f9;
+                        border: 2px dashed #cbd5e1;
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #64748b;
+                        font-size: 16px;
+                        text-align: center;
+                    `;
+                    placeholder.innerHTML = '🎨<br>No AI image was generated<br>during this session';
+                    container.appendChild(placeholder);
+                }
+            }
+            
+            console.log('Session data image info:', {
+                originalUrl: sessionData.image.url,
+                generatedUrl: sessionData.image.generatedImageUrl,
+                hasGenerated: !!sessionData.image.generatedImageUrl
+            });
             
             // 세션 정보 표시
             const duration = Math.floor(sessionData.duration / 1000);
