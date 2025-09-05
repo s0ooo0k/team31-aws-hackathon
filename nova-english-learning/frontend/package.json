@@ -1,0 +1,13 @@
+{
+  "name": "nova-english-frontend",
+  "version": "1.0.0",
+  "description": "Nova English Learning Frontend",
+  "scripts": {
+    "dev": "live-server public --port=3001 --host=localhost",
+    "build": "echo 'Static files ready'",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

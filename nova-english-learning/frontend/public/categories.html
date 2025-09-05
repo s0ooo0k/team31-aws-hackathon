@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nova English Learning - Categories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: #e2e8f0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title h2 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .page-title p {
+            font-size: 18px;
+            color: #64748b;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+        
+        .category-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .category-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .category-description {
+            color: #64748b;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        .category-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .image-count {
+            color: #667eea;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .difficulty {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .difficulty.easy {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .difficulty.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .difficulty.hard {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .random-selection {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .random-btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .random-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>Nova English</h1>
+            </div>
+            <div class="user-info">
+                <span class="user-name" id="user-name">Loading...</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>Choose Your Learning Category</h2>
+            <p>Select a category to start your English description practice</p>
+        </div>
+
+        <div id="categories-container">
+            <div class="loading">Loading categories...</div>
+        </div>
+
+        <div class="random-selection">
+            <button class="random-btn" onclick="selectRandomCategory()">
+                🎲 Surprise Me! (Random Category)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let categories = [];
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 로그인 확인
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // 사용자 이름 표시
+            document.getElementById('user-name').textContent = `Welcome, ${user.name}!`;
+
+            // 카테고리 로드
+            await loadCategories();
+        });
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                const result = await response.json();
+
+                if (result.success) {
+                    categories = result.data;
+                    renderCategories();
+                } else {
+                    throw new Error('Failed to load categories');
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                document.getElementById('categories-container').innerHTML = 
+                    '<div class="loading">Error loading categories. Please refresh the page.</div>';
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            
+            // 카테고리 아이콘 매핑
+            const categoryIcons = {
+                'daily-life': '☕',
+                'travel': '✈️',
+                'business': '💼',
+                'social': '👥',
+                'academic': '📚'
+            };
+
+            // 난이도 매핑
+            const difficultyMap = {
+                'daily-life': 'easy',
+                'travel': 'medium',
+                'business': 'hard',
+                'social': 'medium',
+                'academic': 'hard'
+            };
+
+            const categoriesHTML = `
+                <div class="categories-grid">
+                    ${categories.map(category => `
+                        <div class="category-card" onclick="selectCategory('${category.id}')">
+                            <span class="category-icon">${categoryIcons[category.id] || '🎯'}</span>
+                            <div class="category-name">${category.name}</div>
+                            <div class="category-description">${category.description}</div>
+                            <div class="category-stats">
+                                <span class="image-count">${category.imageCount} images available</span>
+                                <span class="difficulty ${difficultyMap[category.id] || 'medium'}">${difficultyMap[category.id] || 'medium'}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            container.innerHTML = categoriesHTML;
+        }
+
+        function selectCategory(categoryId) {
+            // 선택된 카테고리 저장
+            localStorage.setItem('selectedCategory', categoryId);
+            
+            // 스터디 페이지로 이동
+            window.location.href = `/study?category=${categoryId}`;
+        }
+
+        async function selectRandomCategory() {
+            if (categories.length === 0) {
+                alert('Categories are still loading. Please wait a moment.');
+                return;
+            }
+
+            // 랜덤 카테고리 선택
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            selectCategory(randomCategory.id);
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('selectedCategory');
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

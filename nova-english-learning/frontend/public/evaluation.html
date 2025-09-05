@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nova English Learning - Evaluation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .session-info {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title h2 {
+            font-size: 32px;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .page-title p {
+            font-size: 18px;
+            color: #64748b;
+        }
+        
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .image-comparison {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .image-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .comparison-image {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .similarity-score {
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .evaluation-results {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .overall-score {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .overall-score-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .overall-score-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        .metric-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .metric-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .metric-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+        
+        .feedback-section {
+            margin-top: 30px;
+        }
+        
+        .feedback-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 4px;
+        }
+        
+        .feedback-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .feedback-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .feedback-content {
+            display: none;
+        }
+        
+        .feedback-content.active {
+            display: block;
+        }
+        
+        .feedback-list {
+            list-style: none;
+        }
+        
+        .feedback-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .feedback-item:last-child {
+            border-bottom: none;
+        }
+        
+        .feedback-icon {
+            font-size: 16px;
+            margin-top: 2px;
+        }
+        
+        .feedback-text {
+            flex: 1;
+            line-height: 1.5;
+            color: #374151;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        
+        .action-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .secondary-btn {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .secondary-btn:hover {
+            background: #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            .evaluation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>Nova English Evaluation</h1>
+            </div>
+            <div class="session-info" id="session-info">
+                Session completed
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>Your Learning Session Results</h2>
+            <p>Here's how well you described the image and areas for improvement</p>
+        </div>
+
+        <div class="evaluation-grid">
+            <div class="image-comparison">
+                <div class="section-title">Image Comparison</div>
+                
+                <div class="image-container">
+                    <img id="original-image" class="comparison-image" src="" alt="Original image">
+                    <div class="image-label">Original Image</div>
+                </div>
+                
+                <div class="image-container">
+                    <img id="generated-image" class="comparison-image" src="" alt="Generated image">
+                    <div class="image-label">AI Generated from Your Description</div>
+                </div>
+                
+                <div class="similarity-score">
+                    <div class="score-value" id="similarity-score">85%</div>
+                    <div class="score-label">Similarity Score</div>
+                </div>
+            </div>
+
+            <div class="evaluation-results">
+                <div class="overall-score">
+                    <div class="overall-score-value" id="overall-score">B+</div>
+                    <div class="overall-score-label">Overall Performance</div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">🎯</div>
+                        <div class="metric-value" id="detail-score">High</div>
+                        <div class="metric-label">Description Detail</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="detail-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">📚</div>
+                        <div class="metric-value" id="vocabulary-score">8/10</div>
+                        <div class="metric-label">Vocabulary Diversity</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="vocabulary-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">💬</div>
+                        <div class="metric-value" id="engagement-score">9/10</div>
+                        <div class="metric-label">Conversation Flow</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="engagement-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-section">
+                    <div class="feedback-tabs">
+                        <div class="feedback-tab active" onclick="showFeedback('strengths')">
+                            ✅ Strengths
+                        </div>
+                        <div class="feedback-tab" onclick="showFeedback('improvements')">
+                            📈 Improvements
+                        </div>
+                        <div class="feedback-tab" onclick="showFeedback('alternatives')">
+                            💡 Alternatives
+                        </div>
+                    </div>
+
+                    <div id="strengths" class="feedback-content active">
+                        <ul class="feedback-list" id="strengths-list">
+                            <!-- 동적으로 생성 -->
+                        </ul>
+                    </div>
+
+                    <div id="improvements" class="feedback-content">
+                        <ul class="feedback-list" id="improvements-list">
+                            <!-- 동적으로 생성 -->
+                        </ul>
+                    </div>
+
+                    <div id="alternatives" class="feedback-content">
+                        <ul class="feedback-list" id="alternatives-list">
+                            <!-- 동적으로 생성 -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/study" class="action-btn primary-btn">🔄 Try Another Image</a>
+            <a href="/categories" class="action-btn secondary-btn">📂 Choose Different Category</a>
+            <a href="/categories" class="action-btn secondary-btn">🏠 Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let sessionData = null;
+        let evaluation = null;
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            // 로그인 확인
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // 세션 데이터 로드
+            sessionData = JSON.parse(localStorage.getItem('sessionData') || 'null');
+            if (!sessionData) {
+                window.location.href = '/categories';
+                return;
+            }
+
+            // 평가 생성 및 표시
+            generateEvaluation();
+            displayResults();
+        });
+
+        function generateEvaluation() {
+            // 실제로는 AI 기반 평가 시스템을 사용
+            // 여기서는 시뮬레이션된 평가 생성
+            
+            const conversationLength = sessionData.conversationHistory.length;
+            const duration = sessionData.duration;
+            const userMessages = sessionData.conversationHistory.filter(msg => msg.role === 'user');
+            
+            // 평가 점수 계산 (시뮬레이션)
+            const detailScore = Math.min(100, (conversationLength * 10) + Math.random() * 20);
+            const vocabularyScore = Math.min(10, Math.floor(userMessages.length / 2) + Math.floor(Math.random() * 3));
+            const engagementScore = Math.min(10, Math.floor(duration / 30000) + Math.floor(Math.random() * 3));
+            
+            // 전체 점수 계산
+            const overallScore = Math.round((detailScore + vocabularyScore * 10 + engagementScore * 10) / 3);
+            
+            evaluation = {
+                overallScore: overallScore,
+                overallGrade: getGrade(overallScore),
+                detailLevel: getDetailLevel(detailScore),
+                vocabularyDiversity: vocabularyScore,
+                conversationFlow: engagementScore,
+                similarityScore: Math.floor(Math.random() * 20) + 75, // 75-95%
+                
+                strengths: generateStrengths(detailScore, vocabularyScore, engagementScore),
+                improvements: generateImprovements(detailScore, vocabularyScore, engagementScore),
+                alternatives: generateAlternatives()
+            };
+        }
+
+        function getGrade(score) {
+            if (score >= 90) return 'A+';
+            if (score >= 85) return 'A';
+            if (score >= 80) return 'B+';
+            if (score >= 75) return 'B';
+            if (score >= 70) return 'C+';
+            if (score >= 65) return 'C';
+            return 'D';
+        }
+
+        function getDetailLevel(score) {
+            if (score >= 80) return 'High';
+            if (score >= 60) return 'Medium';
+            return 'Low';
+        }
+
+        function generateStrengths(detail, vocabulary, engagement) {
+            const strengths = [];
+            
+            if (detail >= 70) {
+                strengths.push("You provided good detail in your descriptions");
+            }
+            if (vocabulary >= 7) {
+                strengths.push("You used a diverse range of vocabulary");
+            }
+            if (engagement >= 7) {
+                strengths.push("You maintained good conversation flow with the tutor");
+            }
+            
+            strengths.push("You showed confidence in speaking English");
+            strengths.push("You responded well to follow-up questions");
+            
+            return strengths;
+        }
+
+        function generateImprovements(detail, vocabulary, engagement) {
+            const improvements = [];
+            
+            if (detail < 70) {
+                improvements.push("Try to include more specific details about colors, sizes, and materials");
+            }
+            if (vocabulary < 7) {
+                improvements.push("Expand your vocabulary by using more descriptive adjectives");
+            }
+            if (engagement < 7) {
+                improvements.push("Engage more actively with the tutor's questions");
+            }
+            
+            improvements.push("Practice describing spatial relationships (in front of, behind, next to)");
+            improvements.push("Include more emotional or atmospheric descriptions");
+            
+            return improvements;
+        }
+
+        function generateAlternatives() {
+            return [
+                "Instead of 'big', try 'enormous', 'massive', or 'spacious'",
+                "Instead of 'nice', try 'pleasant', 'attractive', or 'appealing'",
+                "Instead of 'people', try 'individuals', 'customers', or 'visitors'",
+                "Use more specific colors: 'crimson' instead of 'red', 'azure' instead of 'blue'",
+                "Add texture descriptions: 'smooth', 'rough', 'glossy', 'matte'"
+            ];
+        }
+
+        function displayResults() {
+            // 이미지 표시
+            document.getElementById('original-image').src = sessionData.image.url;
+            document.getElementById('generated-image').src = sessionData.image.generatedImageUrl || sessionData.image.url;
+            
+            // 세션 정보 표시
+            const duration = Math.floor(sessionData.duration / 1000);
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            document.getElementById('session-info').textContent = 
+                `Duration: ${minutes}:${seconds.toString().padStart(2, '0')} | ${sessionData.conversationHistory.length} messages`;
+            
+            // 점수 표시
+            document.getElementById('overall-score').textContent = evaluation.overallGrade;
+            document.getElementById('similarity-score').textContent = evaluation.similarityScore + '%';
+            
+            // 메트릭 표시
+            document.getElementById('detail-score').textContent = evaluation.detailLevel;
+            document.getElementById('vocabulary-score').textContent = evaluation.vocabularyDiversity + '/10';
+            document.getElementById('engagement-score').textContent = evaluation.conversationFlow + '/10';
+            
+            // 프로그레스 바 애니메이션
+            setTimeout(() => {
+                const detailPercent = evaluation.detailLevel === 'High' ? 85 : evaluation.detailLevel === 'Medium' ? 60 : 35;
+                document.getElementById('detail-bar').style.width = detailPercent + '%';
+                document.getElementById('vocabulary-bar').style.width = (evaluation.vocabularyDiversity * 10) + '%';
+                document.getElementById('engagement-bar').style.width = (evaluation.conversationFlow * 10) + '%';
+            }, 500);
+            
+            // 피드백 표시
+            displayFeedbackList('strengths-list', evaluation.strengths, '✅');
+            displayFeedbackList('improvements-list', evaluation.improvements, '📈');
+            displayFeedbackList('alternatives-list', evaluation.alternatives, '💡');
+        }
+
+        function displayFeedbackList(containerId, items, icon) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'feedback-item';
+                li.innerHTML = `
+                    <span class="feedback-icon">${icon}</span>
+                    <span class="feedback-text">${item}</span>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        function showFeedback(type) {
+            // 모든 탭 비활성화
+            document.querySelectorAll('.feedback-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 모든 콘텐츠 숨기기
+            document.querySelectorAll('.feedback-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 선택된 탭과 콘텐츠 활성화
+            event.target.classList.add('active');
+            document.getElementById(type).classList.add('active');
+        }
+
+        // 페이지 언로드 시 세션 데이터 정리
+        window.addEventListener('beforeunload', () => {
+            localStorage.removeItem('sessionData');
+        });
+    </script>
+</body>
+</html>
