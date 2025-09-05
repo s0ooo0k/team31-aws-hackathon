@@ -1,676 +1,738 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Nova English Learning - Study</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc;
-            min-height: 100vh;
-        }
-        
-        .header {
-            background: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo h1 {
-            color: #667eea;
-            font-size: 20px;
-            font-weight: 700;
-        }
-        
-        .session-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .timer {
-            color: #64748b;
-            font-weight: 500;
-        }
-        
-        .back-btn {
-            padding: 8px 16px;
-            background: #f1f5f9;
-            color: #64748b;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f8fafc;
+        min-height: 100vh;
+      }
+
+      .header {
+        background: white;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo h1 {
+        color: #667eea;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .session-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .timer {
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .back-btn {
+        padding: 8px 16px;
+        background: #f1f5f9;
+        color: #64748b;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .study-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        height: calc(100vh - 80px);
+      }
+
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .right-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .image-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 15px;
+      }
+
+      .original-image {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      .image-info {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #64748b;
+      }
+
+      .generated-image-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        flex: 1;
+      }
+
+      .generated-image-placeholder {
+        width: 100%;
+        height: 300px;
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-size: 16px;
+      }
+
+      .generated-image {
+        width: 100%;
+        border-radius: 8px;
+        display: none;
+      }
+
+      .conversation-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-container {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        max-height: 400px;
+      }
+
+      .message {
+        margin-bottom: 15px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        max-width: 80%;
+      }
+
+      .message.user {
+        background: #667eea;
+        color: white;
+        margin-left: auto;
+      }
+
+      .message.assistant {
+        background: #f1f5f9;
+        color: #1e293b;
+      }
+
+      .message.thinking {
+        background: #fef3c7;
+        color: #92400e;
+        font-style: italic;
+      }
+
+      .role-label {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        opacity: 0.7;
+      }
+
+      .controls-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .audio-controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .control-btn {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 120px;
+      }
+
+      .start-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      }
+
+      .start-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+      }
+
+      .stop-btn {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+      }
+
+      .stop-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+      }
+
+      .control-btn:disabled {
+        background: #e2e8f0;
+        color: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .status {
+        text-align: center;
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 500;
+      }
+
+      .status.ready {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status.recording {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status.processing {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .status.error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .finish-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .finish-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      @media (max-width: 1024px) {
         .study-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            height: calc(100vh - 80px);
+          grid-template-columns: 1fr;
+          height: auto;
         }
-        
-        .left-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .image-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 15px;
-        }
-        
-        .original-image {
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .image-info {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #64748b;
-        }
-        
-        .generated-image-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            flex: 1;
-        }
-        
-        .generated-image-placeholder {
-            width: 100%;
-            height: 300px;
-            background: #f1f5f9;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            font-size: 16px;
-        }
-        
-        .generated-image {
-            width: 100%;
-            border-radius: 8px;
-            display: none;
-        }
-        
-        .conversation-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            max-height: 400px;
-        }
-        
-        .message {
-            margin-bottom: 15px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            max-width: 80%;
-        }
-        
-        .message.user {
-            background: #667eea;
-            color: white;
-            margin-left: auto;
-        }
-        
-        .message.assistant {
-            background: #f1f5f9;
-            color: #1e293b;
-        }
-        
-        .message.thinking {
-            background: #fef3c7;
-            color: #92400e;
-            font-style: italic;
-        }
-        
-        .role-label {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            opacity: 0.7;
-        }
-        
-        .controls-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        
-        .audio-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .control-btn {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 120px;
-        }
-        
-        .start-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-        
-        .start-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-        }
-        
-        .stop-btn {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-        
-        .stop-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
-        }
-        
-        .control-btn:disabled {
-            background: #e2e8f0;
-            color: #94a3b8;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .status {
-            text-align: center;
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-        
-        .status.ready {
-            background: #dcfce7;
-            color: #166534;
-        }
-        
-        .status.recording {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .status.processing {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-        
-        .status.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .finish-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .finish-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        @media (max-width: 1024px) {
-            .study-container {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header">
-        <div class="header-content">
-            <div class="logo">
-                <h1>Nova English Study</h1>
-            </div>
-            <div class="session-info">
-                <div class="timer" id="timer">00:00</div>
-                <a href="/categories" class="back-btn">← Back to Categories</a>
-            </div>
+      <div class="header-content">
+        <div class="logo">
+          <h1>Nova English Study</h1>
         </div>
+        <div class="session-info">
+          <div class="timer" id="timer">00:00</div>
+          <a href="/categories" class="back-btn">← Back to Categories</a>
+        </div>
+      </div>
     </div>
 
     <div class="study-container">
-        <div class="left-panel">
-            <div class="image-section">
-                <div class="section-title">Original Image</div>
-                <img id="original-image" class="original-image" src="" alt="Study image">
-                <div class="image-info" id="image-info">
-                    Loading image information...
-                </div>
-            </div>
-            
-            <div class="generated-image-section">
-                <div class="section-title">🎨 AI Generated Image (Real-time from Your Speech)</div>
-                <div class="generated-image-placeholder" id="generated-placeholder">
-                    🎤 Start speaking to automatically generate images based on your description!
-                </div>
-                <img id="generated-image" class="generated-image" src="" alt="Generated image">
-            </div>
+      <div class="left-panel">
+        <div class="image-section">
+          <div class="section-title">Original Image</div>
+          <img
+            id="original-image"
+            class="original-image"
+            src=""
+            alt="Study image"
+          />
+          <div class="image-info" id="image-info">
+            Loading image information...
+          </div>
         </div>
 
-        <div class="right-panel">
-            <div class="conversation-section">
-                <div class="section-title">Conversation with Nova Tutor</div>
-                <div class="chat-container" id="chat-container">
-                    <div class="message assistant">
-                        <div class="role-label">NOVA TUTOR</div>
-                        <div>Hello! I'm your English tutor. Look at the image on the left and start describing what you see. I'll help you make your description more detailed and specific!</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="controls-section">
-                <div class="section-title">Voice Controls</div>
-                <div class="audio-controls">
-                    <button id="start-btn" class="control-btn start-btn">🎤 Start Speaking</button>
-                    <button id="stop-btn" class="control-btn stop-btn" disabled>⏹️ Stop</button>
-                </div>
-                <div id="status" class="status ready">Ready to start! Click "Start Speaking" and describe the image.</div>
-                <button id="finish-btn" class="finish-btn">✅ Finish Session & Get Evaluation</button>
-            </div>
+        <div class="generated-image-section">
+          <div class="section-title">
+            🎨 AI Generated Image (Real-time from Your Speech)
+          </div>
+          <div class="generated-image-placeholder" id="generated-placeholder">
+            🎤 Start speaking to automatically generate images based on your
+            description!
+          </div>
+          <img
+            id="generated-image"
+            class="generated-image"
+            src=""
+            alt="Generated image"
+          />
         </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="conversation-section">
+          <div class="section-title">Conversation with Nova Tutor</div>
+          <div class="chat-container" id="chat-container">
+            <div class="message assistant">
+              <div class="role-label">NOVA TUTOR</div>
+              <div>
+                Hello! I'm your English tutor. Look at the image on the left and
+                start describing what you see. I'll help you make your
+                description more detailed and specific!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-section">
+          <div class="section-title">Voice Controls</div>
+          <div class="audio-controls">
+            <button id="start-btn" class="control-btn start-btn">
+              🎤 Start Speaking
+            </button>
+            <button id="stop-btn" class="control-btn stop-btn" disabled>
+              ⏹️ Stop
+            </button>
+          </div>
+          <div id="status" class="status ready">
+            Ready to start! Click "Start Speaking" and describe the image.
+          </div>
+          <button id="finish-btn" class="finish-btn">
+            ✅ Finish Session & Get Evaluation
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-        // 전역 변수
-        let socket;
-        let audioContext;
-        let audioStream;
-        let processor;
-        let sourceNode;
-        let isStreaming = false;
-        let sessionInitialized = false;
-        let startTime;
-        let timerInterval;
-        let conversationHistory = [];
-        let currentImage = null;
-        let samplingRatio = 1;
-        const TARGET_SAMPLE_RATE = 16000;
-        const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
-        
-        // 이미지 생성 관련 변수
-        let userMessages = [];
-        let imageGenerationTimer;
-        let isGeneratingImage = false;
-        
-        console.log('🔧 Frontend: Image generation variables initialized');
+      // 전역 변수
+      let socket;
+      let audioContext;
+      let audioStream;
+      let processor;
+      let sourceNode;
+      let isStreaming = false;
+      let sessionInitialized = false;
+      let startTime;
+      let timerInterval;
+      let conversationHistory = [];
+      let currentImage = null;
+      let samplingRatio = 1;
+      const TARGET_SAMPLE_RATE = 16000;
+      const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
 
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', async () => {
-            // 로그인 확인
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            if (!user) {
-                window.location.href = '/login';
-                return;
-            }
+      // 이미지 생성 관련 변수
+      let userMessages = [];
+      let imageGenerationTimer;
+      let isGeneratingImage = false;
 
-            // URL에서 카테고리 가져오기
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryId = urlParams.get('category') || localStorage.getItem('selectedCategory');
-            
-            if (!categoryId) {
-                window.location.href = '/categories';
-                return;
-            }
+      console.log("🔧 Frontend: Image generation variables initialized");
 
-            // 초기화
-            await initializeStudySession(categoryId);
-            setupEventListeners();
-            startTimer();
-        });
-
-        async function initializeStudySession(categoryId) {
-            try {
-                // 랜덤 이미지 가져오기
-                const response = await fetch('/api/images/random');
-                const result = await response.json();
-                
-                if (result.success) {
-                    currentImage = result.data;
-                    displayImage(currentImage);
-                    
-                    // Socket.IO 연결
-                    socket = io();
-                    setupSocketEvents();
-                    
-                    // 오디오 초기화
-                    await initAudio();
-                
-                // 공식 AudioPlayer 초기화
-                const { AudioPlayer } = await import('/js/AudioPlayer.js');
-                window.audioPlayer = new AudioPlayer();
-                await window.audioPlayer.start();
-                console.log('Official AudioPlayer initialized');
-                } else {
-                    throw new Error('Failed to load image');
-                }
-            } catch (error) {
-                console.error('Error initializing study session:', error);
-                document.getElementById('status').textContent = 'Error loading study session';
-                document.getElementById('status').className = 'status error';
-            }
+      // 페이지 로드 시 초기화
+      document.addEventListener("DOMContentLoaded", async () => {
+        // 로그인 확인
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (!user) {
+          window.location.href = "/login";
+          return;
         }
 
-        function displayImage(imageData) {
-            const img = document.getElementById('original-image');
-            const info = document.getElementById('image-info');
-            
-            img.src = imageData.url;
-            info.innerHTML = `
+        // URL에서 카테고리 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryId =
+          urlParams.get("category") || localStorage.getItem("selectedCategory");
+
+        if (!categoryId) {
+          window.location.href = "/categories";
+          return;
+        }
+
+        // 초기화
+        await initializeStudySession(categoryId);
+        setupEventListeners();
+        startTimer();
+      });
+
+      async function initializeStudySession(categoryId) {
+        try {
+          // 랜덤 이미지 가져오기
+          const response = await fetch("/api/images/random");
+          const result = await response.json();
+
+          if (result.success) {
+            currentImage = result.data;
+            displayImage(currentImage);
+
+            // Socket.IO 연결
+            socket = io();
+            setupSocketEvents();
+
+            // 오디오 초기화
+            await initAudio();
+
+            // 공식 AudioPlayer 초기화
+            const { AudioPlayer } = await import("/js/AudioPlayer.js");
+            window.audioPlayer = new AudioPlayer();
+            await window.audioPlayer.start();
+            console.log("Official AudioPlayer initialized");
+          } else {
+            throw new Error("Failed to load image");
+          }
+        } catch (error) {
+          console.error("Error initializing study session:", error);
+          document.getElementById("status").textContent =
+            "Error loading study session";
+          document.getElementById("status").className = "status error";
+        }
+      }
+
+      function displayImage(imageData) {
+        const img = document.getElementById("original-image");
+        const info = document.getElementById("image-info");
+
+        img.src = imageData.url;
+        info.innerHTML = `
                 <strong>Category:</strong> ${imageData.category}<br>
                 <strong>Description:</strong> ${imageData.description}<br>
-                <strong>Expected Vocabulary:</strong> ${imageData.expectedVocabulary.join(', ')}
+                <strong>Expected Vocabulary:</strong> ${imageData.expectedVocabulary.join(", ")}
             `;
-        }
+      }
 
-        function setupSocketEvents() {
-            socket.on('connect', () => {
-                console.log('Connected to server');
-                document.getElementById('status').textContent = 'Connected! Ready to start.';
-                document.getElementById('status').className = 'status ready';
-            });
+      function setupSocketEvents() {
+        socket.on("connect", () => {
+          console.log("Connected to server");
+          document.getElementById("status").textContent =
+            "Connected! Ready to start.";
+          document.getElementById("status").className = "status ready";
+        });
 
-            socket.on('textOutput', (data) => {
-                console.log('Text output:', data);
-                
-                // interrupted 메시지는 UI에 표시하지 않음
-                if (data.content && data.content.toLowerCase().includes('interrupted')) {
-                    console.log('Filtered out interrupted message:', data.content);
-                    return;
-                }
-                
-                // JSON 형태의 interrupted 메시지 필터링
-                try {
-                    const parsed = JSON.parse(data.content);
-                    if (parsed.interrupted === true) {
-                        console.log('Filtered out JSON interrupted message');
-                        return;
-                    }
-                } catch (e) {
-                    // JSON이 아닌 경우 무시하고 계속 진행
-                }
-                
-                // AI 메시지만 추가 (사용자 메시지는 userTextDetected에서 처리)
-                if (data.role === 'ASSISTANT') {
-                    addMessageToChat('assistant', data.content);
-                }
-                // USER 메시지는 무시 (중복 방지)
-            });
+        socket.on("textOutput", (data) => {
+          console.log("Text output:", data);
 
-            socket.on('audioOutput', (data) => {
-                if (data.content && window.audioPlayer) {
-                    playAudio(data.content);
-                }
-            });
+          // interrupted 메시지는 UI에 표시하지 않음
+          if (
+            data.content &&
+            data.content.toLowerCase().includes("interrupted")
+          ) {
+            console.log("Filtered out interrupted message:", data.content);
+            return;
+          }
 
-            socket.on('contentStart', (data) => {
-                console.log('Content start:', data);
-            });
-
-            socket.on('contentEnd', (data) => {
-                console.log('Content end:', data);
-                
-                // Java 샘플과 동일한 barge-in 처리
-                if (data.type === 'TEXT') {
-                    if (data.stopReason && data.stopReason.toUpperCase() === 'END_TURN') {
-                        console.log('Turn ended normally');
-                    } else if (data.stopReason && data.stopReason.toUpperCase() === 'INTERRUPTED') {
-                        console.log('AI speech interrupted by user (barge-in)');
-                        if (window.audioPlayer) {
-                            window.audioPlayer.bargeIn();
-                        }
-                    }
-                }
-            });
-
-            socket.on('error', (error) => {
-                console.error('Socket error:', error);
-                document.getElementById('status').textContent = 'Error: ' + error.message;
-                document.getElementById('status').className = 'status error';
-            });
-            
-            // 사용자 텍스트 감지 수신 (중복 방지)
-            let lastUserMessage = '';
-            socket.on('userTextDetected', (data) => {
-                console.log('👤 Frontend: User text detected:', data.text);
-                console.log('📝 Frontend: Full buffer:', data.fullBuffer);
-                
-                // 중복 메시지 방지
-                if (data.text !== lastUserMessage) {
-                    addMessageToChat('user', data.text);
-                    lastUserMessage = data.text;
-                    console.log('💬 Frontend: Added user message to chat');
-                } else {
-                    console.log('❌ Frontend: Duplicate message ignored');
-                }
-            });
-            
-            // 이미지 생성 결과 수신
-            socket.on('imageGenerated', (data) => {
-                console.log('🎨 Frontend: Image generation result received:', data);
-                console.log('🔧 Frontend: Setting isGeneratingImage to false');
-                isGeneratingImage = false;
-                
-                if (data.success) {
-                    console.log('✅ Frontend: Image generated successfully!');
-                    if (data.isAutoGenerated) {
-                        console.log('🤖 Frontend: Auto-generated image');
-                        displayGeneratedImage(data.imageUrl, data.originalText, true);
-                        showAutoGenerationNotice(data.originalText);
-                    } else {
-                        console.log('👤 Frontend: Manual generated image');
-                        displayGeneratedImage(data.imageUrl, data.prompt);
-                    }
-                } else {
-                    console.error('❌ Frontend: Image generation failed:', data.error);
-                    showImageGenerationError();
-                }
-                
-                console.log('🔧 Frontend: Ready for next image generation');
-            });
-        }
-
-        async function initAudio() {
-            try {
-                document.getElementById('status').textContent = 'Requesting microphone access...';
-                
-                audioStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    }
-                });
-
-                // 공식 샘플 코드와 동일한 설정
-                const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
-                
-                if (isFirefox) {
-                    audioContext = new AudioContext();
-                } else {
-                    audioContext = new AudioContext({
-                        sampleRate: 16000
-                    });
-                }
-                
-                const samplingRatio = audioContext.sampleRate / 16000;
-                console.log(`AudioContext sampleRate: ${audioContext.sampleRate}, samplingRatio: ${samplingRatio}`);
-                
-                document.getElementById('status').textContent = 'Microphone ready! Click "Start Speaking" to begin.';
-                document.getElementById('status').className = 'status ready';
-                
-            } catch (error) {
-                console.error('Error accessing microphone:', error);
-                document.getElementById('status').textContent = 'Error: ' + error.message;
-                document.getElementById('status').className = 'status error';
+          // JSON 형태의 interrupted 메시지 필터링
+          try {
+            const parsed = JSON.parse(data.content);
+            if (parsed.interrupted === true) {
+              console.log("Filtered out JSON interrupted message");
+              return;
             }
-        }
+          } catch (e) {
+            // JSON이 아닌 경우 무시하고 계속 진행
+          }
 
-        function setupEventListeners() {
-            document.getElementById('start-btn').addEventListener('click', startRecording);
-            document.getElementById('stop-btn').addEventListener('click', stopRecording);
-            document.getElementById('finish-btn').addEventListener('click', finishSession);
-        }
+          // AI 메시지만 추가 (사용자 메시지는 userTextDetected에서 처리)
+          if (data.role === "ASSISTANT") {
+            addMessageToChat("assistant", data.content);
+          }
+          // USER 메시지는 무시 (중복 방지)
+        });
 
-        async function startRecording() {
-            if (isStreaming) return;
+        socket.on("audioOutput", (data) => {
+          if (data.content && window.audioPlayer) {
+            playAudio(data.content);
+          }
+        });
 
-            try {
-                // 세션 초기화
-                if (!sessionInitialized) {
-                    await initializeNovaSession();
-                }
+        socket.on("contentStart", (data) => {
+          console.log("Content start:", data);
+        });
 
-                // 오디오 처리 시작 - 작은 버퍼로 지연시간 최소화
-                sourceNode = audioContext.createMediaStreamSource(audioStream);
-                processor = audioContext.createScriptProcessor(1024, 1, 1);
+        socket.on("contentEnd", (data) => {
+          console.log("Content end:", data);
 
-                processor.onaudioprocess = (e) => {
-                    if (!isStreaming) return;
-
-                    const inputData = e.inputBuffer.getChannelData(0);
-                    const numSamples = Math.round(inputData.length / samplingRatio);
-                    const pcmData = isFirefox ? (new Int16Array(numSamples)) : (new Int16Array(inputData.length));
-                    
-                    // 공식 샘플 코드와 동일한 처리
-                    if (isFirefox) {                    
-                        for (let i = 0; i < inputData.length; i++) {
-                            pcmData[i] = Math.max(-1, Math.min(1, inputData[i * samplingRatio])) * 0x7FFF;
-                        }
-                    } else {
-                        for (let i = 0; i < inputData.length; i++) {
-                            pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-                        }
-                    }
-
-                    const base64Data = arrayBufferToBase64(pcmData.buffer);
-                    socket.emit('audioInput', base64Data);
-                };
-
-                sourceNode.connect(processor);
-                processor.connect(audioContext.destination);
-
-                isStreaming = true;
-                document.getElementById('start-btn').disabled = true;
-                document.getElementById('stop-btn').disabled = false;
-                document.getElementById('status').textContent = 'Listening... Describe what you see!';
-                document.getElementById('status').className = 'status recording';
-
-            } catch (error) {
-                console.error('Error starting recording:', error);
-                document.getElementById('status').textContent = 'Error: ' + error.message;
-                document.getElementById('status').className = 'status error';
+          // Java 샘플과 동일한 barge-in 처리
+          if (data.type === "TEXT") {
+            if (
+              data.stopReason &&
+              data.stopReason.toUpperCase() === "END_TURN"
+            ) {
+              console.log("Turn ended normally");
+            } else if (
+              data.stopReason &&
+              data.stopReason.toUpperCase() === "INTERRUPTED"
+            ) {
+              console.log("AI speech interrupted by user (barge-in)");
+              if (window.audioPlayer) {
+                window.audioPlayer.bargeIn();
+              }
             }
-        }
+          }
+        });
 
-        function stopRecording() {
+        socket.on("error", (error) => {
+          console.error("Socket error:", error);
+          document.getElementById("status").textContent =
+            "Error: " + error.message;
+          document.getElementById("status").className = "status error";
+        });
+
+        // 사용자 텍스트 감지 수신 (중복 방지)
+        let lastUserMessage = "";
+        socket.on("userTextDetected", (data) => {
+          console.log("👤 Frontend: User text detected:", data.text);
+          console.log("📝 Frontend: Full buffer:", data.fullBuffer);
+
+          // 중복 메시지 방지
+          if (data.text !== lastUserMessage) {
+            addMessageToChat("user", data.text);
+            lastUserMessage = data.text;
+            console.log("💬 Frontend: Added user message to chat");
+          } else {
+            console.log("❌ Frontend: Duplicate message ignored");
+          }
+        });
+
+        // 이미지 생성 결과 수신
+        socket.on("imageGenerated", (data) => {
+          console.log("🎨 Frontend: Image generation result received:", data);
+          console.log("🔧 Frontend: Setting isGeneratingImage to false");
+          isGeneratingImage = false;
+
+          if (data.success) {
+            console.log("✅ Frontend: Image generated successfully!");
+            if (data.isAutoGenerated) {
+              console.log("🤖 Frontend: Auto-generated image");
+              displayGeneratedImage(data.imageUrl, data.originalText, true);
+              showAutoGenerationNotice(data.originalText);
+            } else {
+              console.log("👤 Frontend: Manual generated image");
+              displayGeneratedImage(data.imageUrl, data.prompt);
+            }
+          } else {
+            console.error("❌ Frontend: Image generation failed:", data.error);
+            showImageGenerationError();
+          }
+
+          console.log("🔧 Frontend: Ready for next image generation");
+        });
+      }
+
+      async function initAudio() {
+        try {
+          document.getElementById("status").textContent =
+            "Requesting microphone access...";
+
+          audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          });
+
+          // 공식 샘플 코드와 동일한 설정
+          const isFirefox = navigator.userAgent
+            .toLowerCase()
+            .includes("firefox");
+
+          if (isFirefox) {
+            audioContext = new AudioContext();
+          } else {
+            audioContext = new AudioContext({
+              sampleRate: 16000,
+            });
+          }
+
+          const samplingRatio = audioContext.sampleRate / 16000;
+          console.log(
+            `AudioContext sampleRate: ${audioContext.sampleRate}, samplingRatio: ${samplingRatio}`
+          );
+
+          document.getElementById("status").textContent =
+            'Microphone ready! Click "Start Speaking" to begin.';
+          document.getElementById("status").className = "status ready";
+        } catch (error) {
+          console.error("Error accessing microphone:", error);
+          document.getElementById("status").textContent =
+            "Error: " + error.message;
+          document.getElementById("status").className = "status error";
+        }
+      }
+
+      function setupEventListeners() {
+        document
+          .getElementById("start-btn")
+          .addEventListener("click", startRecording);
+        document
+          .getElementById("stop-btn")
+          .addEventListener("click", stopRecording);
+        document
+          .getElementById("finish-btn")
+          .addEventListener("click", finishSession);
+      }
+
+      async function startRecording() {
+        if (isStreaming) return;
+
+        try {
+          // 세션 초기화
+          if (!sessionInitialized) {
+            await initializeNovaSession();
+          }
+
+          // audioContext가 없으면 오디오 재초기화
+          if (!audioContext || !audioStream) {
+            console.log('🔄 Re-initializing audio...');
+            await initAudio();
+          }
+
+          // 오디오 처리 시작 - 작은 버퍼로 지연시간 최소화
+          sourceNode = audioContext.createMediaStreamSource(audioStream);
+          processor = audioContext.createScriptProcessor(1024, 1, 1);
+
+          processor.onaudioprocess = (e) => {
             if (!isStreaming) return;
 
-            isStreaming = false;
+            const inputData = e.inputBuffer.getChannelData(0);
+            const numSamples = Math.round(inputData.length / samplingRatio);
+            const pcmData = isFirefox
+              ? new Int16Array(numSamples)
+              : new Int16Array(inputData.length);
 
-            if (processor) {
-                processor.disconnect();
-                sourceNode.disconnect();
+            // 공식 샘플 코드와 동일한 처리
+            if (isFirefox) {
+              for (let i = 0; i < inputData.length; i++) {
+                pcmData[i] =
+                  Math.max(-1, Math.min(1, inputData[i * samplingRatio])) *
+                  0x7fff;
+              }
+            } else {
+              for (let i = 0; i < inputData.length; i++) {
+                pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7fff;
+              }
             }
 
-            // 사용자가 수동으로 중단할 때 barge-in 처리
-            if (window.audioPlayer) {
-                window.audioPlayer.bargeIn();
-            }
+            const base64Data = arrayBufferToBase64(pcmData.buffer);
+            socket.emit("audioInput", base64Data);
+          };
 
-            document.getElementById('start-btn').disabled = false;
-            document.getElementById('stop-btn').disabled = true;
-            document.getElementById('status').textContent = 'Processing...';
-            document.getElementById('status').className = 'status processing';
+          sourceNode.connect(processor);
+          processor.connect(audioContext.destination);
 
-            socket.emit('stopAudio');
+          isStreaming = true;
+          document.getElementById("start-btn").disabled = true;
+          document.getElementById("stop-btn").disabled = false;
+          document.getElementById("status").textContent =
+            "Listening... Describe what you see!";
+          document.getElementById("status").className = "status recording";
+        } catch (error) {
+          console.error("Error starting recording:", error);
+          document.getElementById("status").textContent =
+            "Error: " + error.message;
+          document.getElementById("status").className = "status error";
+        }
+      }
+
+      function stopRecording() {
+        if (!isStreaming) return;
+
+        isStreaming = false;
+
+        if (processor) {
+          processor.disconnect();
+          sourceNode.disconnect();
         }
 
-        async function initializeNovaSession() {
-            if (sessionInitialized) return;
+        // 사용자가 수동으로 중단할 때 barge-in 처리
+        if (window.audioPlayer) {
+          window.audioPlayer.bargeIn();
+        }
 
-            try {
-                const contextualPrompt = `You are an English conversation tutor helping a user describe an image.
+        document.getElementById("start-btn").disabled = false;
+        document.getElementById("stop-btn").disabled = true;
+        document.getElementById("status").textContent = "Processing...";
+        document.getElementById("status").className = "status processing";
+
+        socket.emit("stopAudio");
+      }
+
+      async function initializeNovaSession() {
+        if (sessionInitialized) return;
+
+        try {
+          const contextualPrompt = `You are an English conversation tutor helping a user describe an image.
 
 Image Context: ${currentImage.description}
-Expected Vocabulary: ${currentImage.expectedVocabulary.join(', ')}
-Guiding Questions: ${currentImage.guidingQuestions.join(', ')}
+Expected Vocabulary: ${currentImage.expectedVocabulary.join(", ")}
+Guiding Questions: ${currentImage.guidingQuestions.join(", ")}
 
 Your role:
 - Ask ONE specific follow-up question at a time
@@ -681,219 +743,241 @@ Your role:
 
 Start by encouraging them to describe what they see.`;
 
-                socket.emit('promptStart');
-                socket.emit('systemPrompt', contextualPrompt);
-                socket.emit('audioStart');
+          socket.emit("promptStart");
+          socket.emit("systemPrompt", contextualPrompt);
+          socket.emit("audioStart");
 
-                sessionInitialized = true;
-                document.getElementById('status').textContent = 'Session initialized! Ready to start.';
-                document.getElementById('status').className = 'status ready';
-                
-                // 이미지 생성 타이머 시작
-                startImageGeneration();
-                
-            } catch (error) {
-                console.error('Failed to initialize Nova session:', error);
-                throw error;
-            }
+          sessionInitialized = true;
+          document.getElementById("status").textContent =
+            "Session initialized! Ready to start.";
+          document.getElementById("status").className = "status ready";
+
+          // 이미지 생성 타이머 시작
+          startImageGeneration();
+        } catch (error) {
+          console.error("Failed to initialize Nova session:", error);
+          throw error;
+        }
+      }
+
+      // 중복 메시지 방지를 위한 변수
+      let lastAssistantMessage = "";
+
+      function addMessageToChat(role, message) {
+        // 빈 메시지나 interrupted 메시지 필터링
+        if (
+          !message ||
+          message.trim() === "" ||
+          message.toLowerCase().includes("interrupted") ||
+          message === '{ "interrupted" : true }' ||
+          message === '{"interrupted":true}'
+        ) {
+          console.log("Filtered message:", message);
+          return;
         }
 
-        function addMessageToChat(role, message) {
-            // 빈 메시지나 interrupted 메시지 필터링
-            if (!message || message.trim() === '' || 
-                message.toLowerCase().includes('interrupted') ||
-                message === '{ "interrupted" : true }' ||
-                message === '{"interrupted":true}') {
-                console.log('Filtered message:', message);
-                return;
-            }
-            
-            const chatContainer = document.getElementById('chat-container');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-            
-            const roleLabel = document.createElement('div');
-            roleLabel.className = 'role-label';
-            roleLabel.textContent = role === 'assistant' ? 'NOVA TUTOR' : 'YOU';
-            
-            const content = document.createElement('div');
-            content.textContent = message;
-            
-            messageDiv.appendChild(roleLabel);
-            messageDiv.appendChild(content);
-            chatContainer.appendChild(messageDiv);
-            
-            // 스크롤을 맨 아래로
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            
-            // 대화 기록에 추가
-            conversationHistory.push({
-                role: role,
-                message: message,
-                timestamp: new Date().toISOString()
-            });
-            
-            // 사용자 메시지는 서버에서 자동으로 처리되므로 여기서는 추가하지 않음
+        // ASSISTANT 메시지 중복 방지
+        if (role === "assistant" && message === lastAssistantMessage) {
+          console.log("Duplicate assistant message filtered:", message);
+          return;
         }
 
-        // 자동 이미지 생성 시작 (서버에서 사용자 발화 종료 시 자동 처리)
-        function startImageGeneration() {
-            console.log('Auto image generation enabled - images will be generated automatically when user stops speaking');
-        }
-        
-        // Nova Canvas로 이미지 생성
-        function generateImageFromUserMessages(prompt) {
-            if (isGeneratingImage) {
-                console.log('Image generation already in progress, skipping...');
-                return;
-            }
-            
-            isGeneratingImage = true;
-            console.log('Generating image with prompt:', prompt);
-            
-            // 생성 중 표시
-            showImageGenerationProgress();
-            
-            // Socket을 통해 이미지 생성 요청
-            socket.emit('generateImage', { prompt: prompt });
-        }
-        
-        // 생성된 이미지 표시
-        function displayGeneratedImage(imageUrl, prompt, isAuto = false) {
-            console.log('🖼️ Frontend: Displaying generated image...');
-            console.log('🔗 Frontend: Image URL length:', imageUrl.length);
-            console.log('📝 Frontend: Prompt:', prompt);
-            
-            const placeholder = document.getElementById('generated-placeholder');
-            const generatedImg = document.getElementById('generated-image');
-            
-            placeholder.style.display = 'none';
-            generatedImg.src = imageUrl;
-            generatedImg.style.display = 'block';
-            
-            // 생성된 이미지 URL 저장
-            currentImage.generatedImageUrl = imageUrl;
-            currentImage.generatedPrompt = prompt;
-            currentImage.isAutoGenerated = isAuto;
-            
-            console.log(`✅ Frontend: Generated image displayed successfully (${isAuto ? 'auto' : 'manual'})`);
-        }
-        
-        // 자동 생성 알림 표시
-        function showAutoGenerationNotice(userText) {
-            const chatContainer = document.getElementById('chat-container');
-            const noticeDiv = document.createElement('div');
-            noticeDiv.className = 'message thinking';
-            
-            const content = document.createElement('div');
-            content.innerHTML = `🎨 <strong>AI Image Generated!</strong><br>Based on: "${userText}"`;
-            
-            noticeDiv.appendChild(content);
-            chatContainer.appendChild(noticeDiv);
-            
-            // 스크롤을 맨 아래로
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-            
-            // 3초 후 자동 삭제
-            setTimeout(() => {
-                if (noticeDiv.parentNode) {
-                    noticeDiv.parentNode.removeChild(noticeDiv);
-                }
-            }, 3000);
-        }
-        
-        // 이미지 생성 진행 상태 표시
-        function showImageGenerationProgress() {
-            const placeholder = document.getElementById('generated-placeholder');
-            placeholder.innerHTML = '🎨 Generating AI image based on your description...';
-            placeholder.style.color = '#667eea';
-        }
-        
-        // 이미지 생성 오류 표시
-        function showImageGenerationError() {
-            const placeholder = document.getElementById('generated-placeholder');
-            placeholder.innerHTML = '❌ Failed to generate image. Keep describing and we\'ll try again!';
-            placeholder.style.color = '#ef4444';
-            
-            // 3초 후 원래 메시지로 복원
-            setTimeout(() => {
-                placeholder.innerHTML = 'Start describing the image above to generate an AI image based on your words!';
-                placeholder.style.color = '#64748b';
-            }, 3000);
-        }
+        const chatContainer = document.getElementById("chat-container");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${role}`;
 
-        function arrayBufferToBase64(buffer) {
-            const binary = [];
-            const bytes = new Uint8Array(buffer);
-            for (let i = 0; i < bytes.byteLength; i++) {
-                binary.push(String.fromCharCode(bytes[i]));
-            }
-            return btoa(binary.join(''));
-        }
+        const roleLabel = document.createElement("div");
+        roleLabel.className = "role-label";
+        roleLabel.textContent = role === "assistant" ? "NOVA TUTOR" : "YOU";
 
-        function playAudio(base64Data) {
-            try {
-                // 공식 샘플 코드와 동일한 방식으로 처리
-                const binaryString = window.atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
+        const content = document.createElement("div");
+        content.textContent = message;
 
-                const int16Array = new Int16Array(bytes.buffer);
-                const float32Array = new Float32Array(int16Array.length);
-                for (let i = 0; i < int16Array.length; i++) {
-                    float32Array[i] = int16Array[i] / 32768.0;
-                }
+        messageDiv.appendChild(roleLabel);
+        messageDiv.appendChild(content);
+        chatContainer.appendChild(messageDiv);
 
-                if (window.audioPlayer && float32Array.length > 0) {
-                    window.audioPlayer.playAudio(float32Array);
-                }
-            } catch (error) {
-                console.error('Error processing audio data:', error);
-            }
-        }
+        // 스크롤을 맨 아래로
+        chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        function startTimer() {
-            startTime = Date.now();
-            timerInterval = setInterval(() => {
-                const elapsed = Date.now() - startTime;
-                const minutes = Math.floor(elapsed / 60000);
-                const seconds = Math.floor((elapsed % 60000) / 1000);
-                document.getElementById('timer').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        function finishSession() {
-            // 타이머 정지
-            if (timerInterval) {
-                clearInterval(timerInterval);
-            }
-
-            // 세션 데이터 저장
-            const sessionData = {
-                image: currentImage,
-                conversationHistory: conversationHistory,
-                duration: Date.now() - startTime,
-                timestamp: new Date().toISOString()
-            };
-
-            localStorage.setItem('sessionData', JSON.stringify(sessionData));
-
-            // 평가 페이지로 이동
-            window.location.href = '/evaluation';
-        }
-
-        // 페이지 언로드 시 정리
-        window.addEventListener('beforeunload', () => {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-            }
-            if (socket) {
-                socket.disconnect();
-            }
+        // 대화 기록에 추가
+        conversationHistory.push({
+          role: role,
+          message: message,
+          timestamp: new Date().toISOString(),
         });
+
+        // 마지막 ASSISTANT 메시지 저장
+        if (role === "assistant") {
+          lastAssistantMessage = message;
+        }
+      }
+
+      // 자동 이미지 생성 시작 (서버에서 사용자 발화 종료 시 자동 처리)
+      function startImageGeneration() {
+        console.log(
+          "Auto image generation enabled - images will be generated automatically when user stops speaking"
+        );
+      }
+
+      // Nova Canvas로 이미지 생성
+      function generateImageFromUserMessages(prompt) {
+        if (isGeneratingImage) {
+          console.log("Image generation already in progress, skipping...");
+          return;
+        }
+
+        isGeneratingImage = true;
+        console.log("Generating image with prompt:", prompt);
+
+        // 생성 중 표시
+        showImageGenerationProgress();
+
+        // Socket을 통해 이미지 생성 요청
+        socket.emit("generateImage", { prompt: prompt });
+      }
+
+      // 생성된 이미지 표시
+      function displayGeneratedImage(imageUrl, prompt, isAuto = false) {
+        console.log("🖼️ Frontend: Displaying generated image...");
+        console.log("🔗 Frontend: Image URL length:", imageUrl.length);
+        console.log("📝 Frontend: Prompt:", prompt);
+
+        const placeholder = document.getElementById("generated-placeholder");
+        const generatedImg = document.getElementById("generated-image");
+
+        placeholder.style.display = "none";
+        generatedImg.src = imageUrl;
+        generatedImg.style.display = "block";
+
+        // 생성된 이미지 URL 저장
+        currentImage.generatedImageUrl = imageUrl;
+        currentImage.generatedPrompt = prompt;
+        currentImage.isAutoGenerated = isAuto;
+
+        console.log(
+          `✅ Frontend: Generated image displayed successfully (${isAuto ? "auto" : "manual"})`
+        );
+      }
+
+      // 자동 생성 알림 표시
+      function showAutoGenerationNotice(userText) {
+        const chatContainer = document.getElementById("chat-container");
+        const noticeDiv = document.createElement("div");
+        noticeDiv.className = "message thinking";
+
+        const content = document.createElement("div");
+        content.innerHTML = `🎨 <strong>AI Image Generated!</strong><br>Based on: "${userText}"`;
+
+        noticeDiv.appendChild(content);
+        chatContainer.appendChild(noticeDiv);
+
+        // 스크롤을 맨 아래로
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        // 3초 후 자동 삭제
+        setTimeout(() => {
+          if (noticeDiv.parentNode) {
+            noticeDiv.parentNode.removeChild(noticeDiv);
+          }
+        }, 3000);
+      }
+
+      // 이미지 생성 진행 상태 표시
+      function showImageGenerationProgress() {
+        const placeholder = document.getElementById("generated-placeholder");
+        placeholder.innerHTML =
+          "🎨 Generating AI image based on your description...";
+        placeholder.style.color = "#667eea";
+      }
+
+      // 이미지 생성 오류 표시
+      function showImageGenerationError() {
+        const placeholder = document.getElementById("generated-placeholder");
+        placeholder.innerHTML =
+          "❌ Failed to generate image. Keep describing and we'll try again!";
+        placeholder.style.color = "#ef4444";
+
+        // 3초 후 원래 메시지로 복원
+        setTimeout(() => {
+          placeholder.innerHTML =
+            "Start describing the image above to generate an AI image based on your words!";
+          placeholder.style.color = "#64748b";
+        }, 3000);
+      }
+
+      function arrayBufferToBase64(buffer) {
+        const binary = [];
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary.push(String.fromCharCode(bytes[i]));
+        }
+        return btoa(binary.join(""));
+      }
+
+      function playAudio(base64Data) {
+        try {
+          // 공식 샘플 코드와 동일한 방식으로 처리
+          const binaryString = window.atob(base64Data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+
+          const int16Array = new Int16Array(bytes.buffer);
+          const float32Array = new Float32Array(int16Array.length);
+          for (let i = 0; i < int16Array.length; i++) {
+            float32Array[i] = int16Array[i] / 32768.0;
+          }
+
+          if (window.audioPlayer && float32Array.length > 0) {
+            window.audioPlayer.playAudio(float32Array);
+          }
+        } catch (error) {
+          console.error("Error processing audio data:", error);
+        }
+      }
+
+      function startTimer() {
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const minutes = Math.floor(elapsed / 60000);
+          const seconds = Math.floor((elapsed % 60000) / 1000);
+          document.getElementById("timer").textContent =
+            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        }, 1000);
+      }
+
+      function finishSession() {
+        // 타이머 정지
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+
+        // 세션 데이터 저장
+        const sessionData = {
+          image: currentImage,
+          conversationHistory: conversationHistory,
+          duration: Date.now() - startTime,
+          timestamp: new Date().toISOString(),
+        };
+
+        localStorage.setItem("sessionData", JSON.stringify(sessionData));
+
+        // 평가 페이지로 이동
+        window.location.href = "/evaluation";
+      }
+
+      // 페이지 언로드 시 정리
+      window.addEventListener("beforeunload", () => {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+        if (socket) {
+          socket.disconnect();
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
