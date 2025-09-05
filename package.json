@@ -1,0 +1,63 @@
+{
+  "name": "nova-english-learning",
+  "version": "1.0.0",
+  "description": "Amazon Nova를 활용한 AI 기반 영어 게이미피케이션 학습 플랫폼",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && npm run test",
+    "deploy:dev": "cd infrastructure && cdk deploy --profile dev",
+    "deploy:staging": "cd infrastructure && cdk deploy --profile staging",
+    "deploy:prod": "cd infrastructure && cdk deploy --profile prod",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+    "setup": "npm install && npm run setup:frontend && npm run setup:backend && npm run setup:infrastructure",
+    "setup:frontend": "cd frontend && npm install",
+    "setup:backend": "cd backend && npm install",
+    "setup:infrastructure": "cd infrastructure && npm install"
+  },
+  "keywords": [
+    "amazon-nova",
+    "english-learning",
+    "gamification",
+    "ai",
+    "aws",
+    "bedrock",
+    "react",
+    "typescript"
+  ],
+  "author": "Nova English Learning Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "concurrently": "^8.2.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "workspaces": [
+    "frontend",
+    "backend",
+    "infrastructure"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/nova-english-learning.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/nova-english-learning/issues"
+  },
+  "homepage": "https://github.com/your-org/nova-english-learning#readme"
+}
