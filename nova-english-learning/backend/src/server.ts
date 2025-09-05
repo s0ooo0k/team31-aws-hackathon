@@ -120,7 +120,68 @@ app.get('/api/images/random', (req, res) => {
   });
 });
 
-// Nova Canvas 이미지 생성
+// Nova Canvas 테스트 엔드포인트
+app.get('/test-canvas', (req, res) => {
+  const prompt = req.query.prompt || 'a beautiful sunset over the ocean';
+  
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Nova Canvas Test</title>
+        <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .container { max-width: 800px; margin: 0 auto; }
+            input { width: 70%; padding: 10px; margin: 10px 0; }
+            button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+            #result { margin-top: 20px; }
+            img { max-width: 100%; border: 1px solid #ddd; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Nova Canvas Test</h1>
+            <input type="text" id="promptInput" placeholder="Enter image description" value="${prompt}">
+            <button onclick="generateImage()">Generate Image</button>
+            <div id="result"></div>
+        </div>
+        
+        <script>
+            async function generateImage() {
+                const prompt = document.getElementById('promptInput').value;
+                const result = document.getElementById('result');
+                
+                result.innerHTML = 'Generating image...';
+                
+                try {
+                    const response = await fetch('/api/images/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        result.innerHTML = \`
+                            <h3>Generated Image:</h3>
+                            <p><strong>Prompt:</strong> \${data.data.prompt}</p>
+                            <img src="\${data.data.imageUrl}" alt="Generated image">
+                        \`;
+                    } else {
+                        result.innerHTML = \`<p style="color: red;">Error: \${data.error}</p>\`;
+                    }
+                } catch (error) {
+                    result.innerHTML = \`<p style="color: red;">Error: \${error.message}</p>\`;
+                }
+            }
+        </script>
+    </body>
+    </html>
+  `);
+});
+
+// Nova Canvas 이미지 생성 (공식 샘플 기반)
 app.post('/api/images/generate', async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -134,30 +195,42 @@ app.post('/api/images/generate', async (req, res) => {
 
     console.log('Generating image with prompt:', prompt);
 
+    const inferenceParams = {
+      taskType: "TEXT_IMAGE",
+      textToImageParams: {
+        text: prompt,
+        negativeText: "blurry, low quality, distorted, ugly"
+      },
+      imageGenerationConfig: {
+        numberOfImages: 1,
+        quality: "standard",
+        width: 512,
+        height: 512,
+        cfgScale: 7.0,
+        seed: Math.floor(Math.random() * 858993459)
+      }
+    };
+
     const command = new InvokeModelCommand({
+      body: JSON.stringify(inferenceParams),
       modelId: 'amazon.nova-canvas-v1:0',
-      body: JSON.stringify({
-        taskType: 'TEXT_IMAGE',
-        textToImageParams: {
-          text: prompt,
-          negativeText: 'blurry, low quality, distorted',
-        },
-        imageGenerationConfig: {
-          numberOfImages: 1,
-          height: 512,
-          width: 512,
-          cfgScale: 8.0,
-          seed: Math.floor(Math.random() * 1000000)
-        }
-      })
+      accept: 'application/json',
+      contentType: 'application/json'
     });
 
     const response = await bedrockRuntimeClient.send(command);
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    
+    if (!(response.body instanceof Uint8Array)) {
+      throw new Error('Unexpected response format: Expected Uint8Array');
+    }
+
+    const responseBody = JSON.parse(Buffer.from(response.body).toString('utf-8'));
     
     if (responseBody.images && responseBody.images.length > 0) {
       const imageBase64 = responseBody.images[0];
       const imageUrl = `data:image/png;base64,${imageBase64}`;
+      
+      console.log('Image generated successfully');
       
       res.json({
         success: true,
@@ -167,7 +240,7 @@ app.post('/api/images/generate', async (req, res) => {
         }
       });
     } else {
-      throw new Error('No image generated');
+      throw new Error('No image generated in response');
     }
     
   } catch (error) {
@@ -345,36 +418,48 @@ io.on('connection', (socket) => {
       }
     });
 
-    // 실시간 이미지 생성
+    // 실시간 이미지 생성 (공식 샘플 기반)
     socket.on('generateImage', async (data) => {
       try {
         const { prompt } = data;
         console.log('Socket image generation request:', prompt);
         
+        const inferenceParams = {
+          taskType: "TEXT_IMAGE",
+          textToImageParams: {
+            text: prompt,
+            negativeText: "blurry, low quality, distorted, ugly"
+          },
+          imageGenerationConfig: {
+            numberOfImages: 1,
+            quality: "standard",
+            width: 512,
+            height: 512,
+            cfgScale: 7.0,
+            seed: Math.floor(Math.random() * 858993459)
+          }
+        };
+
         const command = new InvokeModelCommand({
+          body: JSON.stringify(inferenceParams),
           modelId: 'amazon.nova-canvas-v1:0',
-          body: JSON.stringify({
-            taskType: 'TEXT_IMAGE',
-            textToImageParams: {
-              text: prompt,
-              negativeText: 'blurry, low quality, distorted',
-            },
-            imageGenerationConfig: {
-              numberOfImages: 1,
-              height: 512,
-              width: 512,
-              cfgScale: 8.0,
-              seed: Math.floor(Math.random() * 1000000)
-            }
-          })
+          accept: 'application/json',
+          contentType: 'application/json'
         });
 
         const response = await bedrockRuntimeClient.send(command);
-        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+        
+        if (!(response.body instanceof Uint8Array)) {
+          throw new Error('Unexpected response format: Expected Uint8Array');
+        }
+
+        const responseBody = JSON.parse(Buffer.from(response.body).toString('utf-8'));
         
         if (responseBody.images && responseBody.images.length > 0) {
           const imageBase64 = responseBody.images[0];
           const imageUrl = `data:image/png;base64,${imageBase64}`;
+          
+          console.log('Socket image generated successfully');
           
           socket.emit('imageGenerated', {
             success: true,
@@ -382,7 +467,7 @@ io.on('connection', (socket) => {
             prompt: prompt
           });
         } else {
-          throw new Error('No image generated');
+          throw new Error('No image generated in response');
         }
         
       } catch (error) {
@@ -441,6 +526,7 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Nova English Learning Server listening on port ${PORT}`);
   console.log(`Open http://localhost:${PORT} to access the application`);
+  console.log(`Test Nova Canvas at http://localhost:${PORT}/test-canvas`);
 });
 
 // 종료 처리

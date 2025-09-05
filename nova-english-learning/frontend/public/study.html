@@ -318,7 +318,7 @@
             <div class="generated-image-section">
                 <div class="section-title">AI Generated Image (Based on Your Description)</div>
                 <div class="generated-image-placeholder" id="generated-placeholder">
-                    Start describing the image above to generate an AI image based on your words!
+                    Keep describing the image! AI image will generate after 2+ messages.
                 </div>
                 <img id="generated-image" class="generated-image" src="" alt="Generated image">
             </div>
@@ -366,7 +366,6 @@
         
         // 이미지 생성 관련 변수
         let userMessages = [];
-        let imageGenerationTimer;
         let isGeneratingImage = false;
 
         // 페이지 로드 시 초기화
@@ -464,7 +463,12 @@
                     // JSON이 아닌 경우 무시하고 계속 진행
                 }
                 
-                addMessageToChat('assistant', data.content);
+                // 사용자 메시지인 경우 이미지 생성용으로 수집
+                if (data.role === 'USER') {
+                    addMessageToChat('user', data.content);
+                } else {
+                    addMessageToChat('assistant', data.content);
+                }
             });
 
             socket.on('audioOutput', (data) => {
@@ -656,8 +660,8 @@ Start by encouraging them to describe what they see.`;
                 document.getElementById('status').textContent = 'Session initialized! Ready to start.';
                 document.getElementById('status').className = 'status ready';
                 
-                // 이미지 생성 타이머 시작
-                startImageGeneration();
+                // 이미지 생성 준비 완료
+                console.log('Ready for message-based image generation');
                 
             } catch (error) {
                 console.error('Failed to initialize Nova session:', error);
@@ -700,25 +704,23 @@ Start by encouraging them to describe what they see.`;
                 timestamp: new Date().toISOString()
             });
             
-            // 사용자 메시지인 경우 이미지 생성용 배열에 추가
+            // 사용자 메시지만 이미지 생성용 배열에 추가 및 조건부 생성
             if (role === 'user') {
                 userMessages.push(message);
-                console.log('Added user message for image generation:', message);
+                console.log('Added user message for image generation:', message, `(${userMessages.length} messages total)`);
+                
+                // 2개 이상의 사용자 메시지가 있을 때마다 이미지 생성
+                if (userMessages.length >= 2 && !isGeneratingImage) {
+                    const prompt = userMessages.join(' ');
+                    generateImageFromUserMessages(prompt);
+                } else if (userMessages.length === 1) {
+                    console.log('Waiting for more messages before generating image...');
+                }
             }
         }
 
-        // 10초마다 이미지 생성 시작
-        function startImageGeneration() {
-            imageGenerationTimer = setInterval(() => {
-                if (userMessages.length > 0 && !isGeneratingImage) {
-                    const prompt = userMessages.join(' ');
-                    generateImageFromUserMessages(prompt);
-                    userMessages = []; // 메시지 배열 초기화
-                }
-            }, 10000); // 10초마다 실행
-            
-            console.log('Image generation timer started (every 10 seconds)');
-        }
+        // 메시지 기반 이미지 생성 (누적 방식)
+        // 사용자가 새로운 메시지를 보낼 때마다 호출됨
         
         // Nova Canvas로 이미지 생성
         function generateImageFromUserMessages(prompt) {
@@ -737,7 +739,7 @@ Start by encouraging them to describe what they see.`;
             socket.emit('generateImage', { prompt: prompt });
         }
         
-        // 생성된 이미지 표시
+        // 생성된 이미지 표시 (누적 정보 포함)
         function displayGeneratedImage(imageUrl, prompt) {
             const placeholder = document.getElementById('generated-placeholder');
             const generatedImg = document.getElementById('generated-image');
@@ -750,13 +752,19 @@ Start by encouraging them to describe what they see.`;
             currentImage.generatedImageUrl = imageUrl;
             currentImage.generatedPrompt = prompt;
             
-            console.log('Generated image displayed successfully');
+            // 섹션 제목에 누적 정보 표시
+            const sectionTitle = document.querySelector('.generated-image-section .section-title');
+            const messageCount = userMessages.length;
+            sectionTitle.textContent = `AI Generated Image (${messageCount} messages accumulated)`;
+            
+            console.log('Generated image displayed successfully with', messageCount, 'accumulated messages');
         }
         
-        // 이미지 생성 진행 상태 표시
+        // 이미지 생성 진행 상태 표시 (누적 정보 포함)
         function showImageGenerationProgress() {
             const placeholder = document.getElementById('generated-placeholder');
-            placeholder.innerHTML = '🎨 Generating AI image based on your description...';
+            const messageCount = userMessages.length;
+            placeholder.innerHTML = `🎨 Generating enhanced image with ${messageCount} messages...`;
             placeholder.style.color = '#667eea';
         }
         
@@ -768,7 +776,12 @@ Start by encouraging them to describe what they see.`;
             
             // 3초 후 원래 메시지로 복원
             setTimeout(() => {
-                placeholder.innerHTML = 'Start describing the image above to generate an AI image based on your words!';
+                const messageCount = userMessages.length;
+                if (messageCount < 2) {
+                    placeholder.innerHTML = 'Keep describing the image! AI image will generate after 2+ messages.';
+                } else {
+                    placeholder.innerHTML = 'Ready to generate enhanced image with your descriptions!';
+                }
                 placeholder.style.color = '#64748b';
             }, 3000);
         }
@@ -822,10 +835,8 @@ Start by encouraging them to describe what they see.`;
                 clearInterval(timerInterval);
             }
             
-            // 이미지 생성 타이머 정지
-            if (imageGenerationTimer) {
-                clearInterval(imageGenerationTimer);
-            }
+            // 이미지 생성 중단
+            isGeneratingImage = false;
 
             // 세션 데이터 저장
             const sessionData = {
@@ -846,9 +857,8 @@ Start by encouraging them to describe what they see.`;
             if (timerInterval) {
                 clearInterval(timerInterval);
             }
-            if (imageGenerationTimer) {
-                clearInterval(imageGenerationTimer);
-            }
+            // 이미지 생성 중단
+            isGeneratingImage = false;
             if (socket) {
                 socket.disconnect();
             }
