@@ -91,7 +91,16 @@ export const ImageCategories = [
           'What are the people doing?',
           'How would you describe the atmosphere?',
           'What material is the table made of?'
-        ]
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            'coffee shop', 'café', 'barista', 'staff member', 'customer', 'person sitting',
+            'laptop', 'computer', 'table', 'chair', 'counter', 'menu', 'chalkboard',
+            'plants', 'lighting', 'industrial lights', 'warm atmosphere', 'cozy',
+            'white chairs', 'colored cushions', 'wooden elements', 'modern design'
+          ],
+          detailedDescription: `A cozy, modern café with warm, welcoming ambiance. Two people visible: a barista in dark shirt behind counter, and a customer in dark jacket and cap sitting at table with laptop. White curved-back chairs with yellow, brown, and white cushions. White tables with modern design. Rustic counter with chalkboard menu. Large leafy plant in center, smaller potted plants on counter. Industrial-style hanging lights. Neutral color scheme with white, green plants, black chalkboard, warm cushion tones. Materials include wood (tables, chairs), metal (lighting fixtures), fabric (cushions), glass (bottles, jars). Relaxed, professional atmosphere suitable for work and socializing.`
+        }
       }
     ]
   },
@@ -110,7 +119,16 @@ export const ImageCategories = [
           'How would you describe the trees?',
           'What does the path look like?',
           'What\'s the weather like?'
-        ]
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            'forest', 'woodland', 'trees', 'tall trees', 'path', 'dirt path', 'narrow path',
+            'green foliage', 'leaves', 'brown trunks', 'rocks', 'scattered rocks',
+            'underbrush', 'ground', 'dirt', 'sunlight', 'dappled light', 'shadows',
+            'peaceful', 'tranquil', 'serene', 'natural', 'winding path', 'canopy'
+          ],
+          detailedDescription: `A serene forest setting with narrow dirt path winding through dense woodland. Tall, slender trees with dark brown trunks and vibrant green foliage create tunnel-like canopy effect. No people visible - focus on natural environment. Path made of compacted dirt, curving as it disappears into forest. Scattered rocks of various sizes along path and among trees. Rich earthy color scheme: dark brown tree trunks, vibrant green leaves, brown and tan dirt path. Sunlight filters through trees creating dappled light on ground. Tranquil, undisturbed atmosphere suggesting midday lighting. Rough bark texture, uneven path surface, natural shadows add depth and realism.`
+        }
       }
     ]
   },
@@ -129,7 +147,17 @@ export const ImageCategories = [
           'What equipment do you see?',
           'What are the people wearing?',
           'How does the workspace look organized?'
-        ]
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            'office', 'corridor', 'modern', 'minimalist', 'cubicles', 'workspaces',
+            'teal couch', 'wooden shelving', 'black refrigerator', 'microwave',
+            'recessed lights', 'pendant lights', 'navy blue walls', 'light beige floor',
+            'kitchenette', 'seating area', 'clean', 'organized', 'professional',
+            'contemporary', 'bright lighting', 'empty', 'tranquil'
+          ],
+          detailedDescription: `Modern, minimalist office corridor stretching into distance with cubicles and workspaces on both sides. No people visible, emphasizing emptiness and tranquility. Long teal couch against left wall with wooden shelving unit beside it. Black refrigerator and integrated microwave on right side forming kitchenette area. Deep navy blue walls with light beige flooring. Recessed ceiling lights provide even illumination, with pendant lights hanging in distance. Minimalist color scheme focusing on neutral and dark tones. Materials include smooth painted walls, polished concrete-like flooring, wood shelving, teal fabric upholstery, metal and glass appliances. Calm, professional, modern atmosphere with sense of order and efficiency.`
+        }
       }
     ]
   },
@@ -148,7 +176,17 @@ export const ImageCategories = [
           'How are the people interacting?',
           'What\'s the mood of the scene?',
           'How would you describe the restaurant setting?'
-        ]
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            'six people', 'friends', 'group', 'sitting together', 'concrete ledge',
+            'arms around each other', 'camaraderie', 'friendship', 'scenic viewpoint',
+            'mountains', 'cable car', 'gondolas', 'tourist spot', 'landscape',
+            'gray t-shirt', 'blue cap', 'tie-dye shirt', 'white shirt', 'red bag',
+            'yellow shirt', 'hats', 'casual clothing', 'relaxed', 'enjoying view'
+          ],
+          detailedDescription: `Group of six people sitting closely together on concrete ledge at scenic viewpoint, arms around each other showing camaraderie and friendship. Background features picturesque landscape with mountains, cable car system with suspended gondolas, and partly cloudy sky. Tourist spot, possibly coastal area. People wearing casual attire: gray t-shirts, blue patterned cap, blue and yellow tie-dye shirt, white shirt, blue shirt with hat and red bag, yellow shirt with hat. Relaxed, enjoyable atmosphere suggesting late afternoon with soft, warm lighting. Strong sense of togetherness and friendship evident from body language and positioning.`
+        }
       }
     ]
   },
@@ -167,7 +205,17 @@ export const ImageCategories = [
           'How would you describe the atmosphere?',
           'What study materials do you see?',
           'How is the space organized?'
-        ]
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            'library', 'bookstore', 'bookshelves', 'books', 'rows of shelves',
+            'light bulbs', 'string lights', 'warm lighting', 'yellow glow',
+            'different sized bulbs', 'dark floor', 'wood shelves', 'paper books',
+            'metal fixtures', 'cozy', 'inviting', 'intellectual atmosphere',
+            'evening lighting', 'soft shadows', 'perspective view'
+          ],
+          detailedDescription: `Library or bookstore section with multiple rows of bookshelves extending into background. No people visible - focus on books and lighting. Densely packed shelves with books of various sizes, colors, and genres. String of light bulbs suspended above shelves providing soft, warm yellow lighting. Bulbs are different sizes creating artistic touch. Dark wooden bookshelves with traditional appearance. Dark floor material, possibly wood or tile. Warm color scheme with yellow/orange light contrasting darker tones of shelves and books. Cozy, inviting, intellectual atmosphere. Evening/night time suggested by warm lighting against darker surroundings. Low angle perspective emphasizing shelf height and warm glow, with soft shadows adding depth.`
+        }
       }
     ]
   }

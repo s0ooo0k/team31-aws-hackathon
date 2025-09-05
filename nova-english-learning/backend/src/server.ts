@@ -128,6 +128,177 @@ app.get("/api/images/random", (req, res) => {
   });
 });
 
+// Nova Pro 기반 정확한 평가
+app.post('/api/evaluate', async (req, res) => {
+  try {
+    const { imageId, userMessages, conversationHistory } = req.body;
+    
+    if (!imageId || !userMessages) {
+      return res.status(400).json({
+        success: false,
+        error: 'Image ID and user messages are required'
+      });
+    }
+
+    const imageData = ImageCategories.flatMap(cat => cat.images)
+      .find(img => img.imageId === imageId);
+    
+    if (!imageData || !imageData.evaluationCriteria) {
+      return res.status(404).json({
+        success: false,
+        error: 'Image or evaluation criteria not found'
+      });
+    }
+
+    const userText = userMessages.join(' ');
+    const { detailedDescription } = imageData.evaluationCriteria;
+    
+    // Nova Pro 평가 프롬프트
+    const evaluationPrompt = `You are an English learning evaluation expert. Analyze the user's description compared to the reference image description.
+
+Reference Description:
+${detailedDescription}
+
+User's Description:
+${userText}
+
+Evaluate on these criteria (0-100 each):
+1. ACCURACY: How factually correct is the description?
+2. COMPLETENESS: How much of the image is covered?
+3. VOCABULARY: Quality and variety of vocabulary used?
+4. DETAIL: Level of specific details provided?
+
+Provide response in this JSON format:
+{
+  "accuracy": 85,
+  "completeness": 70,
+  "vocabulary": 80,
+  "detail": 75,
+  "strengths": ["good color description", "mentioned atmosphere"],
+  "improvements": ["describe people's actions", "mention spatial relationships"],
+  "feedback": "Overall good description with room for more specific details."
+}`;
+
+    const command = new InvokeModelCommand({
+      modelId: 'amazon.nova-pro-v1:0',
+      contentType: 'application/json',
+      accept: 'application/json',
+      body: JSON.stringify({
+        messages: [{
+          role: 'user',
+          content: [{ text: evaluationPrompt }]
+        }],
+        inferenceConfig: {
+          maxTokens: 1000,
+          temperature: 0.3,
+          topP: 0.9
+        }
+      })
+    });
+
+    const response = await bedrockRuntimeClient.send(command);
+    const responseBody = JSON.parse(Buffer.from(response.body).toString('utf-8'));
+    const aiResponse = responseBody.output.message.content[0].text;
+    
+    // JSON 파싱
+    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('Invalid AI response format');
+    }
+    
+    const evaluation = JSON.parse(jsonMatch[0]);
+    const totalScore = Math.round((evaluation.accuracy + evaluation.completeness + evaluation.vocabulary + evaluation.detail) / 4);
+    
+    res.json({
+      success: true,
+      data: {
+        totalScore,
+        breakdown: {
+          accuracy: evaluation.accuracy,
+          completeness: evaluation.completeness,
+          vocabulary: evaluation.vocabulary,
+          detail: evaluation.detail
+        },
+        feedback: {
+          strengths: evaluation.strengths,
+          improvements: evaluation.improvements,
+          overall: evaluation.feedback
+        },
+        userMessageCount: userMessages.length
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error evaluating with Nova Pro:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to evaluate response',
+      details: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+// Stable Diffusion 테스트 엔드포인트
+app.get('/test-canvas', (req, res) => {
+  const prompt = req.query.prompt || 'a beautiful sunset over the ocean';
+  
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Stable Diffusion Test</title>
+        <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .container { max-width: 800px; margin: 0 auto; }
+            input { width: 70%; padding: 10px; margin: 10px 0; }
+            button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+            #result { margin-top: 20px; }
+            img { max-width: 100%; border: 1px solid #ddd; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Stable Diffusion Test</h1>
+            <input type="text" id="promptInput" placeholder="Enter image description" value="${prompt}">
+            <button onclick="generateImage()">Generate Image</button>
+            <div id="result"></div>
+        </div>
+        
+        <script>
+            async function generateImage() {
+                const prompt = document.getElementById('promptInput').value;
+                const result = document.getElementById('result');
+                
+                result.innerHTML = 'Generating image...';
+                
+                try {
+                    const response = await fetch('/api/images/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        result.innerHTML = \`
+                            <h3>Generated Image:</h3>
+                            <p><strong>Prompt:</strong> \${data.data.prompt}</p>
+                            <img src="\${data.data.imageUrl}" alt="Generated image">
+                        \`;
+                    } else {
+                        result.innerHTML = \`<p style="color: red;">Error: \${data.error}</p>\`;
+                    }
+                } catch (error) {
+                    result.innerHTML = \`<p style="color: red;">Error: \${error.message}</p>\`;
+                }
+            }
+        </script>
+    </body>
+    </html>
+  `);
+});
+
 // Nova Canvas 이미지 생성
 app.post("/api/images/generate", async (req, res) => {
   try {
@@ -166,7 +337,6 @@ app.post("/api/images/generate", async (req, res) => {
     if (responseBody.images && responseBody.images.length > 0) {
       const imageBase64 = responseBody.images[0];
       const imageUrl = `data:image/png;base64,${imageBase64}`;
-
       res.json({
         success: true,
         data: {
@@ -491,6 +661,7 @@ io.on("connection", (socket) => {
 
         const imagePrompt = createImagePrompt(prompt);
         await generateImageFromUserText(socket, imagePrompt, prompt);
+
       } catch (error) {
         console.error("Error generating image via socket:", error);
         socket.emit("imageGenerated", {
