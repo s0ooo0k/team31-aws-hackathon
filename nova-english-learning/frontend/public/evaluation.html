@@ -367,28 +367,28 @@
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div class="metric-icon">🎯</div>
-                        <div class="metric-value" id="detail-score">High</div>
-                        <div class="metric-label">Description Detail</div>
+                        <div class="metric-value" id="accuracy-score">85</div>
+                        <div class="metric-label">Accuracy</div>
                         <div class="metric-bar">
-                            <div class="metric-fill" id="detail-bar" style="width: 0%"></div>
+                            <div class="metric-fill" id="accuracy-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-icon">📊</div>
+                        <div class="metric-value" id="completeness-score">75</div>
+                        <div class="metric-label">Completeness</div>
+                        <div class="metric-bar">
+                            <div class="metric-fill" id="completeness-bar" style="width: 0%"></div>
                         </div>
                     </div>
                     
                     <div class="metric-card">
                         <div class="metric-icon">📚</div>
-                        <div class="metric-value" id="vocabulary-score">8/10</div>
-                        <div class="metric-label">Vocabulary Diversity</div>
+                        <div class="metric-value" id="vocabulary-score">80</div>
+                        <div class="metric-label">Vocabulary</div>
                         <div class="metric-bar">
                             <div class="metric-fill" id="vocabulary-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-icon">💬</div>
-                        <div class="metric-value" id="engagement-score">9/10</div>
-                        <div class="metric-label">Conversation Flow</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" id="engagement-bar" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
@@ -455,38 +455,80 @@
             }
 
             // 평가 생성 및 표시
-            generateEvaluation();
-            displayResults();
+            generateEvaluation().then(() => {
+                displayResults();
+            });
         });
 
-        function generateEvaluation() {
-            // 실제로는 AI 기반 평가 시스템을 사용
-            // 여기서는 시뮬레이션된 평가 생성
-            
-            const conversationLength = sessionData.conversationHistory.length;
-            const duration = sessionData.duration;
-            const userMessages = sessionData.conversationHistory.filter(msg => msg.role === 'user');
-            
-            // 평가 점수 계산 (시뮬레이션)
-            const detailScore = Math.min(100, (conversationLength * 10) + Math.random() * 20);
-            const vocabularyScore = Math.min(10, Math.floor(userMessages.length / 2) + Math.floor(Math.random() * 3));
-            const engagementScore = Math.min(10, Math.floor(duration / 30000) + Math.floor(Math.random() * 3));
-            
-            // 전체 점수 계산
-            const overallScore = Math.round((detailScore + vocabularyScore * 10 + engagementScore * 10) / 3);
-            
-            evaluation = {
-                overallScore: overallScore,
-                overallGrade: getGrade(overallScore),
-                detailLevel: getDetailLevel(detailScore),
-                vocabularyDiversity: vocabularyScore,
-                conversationFlow: engagementScore,
-                similarityScore: Math.floor(Math.random() * 20) + 75, // 75-95%
+        async function generateEvaluation() {
+            try {
+                // 사용자 메시지만 추출
+                const userMessages = sessionData.conversationHistory
+                    .filter(msg => msg.role === 'user')
+                    .map(msg => msg.message);
                 
-                strengths: generateStrengths(detailScore, vocabularyScore, engagementScore),
-                improvements: generateImprovements(detailScore, vocabularyScore, engagementScore),
-                alternatives: generateAlternatives()
-            };
+                console.log('Evaluating with API:', {
+                    imageId: sessionData.image.imageId,
+                    userMessages: userMessages,
+                    messageCount: userMessages.length
+                });
+                
+                // 평가 API 호출
+                const response = await fetch('/api/evaluate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        imageId: sessionData.image.imageId,
+                        userMessages: userMessages,
+                        conversationHistory: sessionData.conversationHistory
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    
+                    evaluation = {
+                        overallScore: data.totalScore,
+                        overallGrade: getGrade(data.totalScore),
+                        accuracy: data.breakdown.accuracy,
+                        completeness: data.breakdown.completeness,
+                        vocabulary: data.breakdown.vocabulary,
+                        detail: data.breakdown.detail,
+                        similarityScore: Math.min(95, Math.max(60, data.breakdown.completeness)),
+                        
+                        strengths: data.feedback.strengths || [],
+                        improvements: data.feedback.improvements || [],
+                        alternatives: [data.feedback.overall] || [],
+                        
+                        userMessageCount: data.userMessageCount
+                    };
+                    
+                    console.log('Evaluation completed:', evaluation);
+                } else {
+                    throw new Error(result.error || 'Evaluation failed');
+                }
+                
+            } catch (error) {
+                console.error('Error generating evaluation:', error);
+                
+                // 폴백: 기본 평가 생성
+                evaluation = {
+                    overallScore: 75,
+                    overallGrade: 'B',
+                    accuracy: 75,
+                    completeness: 70,
+                    vocabulary: 80,
+                    detail: 75,
+                    similarityScore: 80,
+                    strengths: ['You participated actively in the conversation'],
+                    improvements: ['Try to include more specific details'],
+                    alternatives: ['Use more descriptive vocabulary']
+                };
+            }
         }
 
         function getGrade(score) {
@@ -569,17 +611,16 @@
             document.getElementById('overall-score').textContent = evaluation.overallGrade;
             document.getElementById('similarity-score').textContent = evaluation.similarityScore + '%';
             
-            // 메트릭 표시
-            document.getElementById('detail-score').textContent = evaluation.detailLevel;
-            document.getElementById('vocabulary-score').textContent = evaluation.vocabularyDiversity + '/10';
-            document.getElementById('engagement-score').textContent = evaluation.conversationFlow + '/10';
+            // Nova Pro 메트릭 표시
+            document.getElementById('accuracy-score').textContent = evaluation.accuracy;
+            document.getElementById('completeness-score').textContent = evaluation.completeness;
+            document.getElementById('vocabulary-score').textContent = evaluation.vocabulary;
             
             // 프로그레스 바 애니메이션
             setTimeout(() => {
-                const detailPercent = evaluation.detailLevel === 'High' ? 85 : evaluation.detailLevel === 'Medium' ? 60 : 35;
-                document.getElementById('detail-bar').style.width = detailPercent + '%';
-                document.getElementById('vocabulary-bar').style.width = (evaluation.vocabularyDiversity * 10) + '%';
-                document.getElementById('engagement-bar').style.width = (evaluation.conversationFlow * 10) + '%';
+                document.getElementById('accuracy-bar').style.width = evaluation.accuracy + '%';
+                document.getElementById('completeness-bar').style.width = evaluation.completeness + '%';
+                document.getElementById('vocabulary-bar').style.width = evaluation.vocabulary + '%';
             }, 500);
             
             // 피드백 표시

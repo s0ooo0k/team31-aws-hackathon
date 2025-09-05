@@ -367,6 +367,12 @@
         // 이미지 생성 관련 변수
         let userMessages = [];
         let isGeneratingImage = false;
+        let previousImageBase64 = null; // 이전 생성된 이미지 저장
+        let lastGeneratedMessageCount = 0; // 마지막 생성 시 메시지 개수
+        let sessionSeed = Math.floor(Math.random() * 4294967295); // 세션별 고정 시드
+        
+        // 중복 메시지 방지
+        let lastProcessedMessages = new Set();
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', async () => {
@@ -679,6 +685,20 @@ Start by encouraging them to describe what they see.`;
                 return;
             }
             
+            // 중복 메시지 방지
+            const messageKey = `${role}:${message}`;
+            if (lastProcessedMessages.has(messageKey)) {
+                console.log('Duplicate message filtered:', messageKey);
+                return;
+            }
+            lastProcessedMessages.add(messageKey);
+            
+            // 최근 10개 메시지만 기록 유지 (메모리 절약)
+            if (lastProcessedMessages.size > 10) {
+                const firstKey = lastProcessedMessages.values().next().value;
+                lastProcessedMessages.delete(firstKey);
+            }
+            
             const chatContainer = document.getElementById('chat-container');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
@@ -711,8 +731,10 @@ Start by encouraging them to describe what they see.`;
                 
                 // 2개 이상의 사용자 메시지가 있을 때마다 이미지 생성
                 if (userMessages.length >= 2 && !isGeneratingImage) {
-                    const prompt = userMessages.join(' ');
-                    generateImageFromUserMessages(prompt);
+                    // 새로운 메시지만 추가해서 점진적 프롬프트 구성
+                    const newMessages = userMessages.slice(lastGeneratedMessageCount);
+                    const incrementalPrompt = newMessages.join(' ');
+                    generateImageFromUserMessages(incrementalPrompt, userMessages.length > lastGeneratedMessageCount);
                 } else if (userMessages.length === 1) {
                     console.log('Waiting for more messages before generating image...');
                 }
@@ -722,24 +744,47 @@ Start by encouraging them to describe what they see.`;
         // 메시지 기반 이미지 생성 (누적 방식)
         // 사용자가 새로운 메시지를 보낼 때마다 호출됨
         
-        // Nova Canvas로 이미지 생성
-        function generateImageFromUserMessages(prompt) {
+        // Stable Diffusion으로 실사적 이미지 생성 (점진적 추가)
+        function generateImageFromUserMessages(newContent, isIncremental = false) {
             if (isGeneratingImage) {
                 console.log('Image generation already in progress, skipping...');
                 return;
             }
             
             isGeneratingImage = true;
-            console.log('Generating image with prompt:', prompt);
+            
+            let finalPrompt;
+            if (isIncremental && lastGeneratedMessageCount > 0) {
+                // 이전 내용 + 새로운 내용
+                const previousContent = userMessages.slice(0, lastGeneratedMessageCount).join(' ');
+                finalPrompt = `${previousContent}, ${newContent}`;
+                console.log('Incremental generation - Previous:', previousContent, 'Adding:', newContent);
+            } else {
+                // 첫 번째 생성 또는 전체 재생성
+                finalPrompt = userMessages.join(' ');
+                console.log('Full generation with all messages:', finalPrompt);
+            }
+            
+            // 실사적 프롬프트 강화
+            const enhancedPrompt = `photorealistic, high quality, detailed, ${finalPrompt}, professional photography, natural lighting, sharp focus, 8k resolution`;
+            
+            console.log('Generating photorealistic image with prompt:', enhancedPrompt);
             
             // 생성 중 표시
             showImageGenerationProgress();
             
+            const requestData = {
+                prompt: enhancedPrompt,
+                isIncremental: isIncremental,
+                previousImage: previousImageBase64,
+                seed: sessionSeed // 일관된 화풍을 위한 고정 시드
+            };
+            
             // Socket을 통해 이미지 생성 요청
-            socket.emit('generateImage', { prompt: prompt });
+            socket.emit('generateImage', requestData);
         }
         
-        // 생성된 이미지 표시 (누적 정보 포함)
+        // 생성된 이미지 표시 (점진적 추가 정보 포함)
         function displayGeneratedImage(imageUrl, prompt) {
             const placeholder = document.getElementById('generated-placeholder');
             const generatedImg = document.getElementById('generated-image');
@@ -752,12 +797,21 @@ Start by encouraging them to describe what they see.`;
             currentImage.generatedImageUrl = imageUrl;
             currentImage.generatedPrompt = prompt;
             
-            // 섹션 제목에 누적 정보 표시
+            // 이전 이미지로 저장 (다음 생성 시 기준 이미지로 사용)
+            if (imageUrl.startsWith('data:image')) {
+                previousImageBase64 = imageUrl.split(',')[1]; // base64 부분만 추출
+            }
+            
+            // 마지막 생성 시 메시지 개수 업데이트
+            lastGeneratedMessageCount = userMessages.length;
+            
+            // 섹션 제목에 점진적 정보 표시
             const sectionTitle = document.querySelector('.generated-image-section .section-title');
             const messageCount = userMessages.length;
-            sectionTitle.textContent = `AI Generated Image (${messageCount} messages accumulated)`;
+            const generationType = lastGeneratedMessageCount > 2 ? 'Enhanced' : 'Initial';
+            sectionTitle.textContent = `AI Generated Image - ${generationType} (${messageCount} descriptions)`;
             
-            console.log('Generated image displayed successfully with', messageCount, 'accumulated messages');
+            console.log('Generated image displayed successfully with', messageCount, 'descriptions, last generated at:', lastGeneratedMessageCount);
         }
         
         // 이미지 생성 진행 상태 표시 (누적 정보 포함)
@@ -840,7 +894,10 @@ Start by encouraging them to describe what they see.`;
 
             // 세션 데이터 저장
             const sessionData = {
-                image: currentImage,
+                image: {
+                    ...currentImage,
+                    imageId: currentImage.imageId || 'daily_001' // 기본값 설정
+                },
                 conversationHistory: conversationHistory,
                 duration: Date.now() - startTime,
                 timestamp: new Date().toISOString()
