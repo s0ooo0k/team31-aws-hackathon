@@ -654,19 +654,27 @@
       async function initializeStudySession(categoryId) {
         try {
           // 카테고리별 이미지 가져오기
+          console.log(`Fetching images for category: ${categoryId}`);
           const response = await fetch(`/api/categories/${categoryId}/images`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
           const result = await response.json();
+          console.log('API response:', result);
 
-          if (result.success && result.data.images.length > 0) {
-            // 카테고리 내에서 랜덤 이미지 선택
-            const randomIndex = Math.floor(
-              Math.random() * result.data.images.length
-            );
+          if (result.success && result.data && result.data.image) {
             currentImage = {
-              ...result.data.images[randomIndex],
+              imageId: result.data.image.imageId,
+              url: `https://d1d6oeec7imlh5.cloudfront.net/${result.data.image.s3ImageKey}`,
+              description: result.data.image.description,
+              difficulty: result.data.image.difficulty,
               category: result.data.category,
               categoryId: categoryId,
             };
+            
+            console.log('Current image:', currentImage);
             displayImage(currentImage);
 
             // Socket.IO 연결
@@ -682,18 +690,31 @@
             await window.audioPlayer.start();
             console.log("Official AudioPlayer initialized");
           } else {
-            throw new Error("Failed to load image");
+            console.error('Invalid API response:', result);
+            throw new Error(`Failed to load image: ${result.error || 'Unknown error'}`);
           }
         } catch (error) {
           console.error("Error initializing study session:", error);
           document.getElementById("status").textContent =
-            "Error loading study session";
+            `Error loading study session: ${error.message}`;
           document.getElementById("status").className = "status error";
         }
       }
 
       function displayImage(imageData) {
         const img = document.getElementById("original-image");
+        
+        img.onload = function() {
+          console.log('Image loaded successfully:', imageData.url);
+        };
+        
+        img.onerror = function() {
+          console.error('Failed to load image:', imageData.url);
+          document.getElementById("status").textContent = "Failed to load image";
+          document.getElementById("status").className = "status error";
+        };
+        
+        console.log('Setting image source:', imageData.url);
         img.src = imageData.url;
       }
 
