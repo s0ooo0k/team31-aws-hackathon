@@ -1,11 +1,11 @@
 
-# SPEEK-SEE-PIC : Amazon Nova Family 활용한 Gen AI 기반 실시간 영어 스트리밍 회화 학습 서비스
+# SPEAK-SEE-PIC : Amazon Nova Family 활용한 Gen AI 기반 실시간 영어 스트리밍 회화 학습 서비스
 
-SPEEK-SEE-PIC은 Amazon Nova Family(Nova Sonic, Nova Pro, Nova Canvas)를 활용한 실시간 AI 양방향 스트리밍 대화형 영어 학습 플랫폼입니다. WebSocket 기반 실시간 통신과 이미지 기반 상황 서술 학습을 통해 자연스러운 영어 회화 연습이 가능한 웹 애플리케이션입니다.
+SPEAK-SEE-PIC은 Amazon Nova Family(Nova Sonic, Nova Pro, Nova Canvas)를 활용한 실시간 AI 양방향 스트리밍 대화형 영어 학습 플랫폼입니다. WebSocket 기반 실시간 통신과 이미지 기반 상황 서술 학습을 통해 자연스러운 영어 회화 연습이 가능한 웹 애플리케이션입니다.
 
 ## 어플리케이션 개요
 
-SPEEK-SEE-PIC은 Amazon Nova Family의 강력한 AI 기능들을 종합적으로 활용하여 실시간 영어 학습 경험을 제공합니다.
+SPEAK-SEE-PIC은 Amazon Nova Family의 강력한 AI 기능들을 종합적으로 활용하여 실시간 영어 학습 경험을 제공합니다.
 
 ### 🎯 Nova Family 통합 활용
 - **Nova Sonic**: 실시간 음성 대화 및 발음 교정
