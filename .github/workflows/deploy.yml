@@ -9,7 +9,7 @@ env:
   ECR_REPOSITORY: nova-english-learning
   ECS_SERVICE: nova-english-service
   ECS_CLUSTER: nova-english-learning-cluster
-  CONTAINER_NAME: nova-english-app
+  ECS_TASK_DEFINITION: nova-english-learning-task
 
 jobs:
   deploy:
@@ -24,7 +24,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -32,7 +32,7 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "${{ secrets.ENV }}" > nova-english-learning/backend/.env
+        echo "${{ secrets.ENV }}" > nova-english-learning/.env
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
@@ -44,16 +44,22 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-    - name: Update ECS service
+    - name: Download task definition
       run: |
-        # Get current task definition
-        TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition nova-english-learning-task --query taskDefinition)
-        
-        # Update image in task definition
-        NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ steps.build-image.outputs.image }}" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.placementConstraints) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)')
-        
-        # Register new task definition
-        NEW_TASK_DEF_ARN=$(echo $NEW_TASK_DEFINITION | aws ecs register-task-definition --cli-input-json file:///dev/stdin --query taskDefinition.taskDefinitionArn --output text)
-        
-        # Update service
-        aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --task-definition $NEW_TASK_DEF_ARN
+        aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION --query taskDefinition > task-definition.json
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        container-name: nova-english-learning
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
