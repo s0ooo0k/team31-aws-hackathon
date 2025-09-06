@@ -9,7 +9,7 @@ import {
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 import { NovaSonicBidirectionalStreamClient } from "./client";
-import { ImageCategories, EnglishTutorPrompt } from "./consts";
+import { ImageCategories, EnglishTutorPrompt, createEvidenceBasedPrompt } from "./consts";
 import { Buffer } from "node:buffer";
 
 // AWS 설정
@@ -128,7 +128,7 @@ app.get("/api/images/random", (req, res) => {
   });
 });
 
-// Nova Pro 기반 정확한 평가
+// Nova Pro 기반 증거 기반 평가
 app.post('/api/evaluate', async (req, res) => {
   try {
     const { imageId, userMessages, conversationHistory } = req.body;
@@ -151,22 +151,29 @@ app.post('/api/evaluate', async (req, res) => {
     }
 
     const userText = userMessages.join(' ');
-    const { detailedDescription } = imageData.evaluationCriteria;
+    const responseCount = userMessages.length;
     
-    // Nova Pro 평가 프롬프트
-    const evaluationPrompt = `You are an English learning evaluation expert. Analyze the user's description compared to the reference image description.
+    // 증거 기반 평가 프롬프트 생성
+    const evaluationPrompt = `You are an expert English learning evaluator. Analyze the user's description and provide evidence-based feedback in Korean for the content, but keep the category titles in English.
 
-Reference Description:
-${detailedDescription}
+Evaluation Framework:
+1. ✅ STRENGTHS - 사용자가 잘한 점 (사용자의 실제 답변에서 구체적인 근거 제시)
+2. 📈 IMPROVEMENTS - 개선이 필요한 영역 (누락된 부분의 구체적인 예시)
+3. 💡 ALTERNATIVES - 더 나은 표현 방법 (구체적인 대안 제시)
 
-User's Description:
-${userText}
+IMPORTANT: Every point must include specific evidence from the user's actual words or reference what they described/missed. All feedback content should be in Korean, but keep the JSON structure and category titles in English.
 
-Evaluate on these criteria (0-100 each):
-1. ACCURACY: How factually correct is the description?
-2. COMPLETENESS: How much of the image is covered?
-3. VOCABULARY: Quality and variety of vocabulary used?
-4. DETAIL: Level of specific details provided?
+User Response Analysis:
+- Number of responses: ${responseCount}
+- Combined text: "${userText}"
+
+Reference Image Description:
+${imageData.evaluationCriteria.detailedDescription}
+
+Key Elements to Look For:
+${imageData.evaluationCriteria.keyElements.join(', ')}
+
+Analyze what the user mentioned vs. what they missed, and provide specific evidence for each point.
 
 Provide response in this JSON format:
 {
@@ -174,9 +181,30 @@ Provide response in this JSON format:
   "completeness": 70,
   "vocabulary": 80,
   "detail": 75,
-  "strengths": ["good color description", "mentioned atmosphere"],
-  "improvements": ["describe people's actions", "mention spatial relationships"],
-  "feedback": "Overall good description with room for more specific details."
+  "strengths": [
+    {
+      "point": "색상을 정확하게 식별하고 표현했습니다",
+      "evidence": "답변에서 'silver laptop'이라고 말씀하셨는데, 이는 시각적 세부사항에 대한 주의력을 보여줍니다"
+    }
+  ],
+  "improvements": [
+    ${responseCount <= 5 ? `{
+      "point": "더 많은 답변이 필요합니다",
+      "evidence": "현재 ${responseCount}개의 답변만 제공하셨는데, 이미지를 충분히 설명하기에 부족합니다. 이미지의 세부사항을 더 자세히 관찰하고 최소 8-10개의 답변으로 확장해보세요."
+    },` : ''}
+    {
+      "point": "구체적인 세부사항을 추가해보세요",
+      "evidence": "기본적인 요소는 언급하셨지만 색상, 재질, 위치 관계 등 더 구체적인 묘사가 필요합니다"
+    }
+  ],
+  "alternatives": [
+    {
+      "original": "There are people",
+      "better": "Customers are working on their laptops",
+      "reason": "더 구체적이고 생생한 표현입니다"
+    }
+  ],
+  "feedback": "사용자의 실제 답변을 바탕으로 한 전반적인 평가 (한국어로)"
 }`;
 
     const command = new InvokeModelCommand({
@@ -189,7 +217,7 @@ Provide response in this JSON format:
           content: [{ text: evaluationPrompt }]
         }],
         inferenceConfig: {
-          maxTokens: 1000,
+          maxTokens: 1500,
           temperature: 0.3,
           topP: 0.9
         }
@@ -207,24 +235,40 @@ Provide response in this JSON format:
     }
     
     const evaluation = JSON.parse(jsonMatch[0]);
-    const totalScore = Math.round((evaluation.accuracy + evaluation.completeness + evaluation.vocabulary + evaluation.detail) / 4);
+    // 답변 개수가 5개 이하일 때 점수 조정
+    let adjustedScores = {
+      accuracy: evaluation.accuracy,
+      completeness: evaluation.completeness,
+      vocabulary: evaluation.vocabulary,
+      detail: evaluation.detail
+    };
+    
+    if (userMessages.length <= 5) {
+      // 답변이 부족할 때 completeness와 detail 점수를 낮춤
+      adjustedScores.completeness = Math.max(50, adjustedScores.completeness - 15);
+      adjustedScores.detail = Math.max(50, adjustedScores.detail - 10);
+    }
+    
+    const totalScore = Math.round((adjustedScores.accuracy + adjustedScores.completeness + adjustedScores.vocabulary + adjustedScores.detail) / 4);
     
     res.json({
       success: true,
       data: {
         totalScore,
         breakdown: {
-          accuracy: evaluation.accuracy,
-          completeness: evaluation.completeness,
-          vocabulary: evaluation.vocabulary,
-          detail: evaluation.detail
+          accuracy: adjustedScores.accuracy,
+          completeness: adjustedScores.completeness,
+          vocabulary: adjustedScores.vocabulary,
+          detail: adjustedScores.detail
         },
         feedback: {
-          strengths: evaluation.strengths,
-          improvements: evaluation.improvements,
+          strengths: evaluation.strengths || [],
+          improvements: evaluation.improvements || [],
+          alternatives: evaluation.alternatives || [],
           overall: evaluation.feedback
         },
-        userMessageCount: userMessages.length
+        userMessageCount: userMessages.length,
+        evidenceBased: true
       }
     });
     

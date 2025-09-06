@@ -305,12 +305,85 @@
             background: #e2e8f0;
         }
         
+        .response-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .user-responses, .model-answers {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .response-content {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .user-message {
+            background: #667eea;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .user-message:last-child {
+            margin-bottom: 0;
+        }
+        
+        .model-content {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #0f172a;
+        }
+        
+        .vocabulary-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .vocab-tag {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .empty-responses {
+            text-align: center;
+            color: #64748b;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+        
         @media (max-width: 768px) {
             .evaluation-grid {
                 grid-template-columns: 1fr;
             }
             
             .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .response-analysis {
                 grid-template-columns: 1fr;
             }
             
@@ -427,6 +500,27 @@
             </div>
         </div>
 
+        <div class="response-analysis">
+            <div class="user-responses">
+                <div class="section-title">📝 Your Responses</div>
+                <div class="response-content" id="user-responses">
+                    <!-- 동적으로 생성 -->
+                </div>
+            </div>
+            
+            <div class="model-answers">
+                <div class="section-title">✨ Model Answer</div>
+                <div class="model-content" id="model-description">
+                    <!-- 동적으로 생성 -->
+                </div>
+                
+                <div class="section-title">🎯 Suggested Vocabulary</div>
+                <div class="vocabulary-tags" id="vocabulary-tags">
+                    <!-- 동적으로 생성 -->
+                </div>
+            </div>
+        </div>
+
         <div class="actions">
             <a href="/study" class="action-btn primary-btn">🔄 Try Another Image</a>
             <a href="/categories" class="action-btn secondary-btn">📂 Choose Different Category</a>
@@ -502,7 +596,8 @@
                         
                         strengths: data.feedback.strengths || [],
                         improvements: data.feedback.improvements || [],
-                        alternatives: [data.feedback.overall] || [],
+                        alternatives: data.feedback.alternatives || [],
+                        overallFeedback: data.feedback.overall || '',
                         
                         userMessageCount: data.userMessageCount
                     };
@@ -515,18 +610,35 @@
             } catch (error) {
                 console.error('Error generating evaluation:', error);
                 
+                // 사용자 메시지 개수 확인
+                const userMessageCount = sessionData.conversationHistory
+                    .filter(msg => msg.role === 'user').length;
+                
                 // 폴백: 기본 평가 생성
+                const improvements = ['더 구체적인 세부사항을 포함해보세요'];
+                
+                // 사용자 답변이 5개 이하일 때 추가 피드백
+                if (userMessageCount <= 5) {
+                    improvements.unshift(`더 많은 답변이 필요합니다. 현재 ${userMessageCount}개의 답변만 제공했습니다. 최소 8-10개의 답변으로 이미지를 자세히 설명해보세요`);
+                    improvements.push('대화에 더 적극적으로 참여하고 긴 문장으로 답변해보세요');
+                }
+                
                 evaluation = {
-                    overallScore: 75,
-                    overallGrade: 'B',
-                    accuracy: 75,
-                    completeness: 70,
-                    vocabulary: 80,
-                    detail: 75,
-                    similarityScore: 80,
-                    strengths: ['You participated actively in the conversation'],
-                    improvements: ['Try to include more specific details'],
-                    alternatives: ['Use more descriptive vocabulary']
+                    overallScore: userMessageCount <= 5 ? 65 : 75,
+                    overallGrade: userMessageCount <= 5 ? 'C+' : 'B',
+                    accuracy: userMessageCount <= 5 ? 65 : 75,
+                    completeness: userMessageCount <= 5 ? 60 : 70,
+                    vocabulary: userMessageCount <= 5 ? 70 : 80,
+                    detail: userMessageCount <= 5 ? 65 : 75,
+                    similarityScore: userMessageCount <= 5 ? 70 : 80,
+                    strengths: userMessageCount <= 5 ? 
+                        ['영어로 대화를 시도했습니다', '기본적인 묘사를 제공했습니다'] :
+                        ['대화에 적극적으로 참여했습니다', '다양한 표현을 사용했습니다'],
+                    improvements: improvements,
+                    alternatives: ['더 다양한 어휘를 사용해보세요', '감정이나 분위기도 표현해보세요'],
+                    overallFeedback: userMessageCount <= 5 ? 
+                        '더 많은 대화 참여와 자세한 설명이 필요합니다' :
+                        '좋은 참여도를 보였으나 더 구체적인 표현이 필요합니다'
                 };
             }
         }
@@ -547,52 +659,210 @@
             return 'Low';
         }
 
-        function generateStrengths(detail, vocabulary, engagement) {
+        function generatePersonalizedStrengths(userMessages) {
             const strengths = [];
+            const allText = userMessages.join(' ').toLowerCase();
             
-            if (detail >= 70) {
-                strengths.push("You provided good detail in your descriptions");
-            }
-            if (vocabulary >= 7) {
-                strengths.push("You used a diverse range of vocabulary");
-            }
-            if (engagement >= 7) {
-                strengths.push("You maintained good conversation flow with the tutor");
+            // 색상 언급 확인 - 근거 제시
+            const colorMatch = allText.match(/\b(red|blue|green|yellow|black|white|brown|gray|pink|purple|orange)\b/);
+            if (colorMatch) {
+                const colorExample = userMessages.find(msg => msg.toLowerCase().includes(colorMatch[0]));
+                strengths.push(`색상을 정확하게 식별하고 표현했습니다. 답변에서 "${colorExample}"라고 말씀하셨는데, 이는 이미지의 색상을 잘 파악했다는 증거입니다.`);
             }
             
-            strengths.push("You showed confidence in speaking English");
-            strengths.push("You responded well to follow-up questions");
+            // 크기/수량 표현 확인 - 근거 제시
+            const sizeMatch = allText.match(/\b(big|small|large|huge|tiny|many|few|several|some)\b/);
+            if (sizeMatch) {
+                const sizeExample = userMessages.find(msg => msg.toLowerCase().includes(sizeMatch[0]));
+                strengths.push(`크기나 수량을 적절히 표현했습니다. "${sizeExample}"라는 답변에서 사물의 크기나 양을 구체적으로 묘사하려는 노력이 보입니다.`);
+            }
             
-            return strengths;
+            // 위치/공간 표현 확인 - 근거 제시
+            const locationMatch = allText.match(/\b(on|in|under|behind|front|next|beside|near|far)\b/);
+            if (locationMatch) {
+                const locationExample = userMessages.find(msg => msg.toLowerCase().includes(locationMatch[0]));
+                strengths.push(`공간적 관계를 잘 파악하고 설명했습니다. "${locationExample}"에서 사물들의 위치 관계를 정확히 설명하고 있습니다.`);
+            }
+            
+            // 감정/분위기 표현 확인 - 근거 제시
+            const moodMatch = allText.match(/\b(happy|sad|busy|quiet|peaceful|crowded|comfortable|warm|cozy)\b/);
+            if (moodMatch) {
+                const moodExample = userMessages.find(msg => msg.toLowerCase().includes(moodMatch[0]));
+                strengths.push(`분위기나 감정을 잘 표현했습니다. "${moodExample}"라는 답변에서 단순한 묘사를 넘어 감정적 요소까지 포함시켰습니다.`);
+            }
+            
+            // 행동/동작 표현 확인 - 근거 제시
+            const actionMatch = allText.match(/\b(sitting|standing|walking|working|talking|eating|drinking|reading|typing)\b/);
+            if (actionMatch) {
+                const actionExample = userMessages.find(msg => msg.toLowerCase().includes(actionMatch[0]));
+                strengths.push(`인물들의 행동을 구체적으로 묘사했습니다. "${actionExample}"에서 사람들이 무엇을 하고 있는지 생생하게 표현했습니다.`);
+            }
+            
+            // 문장 길이 분석 - 근거 제시
+            const avgLength = userMessages.reduce((sum, msg) => sum + msg.split(' ').length, 0) / userMessages.length;
+            if (avgLength > 8) {
+                const longestMsg = userMessages.reduce((longest, current) => 
+                    current.split(' ').length > longest.split(' ').length ? current : longest);
+                strengths.push(`완전한 문장으로 자세히 설명하려고 노력했습니다. 특히 "${longestMsg}"와 같은 답변에서 평균 ${Math.round(avgLength)}단어로 구성된 완성도 높은 문장을 구사했습니다.`);
+            }
+            
+            // 다양한 어휘 사용 확인 - 근거 제시
+            const uniqueWords = [...new Set(allText.split(' ').filter(word => word.length > 3))];
+            if (uniqueWords.length > 15) {
+                strengths.push(`다양한 어휘를 사용하여 표현력을 보였습니다. 총 ${uniqueWords.length}개의 서로 다른 단어를 사용하여 반복을 피하고 풍부한 표현을 구사했습니다.`);
+            }
+            
+            // 기본 강점 - 근거 제시
+            if (userMessages.length > 0) {
+                strengths.push(`영어로 대화를 시도하는 적극적인 자세를 보였습니다. 총 ${userMessages.length}개의 응답을 통해 학습에 대한 의지와 참여도를 보여주었습니다.`);
+            }
+            
+            return strengths.slice(0, 6); // 최대 6개
         }
 
-        function generateImprovements(detail, vocabulary, engagement) {
+        function generatePersonalizedImprovements(userMessages) {
             const improvements = [];
+            const allText = userMessages.join(' ').toLowerCase();
+            const avgLength = userMessages.reduce((sum, msg) => sum + msg.split(' ').length, 0) / userMessages.length;
             
-            if (detail < 70) {
-                improvements.push("Try to include more specific details about colors, sizes, and materials");
-            }
-            if (vocabulary < 7) {
-                improvements.push("Expand your vocabulary by using more descriptive adjectives");
-            }
-            if (engagement < 7) {
-                improvements.push("Engage more actively with the tutor's questions");
+            // 답변 개수 부족 확인 - 최우선 피드백 (5개 이하일 때)
+            if (userMessages.length <= 5) {
+                improvements.push(`더 많은 답변이 필요합니다. 현재 ${userMessages.length}개의 답변만 제공하셨는데, 이는 이미지를 충분히 설명하기에 부족합니다. 이미지의 세부사항을 더 자세히 관찰하고 최소 8-10개의 답변으로 확장해보세요. 예를 들어, 색상, 위치, 사람들의 행동, 물건의 특징 등을 각각 별도로 설명해보세요.`);
+                improvements.push(`대화에 더 적극적으로 참여해보세요. 현재 답변 수(${userMessages.length}개)로는 영어 실력 향상에 한계가 있습니다. AI와 더 많은 대화를 나누며 다양한 표현을 연습해보세요.`);
             }
             
-            improvements.push("Practice describing spatial relationships (in front of, behind, next to)");
-            improvements.push("Include more emotional or atmospheric descriptions");
+            // 짧은 답변 개선 - 근거 제시
+            const shortAnswers = userMessages.filter(msg => msg.split(' ').length <= 3);
+            if (avgLength < 5 && shortAnswers.length > 0) {
+                improvements.push(`더 긴 문장으로 자세히 설명해보세요. 현재 평균 ${Math.round(avgLength)}단어로 답변하고 있는데, "${shortAnswers[0]}"와 같은 짧은 답변보다는 "${shortAnswers[0]} with detailed characteristics and specific features"처럼 구체적인 설명을 추가해보세요.`);
+            }
             
-            return improvements;
+            // 색상 표현 부족 - 근거 제시
+            if (!/\b(red|blue|green|yellow|black|white|brown|gray|pink|purple|orange)\b/.test(allText)) {
+                const totalResponses = userMessages.length;
+                improvements.push(`색상 표현이 부족합니다. ${totalResponses}개의 답변 모두에서 색상을 언급하지 않으셨습니다. 이미지에서 보이는 색상들을 'bright blue', 'warm yellow', 'deep red' 등으로 구체적으로 표현해보세요.`);
+            }
+            
+            // 감정/분위기 표현 부족 - 근거 제시
+            if (!/\b(happy|sad|busy|quiet|peaceful|crowded|comfortable|warm|cozy|relaxed|energetic)\b/.test(allText)) {
+                const neutralAnswers = userMessages.filter(msg => msg.length > 5);
+                if (neutralAnswers.length > 0) {
+                    improvements.push(`분위기나 감정 표현이 부족합니다. "${neutralAnswers[0]}"와 같은 답변에서 단순한 사실 나열을 넘어 'cozy', 'peaceful', 'busy' 같은 감정적 요소를 추가하면 더 풍부한 표현이 됩니다.`);
+                } else {
+                    improvements.push(`분위기나 감정 표현이 전혀 없습니다. 모든 답변이 객관적 사실만 나열하고 있어 아쉽습니다. 이미지에서 느껴지는 분위기를 'cozy', 'peaceful', 'busy' 같은 단어로 표현해보세요.`);
+                }
+            }
+            
+            // 위치 표현 부족 - 근거 제시
+            if (!/\b(on|in|under|behind|front|next|beside|near|far|left|right|center)\b/.test(allText)) {
+                const objectMentions = userMessages.filter(msg => /\b(table|chair|laptop|cup|book|person|people)\b/.test(msg.toLowerCase()));
+                if (objectMentions.length > 0) {
+                    improvements.push(`위치 관계 설명이 부족합니다. "${objectMentions[0]}"에서 사물들을 언급하셨지만, 이들이 어디에 위치하는지 'on the table', 'next to', 'behind' 등으로 구체적인 위치를 설명해보세요.`);
+                } else {
+                    improvements.push(`위치 관계 표현이 전혀 없습니다. 모든 답변에서 사물들의 공간적 관계를 설명하지 않으셨습니다. 'on the table', 'next to the window' 등으로 위치를 명확히 해보세요.`);
+                }
+            }
+            
+            // 행동 묘사 부족 - 근거 제시
+            if (!/\b(sitting|standing|walking|working|talking|eating|drinking|reading|typing|smiling)\b/.test(allText)) {
+                const peopleMentions = userMessages.filter(msg => /\b(people|person|man|woman|student)\b/.test(msg.toLowerCase()));
+                if (peopleMentions.length > 0) {
+                    improvements.push(`행동 묘사가 부족합니다. "${peopleMentions[0]}"에서 사람들을 언급하셨지만, 그들이 무엇을 하고 있는지 'working', 'typing', 'talking' 등으로 구체적인 행동을 설명해보세요.`);
+                } else {
+                    improvements.push(`행동 묘사가 전혀 없습니다. 이미지 속 사람들의 행동을 'working', 'talking', 'reading' 등으로 생생하게 표현해보세요.`);
+                }
+            }
+            
+            // 형용사 사용 부족 - 근거 제시
+            const adjectives = (allText.match(/\b(big|small|large|beautiful|nice|good|new|old|modern|comfortable)\b/g) || []);
+            if (adjectives.length < 3) {
+                improvements.push(`형용사 사용이 부족합니다. 현재 ${adjectives.length}개만 사용하셨습니다. ${adjectives.length > 0 ? `사용한 형용사(${adjectives.join(', ')})` : '형용사를 전혀 사용하지 않으셨습니다'}. 'spacious', 'modern', 'comfortable' 등 더 다양한 형용사로 묘사를 풍부하게 해보세요.`);
+            }
+            
+            // 반복 표현 확인 - 근거 제시
+            const words = allText.split(' ').filter(word => word.length > 3);
+            const wordCount = {};
+            words.forEach(word => wordCount[word] = (wordCount[word] || 0) + 1);
+            const repeatedWords = Object.keys(wordCount).filter(word => wordCount[word] > 2);
+            if (repeatedWords.length > 0) {
+                const exampleMsgs = userMessages.filter(msg => msg.toLowerCase().includes(repeatedWords[0]));
+                improvements.push(`"${repeatedWords[0]}" 단어를 ${wordCount[repeatedWords[0]]}번 반복 사용했습니다. "${exampleMsgs[0]}"와 "${exampleMsgs[1] || ''}"에서 같은 단어를 반복하셨는데, 다양한 동의어를 사용하면 더 풍부한 표현이 됩니다.`);
+            }
+            
+            return improvements.slice(0, 6); // 최대 6개 (답변 개수 피드백 포함)
         }
 
-        function generateAlternatives() {
-            return [
-                "Instead of 'big', try 'enormous', 'massive', or 'spacious'",
-                "Instead of 'nice', try 'pleasant', 'attractive', or 'appealing'",
-                "Instead of 'people', try 'individuals', 'customers', or 'visitors'",
-                "Use more specific colors: 'crimson' instead of 'red', 'azure' instead of 'blue'",
-                "Add texture descriptions: 'smooth', 'rough', 'glossy', 'matte'"
-            ];
+        function generatePersonalizedAlternatives(userMessages) {
+            const alternatives = [];
+            const allText = userMessages.join(' ').toLowerCase();
+            
+            // 사용자가 실제 사용한 단어들을 찾아서 근거와 함께 대안 제시
+            
+            // 'big' 사용 분석
+            const bigUsages = userMessages.filter(msg => msg.toLowerCase().includes('big'));
+            if (bigUsages.length > 0) {
+                alternatives.push(`"big" 표현을 개선해보세요. "${bigUsages[0]}"에서 'big'을 사용하셨는데, 'enormous', 'spacious', 'massive' 등 더 구체적인 형용사를 사용하면 "${bigUsages[0].replace(/\bbig\b/gi, 'enormous')}"처럼 더 생생한 표현이 됩니다.`);
+            }
+            
+            // 'nice/good' 사용 분석
+            const niceUsages = userMessages.filter(msg => /\b(nice|good)\b/i.test(msg));
+            if (niceUsages.length > 0) {
+                const word = niceUsages[0].match(/\b(nice|good)\b/i)[0];
+                const enhanced = niceUsages[0].replace(/\bnice\b/gi, 'pleasant').replace(/\bgood\b/gi, 'excellent');
+                alternatives.push(`"${word}" 표현을 개선해보세요. "${niceUsages[0]}"에서 '${word}'를 사용하셨는데, 'pleasant', 'attractive', 'appealing' 등을 사용하면 "${enhanced}"처럼 더 정확한 표현이 됩니다.`);
+            }
+            
+            // 'people' 사용 분석
+            const peopleUsages = userMessages.filter(msg => msg.toLowerCase().includes('people'));
+            if (peopleUsages.length > 0) {
+                alternatives.push(`"people" 표현을 다양화해보세요. "${peopleUsages[0]}"에서 'people'을 사용하셨는데, 상황에 따라 'individuals', 'customers', 'visitors', 'colleagues' 등 더 구체적인 표현을 사용하면 "${peopleUsages[0].replace(/\bpeople\b/gi, 'individuals')}"처럼 더 정확해집니다.`);
+            }
+            
+            // 'small' 사용 분석
+            const smallUsages = userMessages.filter(msg => msg.toLowerCase().includes('small'));
+            if (smallUsages.length > 0) {
+                alternatives.push(`"small" 표현을 구체화해보세요. "${smallUsages[0]}"에서 'small'을 사용하셨는데, 'tiny', 'compact', 'petite', 'miniature' 등을 사용하면 "${smallUsages[0].replace(/\bsmall\b/gi, 'compact')}"처럼 더 생생한 묘사가 됩니다.`);
+            }
+            
+            // 'many' 사용 분석
+            const manyUsages = userMessages.filter(msg => msg.toLowerCase().includes('many'));
+            if (manyUsages.length > 0) {
+                alternatives.push(`"many" 표현을 풍부하게 해보세요. "${manyUsages[0]}"에서 'many'를 사용하셨는데, 'numerous', 'several', 'countless', 'a variety of' 등을 사용하면 "${manyUsages[0].replace(/\bmany\b/gi, 'numerous')}"처럼 더 정교한 표현이 됩니다.`);
+            }
+            
+            // 반복 사용된 단어 분석
+            const words = allText.split(' ').filter(word => word.length > 3);
+            const wordCount = {};
+            words.forEach(word => wordCount[word] = (wordCount[word] || 0) + 1);
+            const repeatedWords = Object.keys(wordCount).filter(word => wordCount[word] > 2);
+            
+            if (repeatedWords.length > 0) {
+                const word = repeatedWords[0];
+                const usageCount = wordCount[word];
+                const exampleMsgs = userMessages.filter(msg => msg.toLowerCase().includes(word));
+                alternatives.push(`"${word}" 반복 사용을 개선해보세요. 이 단어를 ${usageCount}번 사용하셨습니다(예: "${exampleMsgs[0]}", "${exampleMsgs[1] || ''}"). 같은 의미의 다른 단어들을 사용하면 더 다양하고 풍부한 표현이 됩니다.`);
+            }
+            
+            // 기본 대안 (사용자가 사용하지 않은 경우)
+            if (alternatives.length < 3) {
+                const shortestAnswer = userMessages.reduce((shortest, current) => 
+                    current.length < shortest.length ? current : shortest, userMessages[0] || "It's nice");
+                
+                if (shortestAnswer && shortestAnswer.split(' ').length <= 3) {
+                    alternatives.push(`문장을 확장해보세요. 현재 가장 짧은 답변인 "${shortestAnswer}"를 "${shortestAnswer} with detailed characteristics and specific features"처럼 구체적인 설명을 추가하면 더 완성도 높은 답변이 됩니다.`);
+                }
+                
+                // 사용하지 않은 표현들에 대한 제안
+                if (!/\b(red|blue|green|yellow)\b/.test(allText)) {
+                    alternatives.push(`색상 표현을 추가해보세요. 전체 ${userMessages.length}개 답변에서 색상을 언급하지 않으셨습니다. 'bright red', 'deep blue', 'warm yellow' 등의 색상 표현을 추가하면 더 생생한 묘사가 됩니다.`);
+                }
+                
+                if (!/\b(peaceful|busy|quiet|cozy)\b/.test(allText)) {
+                    alternatives.push(`분위기 표현을 추가해보세요. 전체 답변에서 분위기나 감정을 표현하지 않으셨습니다. 'peaceful', 'busy', 'cozy', 'vibrant' 등의 단어로 이미지의 분위기를 표현해보세요.`);
+                }
+            }
+            
+            return alternatives.slice(0, 6); // 최대 6개
         }
 
         function displayResults() {
@@ -658,10 +928,30 @@
                 document.getElementById('vocabulary-bar').style.width = evaluation.vocabulary + '%';
             }, 500);
             
-            // 피드백 표시
-            displayFeedbackList('strengths-list', evaluation.strengths, '✅');
-            displayFeedbackList('improvements-list', evaluation.improvements, '📈');
-            displayFeedbackList('alternatives-list', evaluation.alternatives, '💡');
+            // 사용자 메시지 추출
+            const userMessages = sessionData.conversationHistory
+                .filter(msg => msg.role === 'user')
+                .map(msg => msg.message);
+            
+            // 증거 기반 피드백 표시 (Nova Pro에서 생성된 경우)
+            if (evaluation.strengths && evaluation.strengths.length > 0 && evaluation.strengths[0].evidence) {
+                displayEvidenceBasedFeedback('strengths-list', evaluation.strengths, '✅');
+                displayEvidenceBasedFeedback('improvements-list', evaluation.improvements, '📈');
+                displayEvidenceBasedFeedback('alternatives-list', evaluation.alternatives, '💡');
+            } else {
+                // 폴백: 개인화된 피드백 생성
+                const personalizedStrengths = generatePersonalizedStrengths(userMessages);
+                const personalizedImprovements = generatePersonalizedImprovements(userMessages);
+                const personalizedAlternatives = generatePersonalizedAlternatives(userMessages);
+                
+                displayFeedbackList('strengths-list', personalizedStrengths, '✅');
+                displayFeedbackList('improvements-list', personalizedImprovements, '📈');
+                displayFeedbackList('alternatives-list', personalizedAlternatives, '💡');
+            }
+            
+            // 사용자 답변과 모범 답변 표시
+            displayUserResponses();
+            displayModelAnswers();
         }
 
         function displayFeedbackList(containerId, items, icon) {
@@ -678,7 +968,78 @@
                 container.appendChild(li);
             });
         }
+        
+        function displayEvidenceBasedFeedback(containerId, items, icon) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'feedback-item';
+                
+                if (typeof item === 'object' && item.point && item.evidence) {
+                    // 증거 기반 피드백 형식
+                    li.innerHTML = `
+                        <span class="feedback-icon">${icon}</span>
+                        <div class="feedback-text">
+                            <div style="font-weight: 600; margin-bottom: 4px;">${item.point}</div>
+                            <div style="color: #64748b; font-size: 14px; font-style: italic;">${item.evidence}</div>
+                        </div>
+                    `;
+                } else if (typeof item === 'object' && item.original && item.better) {
+                    // 대안 표현 형식
+                    li.innerHTML = `
+                        <span class="feedback-icon">${icon}</span>
+                        <div class="feedback-text">
+                            <div style="margin-bottom: 8px;">
+                                <span style="color: #ef4444; text-decoration: line-through;">“${item.original}”</span>
+                                →
+                                <span style="color: #10b981; font-weight: 600;">“${item.better}”</span>
+                            </div>
+                            <div style="color: #64748b; font-size: 14px;">${item.reason}</div>
+                        </div>
+                    `;
+                } else {
+                    // 기본 형식
+                    li.innerHTML = `
+                        <span class="feedback-icon">${icon}</span>
+                        <span class="feedback-text">${typeof item === 'string' ? item : item.point || item}</span>
+                    `;
+                }
+                
+                container.appendChild(li);
+            });
+        }
 
+        function displayUserResponses() {
+            const container = document.getElementById('user-responses');
+            const userMessages = sessionData.conversationHistory
+                .filter(msg => msg.role === 'user')
+                .map(msg => msg.message);
+            
+            if (userMessages.length === 0) {
+                container.innerHTML = '<div class="empty-responses">사용자 답변이 없습니다.</div>';
+                return;
+            }
+            
+            container.innerHTML = userMessages.map(message => 
+                `<div class="user-message">${message}</div>`
+            ).join('');
+        }
+        
+        function displayModelAnswers() {
+            const descriptionContainer = document.getElementById('model-description');
+            const vocabularyContainer = document.getElementById('vocabulary-tags');
+            
+            // 모범 답변 (이미지 description)
+            descriptionContainer.textContent = sessionData.image.description;
+            
+            // 선택 가능 어휘 (expectedVocabulary)
+            vocabularyContainer.innerHTML = sessionData.image.expectedVocabulary
+                .map(vocab => `<span class="vocab-tag">${vocab}</span>`)
+                .join('');
+        }
+        
         function showFeedback(type) {
             // 모든 탭 비활성화
             document.querySelectorAll('.feedback-tab').forEach(tab => {

@@ -427,12 +427,18 @@
 
       async function initializeStudySession(categoryId) {
         try {
-          // 랜덤 이미지 가져오기
-          const response = await fetch("/api/images/random");
+          // 카테고리별 이미지 가져오기
+          const response = await fetch(`/api/categories/${categoryId}/images`);
           const result = await response.json();
 
-          if (result.success) {
-            currentImage = result.data;
+          if (result.success && result.data.images.length > 0) {
+            // 카테고리 내에서 랜덤 이미지 선택
+            const randomIndex = Math.floor(Math.random() * result.data.images.length);
+            currentImage = {
+              ...result.data.images[randomIndex],
+              category: result.data.category,
+              categoryId: categoryId
+            };
             displayImage(currentImage);
 
             // Socket.IO 연결

@@ -74,6 +74,22 @@ You: "Excellent details! How would you describe the atmosphere of the coffee sho
 
 export const DefaultSystemPrompt = EnglishTutorPrompt;
 
+// 증거 기반 평가를 위한 헬퍼 함수
+export const createEvidenceBasedPrompt = (imageData: any, userText: string) => {
+  return `${EvaluationPrompts.evidenceBasedEvaluation}
+
+Reference Image Description:
+${imageData.evaluationCriteria.detailedDescription}
+
+Key Elements to Look For:
+${imageData.evaluationCriteria.keyElements.join(', ')}
+
+User's Description:
+"${userText}"
+
+Analyze what the user mentioned vs. what they missed, and provide specific evidence for each point.`;
+};
+
 // 카테고리별 이미지 데이터
 export const ImageCategories = [
   {
@@ -220,3 +236,50 @@ export const ImageCategories = [
     ]
   }
 ];
+
+// 평가 기준 및 피드백 템플릿
+export const EvaluationPrompts = {
+  evidenceBasedEvaluation: `You are an expert English learning evaluator. Analyze the user's description and provide evidence-based feedback.
+
+Evaluation Framework:
+1. ✅ STRENGTHS - What the user did well (with specific evidence from their response)
+2. 📈 IMPROVEMENTS - Areas for development (with specific examples of what was missing)
+3. 💡 ALTERNATIVES - Better ways to express what they said (with concrete alternatives)
+
+IMPORTANT: Every point must include specific evidence from the user's actual words or reference what they described/missed.
+
+Provide response in this JSON format:
+{
+  "accuracy": 85,
+  "completeness": 70,
+  "vocabulary": 80,
+  "detail": 75,
+  "strengths": [
+    {
+      "point": "Good color description",
+      "evidence": "You mentioned 'silver laptop' which shows attention to visual details"
+    }
+  ],
+  "improvements": [
+    {
+      "point": "Describe people's actions",
+      "evidence": "You saw people but didn't mention what they were doing (working, typing, drinking coffee)"
+    }
+  ],
+  "alternatives": [
+    {
+      "original": "There are people",
+      "better": "Customers are working on their laptops",
+      "reason": "More specific and descriptive"
+    }
+  ],
+  "feedback": "Overall assessment with specific examples"
+}`,
+  
+  scoreCalculation: {
+    accuracy: 'How factually correct compared to reference image (0-100)',
+    completeness: 'How much of the key elements were covered (0-100)', 
+    vocabulary: 'Quality and variety of vocabulary used (0-100)',
+    detail: 'Level of specific details provided (0-100)'
+  }
+};
