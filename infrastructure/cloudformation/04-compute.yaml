@@ -1,0 +1,230 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nova English Learning - ECS Fargate Resources'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, prod]
+    Description: Environment name
+  
+  ProjectName:
+    Type: String
+    Default: nova-english-learning
+    Description: Project name for resource naming
+
+Resources:
+  # Security Group for ALB
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${ProjectName}-${Environment}-alb-sg'
+      GroupDescription: Security group for Application Load Balancer
+      VpcId: vpc-0e774a177b18f3226  # 기본 VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-alb-sg'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # Security Group for ECS Tasks
+  ECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${ProjectName}-${Environment}-ecs-sg'
+      GroupDescription: Security group for ECS tasks
+      VpcId: vpc-0e774a177b18f3226  # 기본 VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub '${ProjectName}-${Environment}-ecs-sg'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # Application Load Balancer
+  NovaALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-alb'
+      Scheme: internet-facing
+      Type: application
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Subnets:
+        - subnet-01c55171939070617  # us-east-1a
+        - subnet-0d3a6afe01ce3d9dd  # us-east-1b
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # ALB Target Group
+  NovaTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub '${ProjectName}-${Environment}-tg'
+      Port: 3000
+      Protocol: HTTP
+      VpcId: vpc-0e774a177b18f3226  # 기본 VPC
+      TargetType: ip
+      HealthCheckPath: /health
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 60
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 10
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # ALB Listener
+  NovaALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref NovaTargetGroup
+      LoadBalancerArn: !Ref NovaALB
+      Port: 80
+      Protocol: HTTP
+
+  # ECS Cluster
+  NovaECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub '${ProjectName}-${Environment}'
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # CloudWatch Log Group
+  NovaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ecs/${ProjectName}-${Environment}'
+      RetentionInDays: 7
+
+  # ECS Task Definition
+  NovaTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub '${ProjectName}-${Environment}'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: !Sub 
+        - '${ExecutionRoleArn}'
+        - ExecutionRoleArn: !ImportValue 'nova-iam-dev-ECSTaskExecutionRoleArn'
+      TaskRoleArn: !Sub
+        - '${TaskRoleArn}'
+        - TaskRoleArn: !ImportValue 'nova-iam-dev-ECSTaskRoleArn'
+      ContainerDefinitions:
+        - Name: !Sub '${ProjectName}-${Environment}'
+          Image: !Sub 
+            - '${ECRRepositoryURI}:latest'
+            - ECRRepositoryURI: !ImportValue 'nova-ecr-dev-ECRRepositoryURI'
+          PortMappings:
+            - ContainerPort: 3000
+              Protocol: tcp
+          Environment:
+            - Name: NODE_ENV
+              Value: !Ref Environment
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: S3_BUCKET
+              Value: !Sub '${ProjectName}-${Environment}-${AWS::AccountId}'
+            - Name: DYNAMODB_USERS_TABLE
+              Value: !Sub '${ProjectName}-users-${Environment}'
+            - Name: DYNAMODB_SESSIONS_TABLE
+              Value: !Sub '${ProjectName}-sessions-${Environment}'
+            - Name: DYNAMODB_TURNS_TABLE
+              Value: !Sub '${ProjectName}-turns-${Environment}'
+            - Name: DYNAMODB_EVALUATIONS_TABLE
+              Value: !Sub '${ProjectName}-evaluations-${Environment}'
+            - Name: IS_ECS_ENVIRONMENT
+              Value: 'true'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref NovaLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+          Essential: true
+
+  # ECS Service
+  NovaECSService:
+    Type: AWS::ECS::Service
+    DependsOn: NovaALBListener
+    Properties:
+      ServiceName: !Sub '${ProjectName}-${Environment}'
+      Cluster: !Ref NovaECSCluster
+      TaskDefinition: !Ref NovaTaskDefinition
+      LaunchType: FARGATE
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          Subnets:
+            - subnet-01c55171939070617  # us-east-1a
+          AssignPublicIp: ENABLED
+      LoadBalancers:
+        - ContainerName: !Sub '${ProjectName}-${Environment}'
+          ContainerPort: 3000
+          TargetGroupArn: !Ref NovaTargetGroup
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: !Ref ProjectName
+
+Outputs:
+  ALBDNSName:
+    Description: Application Load Balancer DNS Name
+    Value: !GetAtt NovaALB.DNSName
+    Export:
+      Name: !Sub '${AWS::StackName}-ALBDNSName'
+
+  ECSClusterName:
+    Description: ECS Cluster Name
+    Value: !Ref NovaECSCluster
+    Export:
+      Name: !Sub '${AWS::StackName}-ECSClusterName'
+
+  ECSServiceName:
+    Description: ECS Service Name
+    Value: !Ref NovaECSService
+    Export:
+      Name: !Sub '${AWS::StackName}-ECSServiceName'

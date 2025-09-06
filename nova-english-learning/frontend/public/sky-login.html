@@ -1,0 +1,550 @@
+<!doctype html>
+<html>
+  <head>
+    <title>☁️ Nova Sky - English Adventure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/sky-theme.css" />
+    <script src="/js/interactive.js"></script>
+    <script src="/js/sky-logo.js"></script>
+    <script src="/js/icon-replacer.js"></script>
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .login-container {
+        max-width: 450px;
+        width: 90%;
+        padding: 40px;
+        background: var(--floating-card);
+        backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 30px;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        z-index: 10;
+        animation: slideInUp 0.8s ease-out, gentle-sway 8s ease-in-out infinite;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .logo-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+        animation: float 4s ease-in-out infinite;
+        display: block;
+      }
+
+      .logo h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 32px;
+        font-weight: 600;
+        background: var(--ocean-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 15px rgba(135, 206, 235, 0.4);
+      }
+
+      .logo p {
+        color: var(--ocean-blue);
+        font-size: 16px;
+        font-weight: 400;
+        opacity: 0.8;
+      }
+
+      .level-selector {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        justify-content: center;
+      }
+
+      .level-btn {
+        padding: 10px 20px;
+        background: var(--cloud-gradient);
+        border: 2px solid rgba(135, 206, 235, 0.3);
+        border-radius: 25px;
+        color: var(--ocean-blue);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        text-transform: uppercase;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .level-btn:nth-child(2) { animation-delay: 0.5s; }
+      .level-btn:nth-child(3) { animation-delay: 1s; }
+
+      .level-btn.active,
+      .level-btn:hover {
+        background: var(--sunset-gradient);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--ocean-blue);
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .input-wrapper {
+        position: relative;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 16px 20px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 2px solid rgba(135, 206, 235, 0.3);
+        border-radius: 20px;
+        font-size: 16px;
+        color: var(--ocean-blue);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .form-group input::placeholder {
+        color: rgba(70, 130, 180, 0.6);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--sky-blue);
+        box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: var(--sky-blue);
+      }
+
+      .sky-btn {
+        width: 100%;
+        padding: 18px;
+        background: var(--sunset-gradient);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        animation: gentle-sway 6s ease-in-out infinite;
+      }
+
+      .sky-btn:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(255, 182, 193, 0.5);
+      }
+
+      .sky-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      .sky-btn:hover::before {
+        left: 100%;
+      }
+
+      .social-login {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .social-btn {
+        flex: 1;
+        padding: 15px;
+        background: var(--cloud-gradient);
+        border: 2px solid rgba(135, 206, 235, 0.3);
+        border-radius: 20px;
+        color: var(--ocean-blue);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+      }
+
+      .social-btn:hover {
+        border-color: var(--sky-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-cloud);
+      }
+
+      .divider {
+        text-align: center;
+        margin: 25px 0;
+        color: var(--ocean-blue);
+        position: relative;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.7;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(135, 206, 235, 0.4), transparent);
+      }
+
+      .divider span {
+        background: var(--sky-bg);
+        padding: 0 20px;
+      }
+
+      .signup-link {
+        text-align: center;
+      }
+
+      .signup-link a {
+        color: var(--ocean-blue);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .signup-link a:hover {
+        color: var(--soft-pink);
+      }
+
+      .demo-info {
+        background: rgba(135, 206, 235, 0.1);
+        border: 1px solid rgba(135, 206, 235, 0.3);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 25px;
+        font-size: 14px;
+        color: var(--ocean-blue);
+        text-align: center;
+        backdrop-filter: blur(10px);
+      }
+
+      .demo-info strong {
+        color: var(--sky-blue);
+        display: block;
+        margin-bottom: 5px;
+        font-size: 16px;
+      }
+
+      .achievement-preview {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .mini-badge {
+        padding: 6px 12px;
+        background: var(--dawn-gradient);
+        border-radius: 15px;
+        font-size: 11px;
+        color: var(--ocean-blue);
+        font-weight: 600;
+        border: 1px solid rgba(135, 206, 235, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cloud-particles" id="particles"></div>
+
+    <div class="login-container cloud-card">
+      <div class="logo">
+        <span class="logo-icon">☁️</span>
+        <h1 class="sky-title">NOVA SKY</h1>
+        <p>🌤️ English Adventure in the Clouds</p>
+      </div>
+
+      <div class="level-selector">
+        <button class="level-btn active sky-interactive" data-level="beginner">🌱 Breeze</button>
+        <button class="level-btn sky-interactive" data-level="intermediate">⛅ Cloud</button>
+        <button class="level-btn sky-interactive" data-level="advanced">🌟 Sky</button>
+      </div>
+
+      <div class="demo-info">
+        <strong>🌈 Sky Mode Active</strong>
+        Enter any credentials to soar through your English adventure!
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">✉️ Sky Mail</label>
+          <div class="input-wrapper">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="your.email@skyquest.com"
+              required
+            />
+            <span class="input-icon">☁️</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">🔐 Cloud Key</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your cloud key"
+              required
+            />
+            <span class="input-icon">🗝️</span>
+          </div>
+        </div>
+        <button type="submit" class="sky-btn" id="login-btn">
+          🚀 Soar to Adventure
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>☁️ Quick Flight ☁️</span>
+      </div>
+
+      <div class="social-login">
+        <button class="social-btn sky-interactive" onclick="signInWithGoogle()">
+          🌤️ Google Sky
+        </button>
+        <button class="social-btn sky-interactive" onclick="signInWithFacebook()">
+          ⛅ Facebook Cloud
+        </button>
+      </div>
+
+      <div class="signup-link">
+        <p style="color: var(--ocean-blue); opacity: 0.8;">
+          New sky explorer? <a href="#" onclick="showSignUp()">🌈 Join the Sky</a>
+        </p>
+      </div>
+
+      <div class="achievement-preview">
+        <span class="mini-badge">🌤️ First Flight</span>
+        <span class="mini-badge">☁️ Cloud Walker</span>
+        <span class="mini-badge">🌟 Sky Master</span>
+      </div>
+    </div>
+
+    <script>
+      // 구름 파티클 생성
+      function createCloudParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 15;
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'sky-particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.top = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 8 + 's';
+          particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      // 레벨 선택 처리
+      document.querySelectorAll('.level-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // 구름 효과
+          createFloatingCloud();
+        });
+      });
+
+      function createFloatingCloud() {
+        const cloud = document.createElement('div');
+        cloud.innerHTML = '☁️';
+        cloud.style.cssText = `
+          position: fixed;
+          left: ${Math.random() * window.innerWidth}px;
+          top: ${window.innerHeight + 50}px;
+          font-size: 30px;
+          pointer-events: none;
+          z-index: 1000;
+          animation: float 3s ease-out forwards;
+        `;
+        document.body.appendChild(cloud);
+        
+        setTimeout(() => {
+          cloud.remove();
+        }, 3000);
+      }
+
+      // 로그인 폼 처리
+      document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const selectedLevel = document.querySelector('.level-btn.active').dataset.level;
+        const loginBtn = document.getElementById("login-btn");
+
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = "🌤️ Ascending to Sky...";
+
+        try {
+          await simulateLogin(email, password);
+
+          const userData = {
+            email: email,
+            name: email.split("@")[0],
+            level: selectedLevel,
+            xp: 0,
+            achievements: ['🌤️ First Flight'],
+            streak: 0,
+            totalScore: 0,
+            joinDate: new Date().toISOString()
+          };
+          
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          showSkyEffect();
+          
+          setTimeout(() => {
+            window.location.href = "/sky-categories.html";
+          }, 2000);
+          
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          setTimeout(() => {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = "🚀 Soar to Adventure";
+          }, 2000);
+        }
+      });
+
+      async function simulateLogin(email, password) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (email && password) {
+              resolve();
+            } else {
+              reject(new Error("☁️ Please enter your sky credentials!"));
+            }
+          }, 1200);
+        });
+      }
+
+      function showSkyEffect() {
+        // 하늘 효과
+        for (let i = 0; i < 15; i++) {
+          setTimeout(() => {
+            createSkyParticle();
+          }, i * 100);
+        }
+      }
+
+      function createSkyParticle() {
+        const particle = document.createElement('div');
+        particle.innerHTML = ['☁️', '🌤️', '⭐', '🌈', '✨'][Math.floor(Math.random() * 5)];
+        particle.style.cssText = `
+          position: fixed;
+          left: ${Math.random() * window.innerWidth}px;
+          top: ${window.innerHeight}px;
+          font-size: 25px;
+          animation: float 4s ease-out forwards;
+          pointer-events: none;
+          z-index: 1000;
+        `;
+        document.body.appendChild(particle);
+        
+        setTimeout(() => {
+          particle.remove();
+        }, 4000);
+      }
+
+      function signInWithGoogle() {
+        showSkyAlert("🌤️ Google Sky integration coming soon! Prepare for cloud adventures!");
+      }
+
+      function signInWithFacebook() {
+        showSkyAlert("⛅ Facebook Cloud will be available in the next sky update!");
+      }
+
+      function showSignUp() {
+        showSkyAlert("🌈 New sky explorer registration portal is under construction!");
+      }
+
+      function showSkyAlert(message) {
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: var(--floating-card);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(135, 206, 235, 0.4);
+          border-radius: 20px;
+          padding: 20px;
+          color: var(--ocean-blue);
+          font-weight: 600;
+          z-index: 1000;
+          animation: slideInUp 0.5s ease-out;
+          max-width: 300px;
+          box-shadow: var(--shadow-soft);
+        `;
+        alert.textContent = message;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+          alert.remove();
+        }, 4000);
+      }
+
+      function showError(message) {
+        showSkyAlert(`⚠️ ${message}`);
+      }
+
+      // 이미 로그인된 경우 리다이렉트
+      if (localStorage.getItem("user")) {
+        window.location.href = "/sky-categories.html";
+      }
+
+      // 페이지 로드 시 파티클 생성
+      window.addEventListener('load', createCloudParticles);
+    </script>
+  </body>
+</html>

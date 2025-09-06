@@ -1,0 +1,586 @@
+<!doctype html>
+<html>
+  <head>
+    <title>☁️ Nova Sky - Cloud Adventures</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/sky-theme.css" />
+    <script src="/js/interactive.js"></script>
+    <script src="/js/icon-replacer.js"></script>
+    <style>
+      body {
+        position: relative;
+      }
+
+      .sky-header {
+        background: var(--cloud-surface);
+        backdrop-filter: blur(25px);
+        border-bottom: 1px solid rgba(135, 206, 235, 0.3);
+        padding: 20px 0;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 10;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .sky-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .sky-logo h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 24px;
+        font-weight: 600;
+        background: var(--ocean-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .logo-icon {
+        font-size: 32px;
+        animation: float 4s ease-in-out infinite;
+      }
+
+      .user-panel {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .user-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+      }
+
+      .user-name {
+        color: var(--ocean-blue);
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .user-level {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .cloud-badge {
+        padding: 4px 12px;
+        background: var(--sunset-gradient);
+        border-radius: 15px;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .xp-display {
+        font-size: 12px;
+        color: var(--sky-blue);
+        font-weight: 600;
+      }
+
+      .logout-btn {
+        padding: 10px 20px;
+        background: transparent;
+        border: 2px solid var(--soft-pink);
+        border-radius: 25px;
+        color: var(--soft-pink);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+
+      .logout-btn:hover {
+        background: var(--soft-pink);
+        color: white;
+        box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 10;
+      }
+
+      .sky-title {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .sky-title h2 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 36px;
+        font-weight: 600;
+        background: var(--ocean-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 15px;
+        animation: gentle-sway 6s ease-in-out infinite;
+      }
+
+      .sky-title p {
+        font-size: 18px;
+        color: var(--ocean-blue);
+        font-weight: 400;
+        opacity: 0.8;
+      }
+
+      .adventure-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+      }
+
+      .adventure-card {
+        background: var(--floating-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 25px;
+        padding: 30px;
+        transition: all 0.4s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out, gentle-sway 8s ease-in-out infinite;
+      }
+
+      .adventure-card:nth-child(2) { animation-delay: 0.1s; }
+      .adventure-card:nth-child(3) { animation-delay: 0.2s; }
+      .adventure-card:nth-child(4) { animation-delay: 0.3s; }
+      .adventure-card:nth-child(5) { animation-delay: 0.4s; }
+
+      .adventure-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(135, 206, 235, 0.1), transparent);
+        animation: cloud-drift 10s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .adventure-card:hover::before {
+        opacity: 1;
+      }
+
+      .adventure-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(135, 206, 235, 0.4);
+      }
+
+      .adventure-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        display: block;
+        text-align: center;
+        animation: float 5s ease-in-out infinite;
+        position: relative;
+        z-index: 2;
+      }
+
+      .adventure-name {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--ocean-blue);
+        margin-bottom: 12px;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .adventure-description {
+        color: var(--ocean-blue);
+        opacity: 0.8;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .adventure-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(135, 206, 235, 0.2);
+        position: relative;
+        z-index: 2;
+      }
+
+      .challenge-count {
+        color: var(--sky-blue);
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .difficulty-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .difficulty-badge.breeze {
+        background: var(--dawn-gradient);
+        color: var(--ocean-blue);
+      }
+
+      .difficulty-badge.cloud {
+        background: var(--sunset-gradient);
+        color: white;
+      }
+
+      .difficulty-badge.sky {
+        background: var(--ocean-gradient);
+        color: white;
+      }
+
+      .mystery-adventure {
+        text-align: center;
+        margin-top: 60px;
+      }
+
+      .mystery-btn {
+        padding: 20px 40px;
+        background: var(--sunset-gradient);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+        animation: gentle-sway 6s ease-in-out infinite;
+      }
+
+      .mystery-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(255, 182, 193, 0.5);
+      }
+
+      .mystery-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      .mystery-btn:hover::before {
+        left: 100%;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px;
+        color: var(--ocean-blue);
+        font-size: 18px;
+      }
+
+      @media (max-width: 768px) {
+        .adventure-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .header-content {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .user-panel {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .sky-title h2 {
+          font-size: 28px;
+        }
+
+        .adventure-card {
+          padding: 25px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cloud-particles" id="particles"></div>
+
+    <div class="sky-header">
+      <div class="header-content">
+        <div class="sky-logo">
+          <span class="logo-icon">☁️</span>
+          <h1 class="sky-title">NOVA SKY</h1>
+        </div>
+        <div class="user-panel">
+          <div class="user-stats">
+            <div class="user-name" id="user-name">Loading...</div>
+            <div class="user-level">
+              <span class="cloud-badge" id="user-level">Breeze</span>
+              <span class="xp-display" id="user-xp">0 XP</span>
+            </div>
+          </div>
+          <button class="logout-btn sky-interactive" onclick="logout()">
+            🌤️ Exit Sky
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="sky-title">
+        <h2>🌈 Choose Your Sky Adventure</h2>
+        <p>☁️ Select a cloud journey to begin your English sky quest</p>
+      </div>
+
+      <div id="categories-container">
+        <div class="loading">
+          <div class="sky-spinner"></div>
+          ☁️ Discovering sky adventures...
+        </div>
+      </div>
+
+      <div class="mystery-adventure">
+        <button class="mystery-btn sky-interactive" onclick="selectRandomCategory()">
+          🌤️ ✨ Mystery Sky Journey ✨
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let categories = [];
+
+      // 구름 파티클 생성
+      function createSkyParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 20;
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'sky-particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.top = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 8 + 's';
+          particle.style.animationDuration = (Math.random() * 6 + 8) + 's';
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      // 페이지 로드 시 초기화
+      document.addEventListener("DOMContentLoaded", async () => {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (!user) {
+          window.location.href = "/sky-login.html";
+          return;
+        }
+
+        displayUserInfo(user);
+        createSkyParticles();
+        await loadCategories();
+      });
+
+      function displayUserInfo(user) {
+        document.getElementById("user-name").textContent = `☁️ ${user.name}`;
+        
+        const levelMap = {
+          'beginner': { badge: '🌱 Breeze', color: 'var(--dawn-gradient)' },
+          'intermediate': { badge: '⛅ Cloud', color: 'var(--sunset-gradient)' },
+          'advanced': { badge: '🌟 Sky', color: 'var(--ocean-gradient)' }
+        };
+        
+        const levelInfo = levelMap[user.level] || levelMap['intermediate'];
+        document.getElementById("user-level").textContent = levelInfo.badge;
+        document.getElementById("user-xp").textContent = `${user.xp || 0} XP`;
+      }
+
+      async function loadCategories() {
+        try {
+          const response = await fetch("/api/categories");
+          const result = await response.json();
+
+          if (result.success) {
+            categories = result.data;
+            renderAdventureCards();
+          } else {
+            throw new Error("Failed to load categories");
+          }
+        } catch (error) {
+          console.error("Error loading categories:", error);
+          document.getElementById("categories-container").innerHTML =
+            '<div class="loading"><div class="sky-spinner"></div>☁️ Sky discovery failed. Please refresh to retry.</div>';
+        }
+      }
+
+      function renderAdventureCards() {
+        const container = document.getElementById("categories-container");
+
+        const adventureIcons = {
+          "daily-life": "🏠",
+          travel: "🌍",
+          business: "🏢",
+          social: "🎉",
+          academic: "🎓",
+        };
+
+        const difficultyMap = {
+          "daily-life": "breeze",
+          travel: "cloud",
+          business: "sky",
+          social: "cloud",
+          academic: "sky",
+        };
+
+        const adventureDescriptions = {
+          "daily-life": "☁️ Float through everyday conversations and daily routines",
+          travel: "🌍 Soar across the world through language adventures",
+          business: "🏢 Rise above professional communication challenges",
+          social: "🎉 Dance through clouds of social interactions",
+          academic: "🎓 Ascend to academic vocabulary heights",
+        };
+
+        const adventuresHTML = `
+          <div class="adventure-grid">
+            ${categories
+              .map(
+                (category, index) => `
+                <div class="adventure-card cloud-card sky-interactive" onclick="selectAdventure('${category.id}')" style="animation-delay: ${index * 0.1}s">
+                  <span class="adventure-icon">${adventureIcons[category.id] || "☁️"}</span>
+                  <div class="adventure-name">${category.name}</div>
+                  <div class="adventure-description">${adventureDescriptions[category.id] || category.description}</div>
+                  <div class="adventure-stats">
+                    <span class="challenge-count">☁️ ${category.imageCount} Sky Challenges</span>
+                    <span class="difficulty-badge ${difficultyMap[category.id] || "cloud"}">${difficultyMap[category.id] || "cloud"}</span>
+                  </div>
+                </div>
+              `
+              )
+              .join("")}
+          </div>
+        `;
+
+        container.innerHTML = adventuresHTML;
+      }
+
+      function selectAdventure(categoryId) {
+        showAdventureSelectionEffect();
+        
+        localStorage.setItem("selectedCategory", categoryId);
+
+        setTimeout(() => {
+          window.location.href = `/sky-study.html?category=${categoryId}`;
+        }, 1500);
+      }
+
+      function showAdventureSelectionEffect() {
+        // 하늘 선택 효과
+        for (let i = 0; i < 12; i++) {
+          setTimeout(() => {
+            createSkySelectionParticle();
+          }, i * 50);
+        }
+      }
+
+      function createSkySelectionParticle() {
+        const particle = document.createElement('div');
+        particle.innerHTML = ['✨', '☁️', '🌟', '🌈'][Math.floor(Math.random() * 4)];
+        particle.style.cssText = `
+          position: fixed;
+          left: ${Math.random() * window.innerWidth}px;
+          top: ${Math.random() * window.innerHeight}px;
+          font-size: 24px;
+          pointer-events: none;
+          z-index: 1000;
+          animation: float 2s ease-out forwards;
+        `;
+        document.body.appendChild(particle);
+        
+        setTimeout(() => {
+          particle.remove();
+        }, 2000);
+      }
+
+      async function selectRandomCategory() {
+        if (categories.length === 0) {
+          showSkyAlert("☁️ Sky adventures are still loading! Please wait for the clouds to gather...");
+          return;
+        }
+
+        const btn = document.querySelector('.mystery-btn');
+        btn.innerHTML = '🌤️ ✨ Selecting Mystery Sky... ✨';
+        btn.disabled = true;
+
+        setTimeout(() => {
+          const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+          selectAdventure(randomCategory.id);
+        }, 1500);
+      }
+
+      function showSkyAlert(message) {
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: var(--floating-card);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(135, 206, 235, 0.4);
+          border-radius: 20px;
+          padding: 20px;
+          color: var(--ocean-blue);
+          font-weight: 600;
+          z-index: 1000;
+          animation: slideInUp 0.5s ease-out;
+          max-width: 300px;
+          box-shadow: var(--shadow-soft);
+        `;
+        alert.textContent = message;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+          alert.remove();
+        }, 3000);
+      }
+
+      function logout() {
+        showSkyAlert("☁️ Descending from sky... See you in the next adventure!");
+        
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("selectedCategory");
+          window.location.href = "/sky-login.html";
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>

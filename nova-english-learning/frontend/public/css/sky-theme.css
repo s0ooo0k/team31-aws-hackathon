@@ -1,0 +1,500 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* 하늘 컬러 팔레트 */
+  --sky-gradient: linear-gradient(135deg, #87CEEB 0%, #E0F6FF 50%, #87CEFA 100%);
+  --cloud-gradient: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+  --sunset-gradient: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 50%, #E0F6FF 100%);
+  --dawn-gradient: linear-gradient(135deg, #E0F6FF 0%, #F0F8FF 50%, #B0E0E6 100%);
+  --ocean-gradient: linear-gradient(135deg, #4682B4 0%, #87CEEB 100%);
+  
+  /* 부드러운 하늘 컬러 */
+  --sky-blue: #87CEEB;
+  --cloud-white: #F8F8FF;
+  --soft-pink: #FFB6C1;
+  --gentle-blue: #E0F6FF;
+  --ocean-blue: #4682B4;
+  
+  /* 고급스러운 배경 */
+  --sky-bg: linear-gradient(180deg, #E0F6FF 0%, #B0E0E6 50%, #87CEEB 100%);
+  --cloud-surface: rgba(248, 248, 255, 0.9);
+  --floating-card: rgba(255, 255, 255, 0.85);
+  
+  /* 부드러운 UI 요소 */
+  --glass-sky: rgba(255, 255, 255, 0.25);
+  --glass-cloud: rgba(248, 248, 255, 0.3);
+  --shadow-soft: 0 8px 32px rgba(135, 206, 235, 0.3);
+  --shadow-cloud: 0 4px 20px rgba(176, 224, 230, 0.4);
+}
+
+* {
+  font-family: 'Poppins', "Pretendard Variable", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', "Pretendard Variable", sans-serif;
+  overflow-x: hidden;
+  background: var(--sky-bg);
+  position: relative;
+  min-height: 100vh;
+}
+
+/* 구름 배경 효과 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse 800px 400px at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse 600px 300px at 80% 70%, rgba(248, 248, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 400px 200px at 60% 20%, rgba(176, 224, 230, 0.2) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: cloud-drift 20s ease-in-out infinite;
+}
+
+/* 하늘을 나는 애니메이션 */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  33% { transform: translateY(-8px) translateX(2px); }
+  66% { transform: translateY(-4px) translateX(-2px); }
+}
+
+@keyframes cloud-drift {
+  0% { transform: translateX(0px) translateY(0px); }
+  50% { transform: translateX(20px) translateY(-10px); }
+  100% { transform: translateX(0px) translateY(0px); }
+}
+
+@keyframes gentle-sway {
+  0%, 100% { transform: rotate(0deg) translateY(0px); }
+  50% { transform: rotate(1deg) translateY(-5px); }
+}
+
+@keyframes soft-glow {
+  0%, 100% { box-shadow: var(--shadow-soft); }
+  50% { box-shadow: 0 12px 40px rgba(135, 206, 235, 0.5); }
+}
+
+@keyframes cloud-glow {
+  0%, 100% { box-shadow: var(--shadow-cloud); }
+  50% { box-shadow: 0 8px 30px rgba(176, 224, 230, 0.6); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 구름 같은 카드 */
+.cloud-card {
+  background: var(--floating-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  padding: 30px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  animation: gentle-sway 6s ease-in-out infinite;
+}
+
+.cloud-card.glow {
+  box-shadow: 
+    0 0 30px rgba(135, 206, 235, 0.2),
+    0 0 60px rgba(135, 206, 235, 0.1),
+    inset 0 0 30px rgba(255, 255, 255, 0.15);
+  animation: gentle-sway 8s ease-in-out infinite, subtle-glow 6s ease-in-out infinite;
+}
+
+@keyframes subtle-glow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 30px rgba(135, 206, 235, 0.2),
+      0 0 60px rgba(135, 206, 235, 0.1),
+      inset 0 0 30px rgba(255, 255, 255, 0.15);
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(135, 206, 235, 0.25),
+      0 0 80px rgba(135, 206, 235, 0.15),
+      inset 0 0 40px rgba(255, 255, 255, 0.2);
+  }
+}
+
+.cloud-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(135, 206, 235, 0.4);
+}
+
+.cloud-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+  animation: cloud-drift 8s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cloud-card:hover::before {
+  opacity: 1;
+}
+
+/* 하늘 버튼 */
+.sky-btn {
+  padding: 15px 35px;
+  background: var(--cloud-gradient);
+  color: var(--ocean-blue);
+  border: 2px solid rgba(135, 206, 235, 0.3);
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  animation: float 4s ease-in-out infinite;
+}
+
+.sky-btn.shimmer {
+  animation: float 4s ease-in-out infinite, shimmer-sweep 3s ease-in-out infinite;
+}
+
+.sky-btn:hover {
+  transform: translateY(-5px);
+  background: var(--sunset-gradient);
+  color: white;
+  box-shadow: 0 15px 40px rgba(255, 182, 193, 0.4);
+}
+
+.sky-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s;
+}
+
+.sky-btn:hover::before {
+  left: 100%;
+}
+
+/* 부드러운 파티클 */
+.sky-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, var(--sky-blue), transparent);
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+/* 구름 입자 효과 */
+.cloud-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 하늘 타이틀 */
+.sky-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  background: var(--ocean-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(135, 206, 235, 0.3);
+}
+
+.sky-title.glow {
+  text-shadow: 
+    0 0 10px rgba(135, 206, 235, 0.5),
+    0 0 20px rgba(135, 206, 235, 0.3),
+    0 0 30px rgba(135, 206, 235, 0.2);
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* 레벨 배지 - 구름 스타일 */
+.cloud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: var(--cloud-gradient);
+  border-radius: 25px;
+  color: var(--ocean-blue);
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: var(--shadow-cloud);
+  border: 1px solid rgba(135, 206, 235, 0.2);
+}
+
+/* 부드러운 진행 바 */
+.sky-progress {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sky-progress-fill {
+  height: 100%;
+  background: var(--sunset-gradient);
+  border-radius: 15px;
+  transition: width 1s ease;
+  position: relative;
+}
+
+.sky-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 마우스 커서 - 구름 스타일 */
+.cloud-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sky-blue), transparent);
+  pointer-events: none;
+  z-index: 9999;
+  transition: all 0.1s ease;
+  mix-blend-mode: multiply;
+}
+
+.cloud-cursor.hover {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, var(--soft-pink), transparent);
+}
+
+/* 로딩 스피너 - 구름 스타일 */
+.sky-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(135, 206, 235, 0.3);
+  border-top: 3px solid var(--sky-blue);
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  box-shadow: var(--shadow-soft);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 인터랙티브 요소 */
+.sky-interactive {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sky-interactive:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+/* 부드러운 보케 효과 */
+.bokeh-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+.bokeh-light {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 40%, transparent 70%);
+  animation: gentle-float 12s ease-in-out infinite;
+  filter: blur(1px);
+}
+
+@keyframes gentle-float {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px) scale(1);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateY(-15px) translateX(8px) scale(1.05);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateY(-8px) translateX(-5px) scale(0.95);
+    opacity: 0.8;
+  }
+  75% { 
+    transform: translateY(-20px) translateX(3px) scale(1.02);
+    opacity: 0.4;
+  }
+}
+
+.bokeh-light:nth-child(2n) {
+  animation-delay: 2s;
+  animation-duration: 15s;
+}
+
+.bokeh-light:nth-child(3n) {
+  animation-delay: 4s;
+  animation-duration: 10s;
+}
+
+/* 부드러운 광선 효과 */
+.soft-light-ray {
+  position: fixed;
+  width: 1px;
+  height: 100vh;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.05) 20%, 
+    rgba(255, 255, 255, 0.15) 50%, 
+    rgba(255, 255, 255, 0.05) 80%, 
+    transparent 100%);
+  animation: light-sway 20s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+@keyframes light-sway {
+  0%, 100% { 
+    transform: translateX(0px) rotate(0deg);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateX(3px) rotate(0.5deg);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateX(-2px) rotate(-0.3deg);
+    opacity: 0.4;
+  }
+  75% { 
+    transform: translateX(4px) rotate(0.7deg);
+    opacity: 0.5;
+  }
+}
+
+/* 반짝이는 효과 */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer-sweep 3s ease-in-out infinite;
+}
+
+@keyframes shimmer-sweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* 빛나는 요소 */
+.glow {
+  box-shadow: 
+    0 0 20px rgba(135, 206, 235, 0.3),
+    0 0 40px rgba(135, 206, 235, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(135, 206, 235, 0.3),
+      0 0 40px rgba(135, 206, 235, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  50% { 
+    box-shadow: 
+      0 0 30px rgba(135, 206, 235, 0.5),
+      0 0 60px rgba(135, 206, 235, 0.3),
+      inset 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* 마법 파티클 */
+.magic-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #fff 0%, #87CEEB 100%);
+  border-radius: 50%;
+  animation: magic-float 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes magic-float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}

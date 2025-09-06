@@ -42,8 +42,8 @@ Nova Sonic과의 실시간 대화를 통한 인터랙티브 영어 학습 서비
 ### 개발 환경 설정
 ```bash
 # 저장소 클론
-git clone https://github.com/s0ooo0k/team31_0905.git
-cd team31_0905
+git clone https://github.com/s0ooo0k/team31-aws-hackathon.git
+cd team31-aws-hackathon
 
 # 의존성 설치
 npm install
