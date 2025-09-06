@@ -46,11 +46,14 @@ jobs:
 
     - name: Update ECS service
       run: |
-        # Update task definition with new image
-        sed -i 's|"image": ".*"|"image": "'${{ steps.build-image.outputs.image }}'"|' task-definition.json
+        # Get current task definition
+        TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition nova-english-learning-task --query taskDefinition)
+        
+        # Update image in task definition
+        NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ steps.build-image.outputs.image }}" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.placementConstraints) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)')
         
         # Register new task definition
-        aws ecs register-task-definition --cli-input-json file://task-definition.json
+        NEW_TASK_DEF_ARN=$(echo $NEW_TASK_DEFINITION | aws ecs register-task-definition --cli-input-json file:///dev/stdin --query taskDefinition.taskDefinitionArn --output text)
         
-        # Update service to use new task definition
-        aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
+        # Update service
+        aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --task-definition $NEW_TASK_DEF_ARN
