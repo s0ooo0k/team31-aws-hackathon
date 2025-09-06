@@ -41,7 +41,10 @@ SPEEK-SEE-PIC은 Amazon Nova Family의 강력한 AI 기능들을 종합적으로
 - **실시간 동기화**: 모든 Nova 모델 간의 seamless한 데이터 연동
 
 ## 동영상 데모
-![데모](docs/speek-see-pic-demo.gif)
+![KakaoTalk_Photo_2025-09-06-16-36-26](https://github.com/user-attachments/assets/b8ad6769-890e-41d0-a54a-290d27c93350)
+![KakaoTalk_Photo_2025-09-06-16-37-09](https://github.com/user-attachments/assets/128c8b51-65d6-428c-8f98-f2627d5c207b)
+![KakaoTalk_Photo_2025-09-06-16-37-38](https://github.com/user-attachments/assets/48bc63a3-d454-408a-ac01-02b57c0dce8a)
+![KakaoTalk_Photo_2025-09-06-16-38-12](https://github.com/user-attachments/assets/959f1021-f2be-4193-a3f3-555e79687f1d)
 
 ## MCP-Notion을 활용한 프로젝트 관리 및 개발
 
