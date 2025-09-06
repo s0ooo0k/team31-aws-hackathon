@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+<head>
+  <title>🏙️ NOVA Urban - Learning Categories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/urban-theme.css" />
+  <script src="/js/urban-effects.js"></script>
+</head>
+<body>
+  <div class="header glass-card" style="
+    margin: 20px;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+  ">
+    <div class="logo" style="display: flex; align-items: center; gap: 15px;">
+      <span style="font-size: 28px;">🏙️</span>
+      <h1 class="urban-title" style="font-size: 24px; margin: 0;">NOVA URBAN</h1>
+    </div>
+    
+    <div class="user-panel" style="display: flex; align-items: center; gap: 20px;">
+      <div class="user-stats" style="text-align: right;">
+        <div class="user-name" id="user-name" style="color: var(--text-primary); font-weight: 600;">Loading...</div>
+        <div class="user-level" style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+          <span class="level-badge" id="user-level" style="
+            padding: 4px 12px;
+            background: var(--neon-gradient);
+            border-radius: 12px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+          ">Pro</span>
+          <span class="xp-display" id="user-xp" style="color: var(--accent-blue); font-size: 12px; font-weight: 600;">0 XP</span>
+        </div>
+      </div>
+      <button class="urban-btn" onclick="logout()" style="padding: 8px 16px; font-size: 12px;">
+        🚪 Exit
+      </button>
+    </div>
+  </div>
+
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <div class="page-title" style="text-align: center; margin-bottom: 50px;">
+      <h2 class="urban-title">🎯 Choose Your Learning Path</h2>
+      <p class="urban-subtitle">Select a category to begin your AI-powered English journey</p>
+    </div>
+
+    <div id="categories-container">
+      <div class="loading" style="text-align: center; padding: 60px; color: var(--text-secondary);">
+        <div style="font-size: 24px; margin-bottom: 16px;">⚡</div>
+        Loading learning modules...
+      </div>
+    </div>
+
+    <div class="mystery-section" style="text-align: center; margin-top: 60px;">
+      <button class="urban-btn" onclick="selectRandomCategory()" style="
+        padding: 20px 40px;
+        font-size: 18px;
+        background: var(--urban-gradient);
+      ">
+        🎲 ✨ Random Challenge ✨
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let categories = [];
+
+    // 페이지 로드 시 초기화
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (!user) {
+        window.location.href = "/urban-login.html";
+        return;
+      }
+
+      displayUserInfo(user);
+      await loadCategories();
+    });
+
+    function displayUserInfo(user) {
+      document.getElementById("user-name").textContent = `💻 ${user.name}`;
+      
+      const levelMap = {
+        'beginner': { badge: '🌱 Starter', color: 'var(--accent-green)' },
+        'intermediate': { badge: '⚡ Pro', color: 'var(--accent-blue)' },
+        'advanced': { badge: '🚀 Elite', color: 'var(--accent-purple)' }
+      };
+      
+      const levelInfo = levelMap[user.level] || levelMap['intermediate'];
+      document.getElementById("user-level").textContent = levelInfo.badge;
+      document.getElementById("user-xp").textContent = `${user.xp || 0} XP`;
+    }
+
+    async function loadCategories() {
+      try {
+        // 시뮬레이션된 카테고리 데이터
+        categories = [
+          { id: 'daily-life', name: 'Daily Life', imageCount: 25 },
+          { id: 'business', name: 'Business', imageCount: 30 },
+          { id: 'travel', name: 'Travel', imageCount: 20 },
+          { id: 'social', name: 'Social', imageCount: 22 },
+          { id: 'academic', name: 'Academic', imageCount: 28 }
+        ];
+        
+        renderCategoryCards();
+      } catch (error) {
+        console.error("Error loading categories:", error);
+        document.getElementById("categories-container").innerHTML =
+          '<div class="loading">⚠️ Failed to load categories. Please refresh.</div>';
+      }
+    }
+
+    function renderCategoryCards() {
+      const container = document.getElementById("categories-container");
+
+      const categoryIcons = {
+        "daily-life": "🏠",
+        "business": "💼", 
+        "travel": "✈️",
+        "social": "👥",
+        "academic": "🎓"
+      };
+
+      const categoryDescriptions = {
+        "daily-life": "Master everyday conversations and routine interactions",
+        "business": "Professional communication and workplace scenarios", 
+        "travel": "Navigate travel situations with confidence",
+        "social": "Social interactions and networking skills",
+        "academic": "Academic vocabulary and formal communication"
+      };
+
+      const difficultyLevels = {
+        "daily-life": "Starter",
+        "business": "Elite",
+        "travel": "Pro", 
+        "social": "Pro",
+        "academic": "Elite"
+      };
+
+      const cardsHTML = `
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 24px;
+          margin-bottom: 40px;
+        ">
+          ${categories.map((category, index) => `
+            <div class="category-card glass-card" onclick="selectCategory('${category.id}')" style="
+              padding: 30px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              animation: slideInUp 0.6s ease-out ${index * 0.1}s both;
+              position: relative;
+              overflow: hidden;
+            ">
+              <div style="font-size: 48px; text-align: center; margin-bottom: 20px;">
+                ${categoryIcons[category.id]}
+              </div>
+              <h3 style="
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 12px;
+                text-align: center;
+              ">${category.name}</h3>
+              <p style="
+                color: var(--text-secondary);
+                font-size: 14px;
+                line-height: 1.6;
+                margin-bottom: 20px;
+                text-align: center;
+              ">${categoryDescriptions[category.id]}</p>
+              <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+              ">
+                <span style="color: var(--accent-blue); font-weight: 600; font-size: 12px;">
+                  📊 ${category.imageCount} Scenarios
+                </span>
+                <span style="
+                  padding: 4px 12px;
+                  background: var(--neon-gradient);
+                  border-radius: 12px;
+                  color: white;
+                  font-size: 10px;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                ">${difficultyLevels[category.id]}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      container.innerHTML = cardsHTML;
+
+      // 카드 호버 효과 추가
+      document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-8px) scale(1.02)';
+          card.style.boxShadow = 'var(--shadow-neon)';
+          card.style.borderColor = 'var(--accent-blue)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'translateY(0) scale(1)';
+          card.style.boxShadow = 'var(--shadow-card)';
+          card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        });
+      });
+    }
+
+    function selectCategory(categoryId) {
+      showSelectionEffect();
+      localStorage.setItem("selectedCategory", categoryId);
+
+      setTimeout(() => {
+        window.location.href = `/urban-study.html?category=${categoryId}`;
+      }, 1000);
+    }
+
+    function showSelectionEffect() {
+      // 선택 효과
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          createSelectionParticle();
+        }, i * 50);
+      }
+    }
+
+    function createSelectionParticle() {
+      const particle = document.createElement('div');
+      particle.innerHTML = ['⚡', '💫', '🔥', '✨'][Math.floor(Math.random() * 4)];
+      particle.style.cssText = `
+        position: fixed;
+        left: ${Math.random() * window.innerWidth}px;
+        top: ${Math.random() * window.innerHeight}px;
+        font-size: 20px;
+        pointer-events: none;
+        z-index: 1000;
+        animation: fadeIn 1s ease-out forwards;
+      `;
+      document.body.appendChild(particle);
+      
+      setTimeout(() => {
+        particle.remove();
+      }, 1000);
+    }
+
+    async function selectRandomCategory() {
+      if (categories.length === 0) {
+        showAlert("⚡ Categories still loading! Please wait...");
+        return;
+      }
+
+      const btn = event.target;
+      btn.innerHTML = '🔄 Selecting...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        selectCategory(randomCategory.id);
+      }, 1000);
+    }
+
+    function showAlert(message) {
+      const alert = document.createElement('div');
+      alert.className = 'glass-card';
+      alert.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 20px;
+        color: var(--text-primary);
+        font-weight: 500;
+        z-index: 1000;
+        animation: slideInUp 0.3s ease-out;
+        max-width: 300px;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      `;
+      alert.textContent = message;
+      document.body.appendChild(alert);
+      
+      setTimeout(() => {
+        alert.remove();
+      }, 3000);
+    }
+
+    function logout() {
+      showAlert("🚪 Logging out... See you next time!");
+      
+      setTimeout(() => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("selectedCategory");
+        window.location.href = "/urban-login.html";
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

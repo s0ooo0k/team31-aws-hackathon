@@ -1,0 +1,269 @@
+<!doctype html>
+<html>
+<head>
+  <title>🏙️ NOVA Urban - AI English Learning</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/urban-theme.css" />
+  <script src="/js/urban-effects.js"></script>
+</head>
+<body>
+  <div class="login-container glass-card" style="
+    max-width: 420px;
+    width: 90%;
+    margin: 10vh auto;
+    padding: 40px;
+    position: relative;
+    z-index: 10;
+    animation: slideInUp 0.8s ease-out;
+  ">
+    <div class="logo" style="text-align: center; margin-bottom: 40px;">
+      <div style="font-size: 48px; margin-bottom: 16px;">🏙️</div>
+      <h1 class="urban-title">NOVA URBAN</h1>
+      <p class="urban-subtitle">AI-Powered English Learning Platform</p>
+    </div>
+
+    <div class="level-selector" style="
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+      justify-content: center;
+    ">
+      <button class="level-btn urban-btn active" data-level="beginner" style="flex: 1; padding: 12px;">
+        🌱 Starter
+      </button>
+      <button class="level-btn urban-btn" data-level="intermediate" style="flex: 1; padding: 12px;">
+        ⚡ Pro
+      </button>
+      <button class="level-btn urban-btn" data-level="advanced" style="flex: 1; padding: 12px;">
+        🚀 Elite
+      </button>
+    </div>
+
+    <div class="demo-info glass-card" style="
+      padding: 20px;
+      margin-bottom: 25px;
+      text-align: center;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    ">
+      <strong style="color: var(--accent-blue); display: block; margin-bottom: 8px;">
+        🎯 Demo Mode Active
+      </strong>
+      <span style="color: var(--text-secondary); font-size: 14px;">
+        Enter any credentials to access the platform
+      </span>
+    </div>
+
+    <form id="login-form">
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label style="
+          display: block;
+          margin-bottom: 8px;
+          color: var(--text-secondary);
+          font-weight: 600;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        ">📧 Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="your.email@domain.com"
+          required
+          style="
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+          "
+        />
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 30px;">
+        <label style="
+          display: block;
+          margin-bottom: 8px;
+          color: var(--text-secondary);
+          font-weight: 600;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        ">🔐 Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+          style="
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+          "
+        />
+      </div>
+      
+      <button type="submit" class="urban-btn" id="login-btn" style="
+        width: 100%;
+        padding: 18px;
+        font-size: 16px;
+        margin-bottom: 25px;
+      ">
+        🚀 Launch Platform
+      </button>
+    </form>
+
+    <div class="divider" style="
+      text-align: center;
+      margin: 25px 0;
+      color: var(--text-muted);
+      position: relative;
+    ">
+      <span style="background: var(--primary-dark); padding: 0 20px;">
+        ⚡ Quick Access
+      </span>
+    </div>
+
+    <div class="social-login" style="display: flex; gap: 12px; margin-bottom: 25px;">
+      <button class="urban-btn" onclick="signInWithGoogle()" style="flex: 1; padding: 12px; font-size: 14px;">
+        🌐 Google
+      </button>
+      <button class="urban-btn" onclick="signInWithGithub()" style="flex: 1; padding: 12px; font-size: 14px;">
+        💻 GitHub
+      </button>
+    </div>
+
+    <div class="signup-link" style="text-align: center;">
+      <p style="color: var(--text-secondary);">
+        New to NOVA? <a href="#" onclick="showSignUp()" style="color: var(--accent-blue); text-decoration: none;">Create Account</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // 레벨 선택 처리
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // 입력 필드 포커스 효과
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', () => {
+        input.style.borderColor = 'var(--accent-blue)';
+        input.style.boxShadow = '0 0 10px rgba(0, 212, 255, 0.3)';
+      });
+      
+      input.addEventListener('blur', () => {
+        input.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        input.style.boxShadow = 'none';
+      });
+    });
+
+    // 로그인 폼 처리
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const selectedLevel = document.querySelector('.level-btn.active').dataset.level;
+      const loginBtn = document.getElementById("login-btn");
+
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = "🔄 Connecting...";
+
+      try {
+        await simulateLogin(email, password);
+
+        const userData = {
+          email: email,
+          name: email.split("@")[0],
+          level: selectedLevel,
+          xp: 0,
+          achievements: ['🎯 First Login'],
+          streak: 0,
+          totalScore: 0,
+          joinDate: new Date().toISOString()
+        };
+        
+        localStorage.setItem("user", JSON.stringify(userData));
+        
+        setTimeout(() => {
+          window.location.href = "/urban-categories.html";
+        }, 1500);
+        
+      } catch (error) {
+        showAlert(error.message);
+      } finally {
+        setTimeout(() => {
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = "🚀 Launch Platform";
+        }, 1500);
+      }
+    });
+
+    async function simulateLogin(email, password) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (email && password) {
+            resolve();
+          } else {
+            reject(new Error("⚠️ Please enter your credentials!"));
+          }
+        }, 1000);
+      });
+    }
+
+    function signInWithGoogle() {
+      showAlert("🌐 Google integration coming soon!");
+    }
+
+    function signInWithGithub() {
+      showAlert("💻 GitHub integration coming soon!");
+    }
+
+    function showSignUp() {
+      showAlert("📝 Registration portal under development!");
+    }
+
+    function showAlert(message) {
+      const alert = document.createElement('div');
+      alert.className = 'glass-card';
+      alert.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 20px;
+        color: var(--text-primary);
+        font-weight: 500;
+        z-index: 1000;
+        animation: slideInUp 0.3s ease-out;
+        max-width: 300px;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+      `;
+      alert.textContent = message;
+      document.body.appendChild(alert);
+      
+      setTimeout(() => {
+        alert.remove();
+      }, 3000);
+    }
+
+    // 이미 로그인된 경우 리다이렉트
+    if (localStorage.getItem("user")) {
+      window.location.href = "/urban-categories.html";
+    }
+  </script>
+</body>
+</html>

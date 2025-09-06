@@ -1,26 +1,60 @@
 <!doctype html>
 <html>
   <head>
-    <title>SPEAK-SEE-PIC! - Study</title>
+    <title>🏎️ NOVA RACING - Turbo Study</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/sky-theme.css" />
     <script src="/socket.io/socket.io.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      .sky-header {
+        background: var(--carbon-surface);
+        backdrop-filter: blur(25px);
+        border-bottom: 2px solid rgba(255, 0, 64, 0.3);
+        padding: 20px 0;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 10;
       }
 
-      body {
-        background: 
-          radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.25) 0%, transparent 60%),
-          radial-gradient(circle at 80% 20%, rgba(255, 223, 0, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(135, 206, 235, 0.2) 0%, transparent 50%),
-          linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #B0E0E6 100%);
-        min-height: 100vh;
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .sky-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .sky-logo h1 {
+        font-family: 'Orbitron', monospace;
+        font-size: 28px;
+        font-weight: 900;
+        background: var(--speed-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 0 0 30px rgba(255, 0, 64, 0.5);
+        animation: title-glow 3s ease-in-out infinite;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
         position: relative;
-        overflow-x: hidden;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 120px);
       }
 
       body::before {
@@ -51,8 +85,10 @@
       }
 
       .header {
-        background: transparent;
-        padding: 15px 0;
+        background: var(--carbon-surface);
+        backdrop-filter: blur(25px);
+        border-bottom: 2px solid rgba(255, 0, 64, 0.3);
+        padding: 20px 0;
         position: relative;
         z-index: 10;
       }
@@ -68,6 +104,9 @@
 
       .logo {
         position: relative;
+        display: flex;
+        align-items: center;
+        gap: 15px;
       }
       
       .logo::before {
@@ -91,17 +130,17 @@
       }
       
       .logo h1 {
-        background: linear-gradient(135deg, #E0F6FF 0%, #87CEEB 50%, #4682B4 100%);
+        font-family: 'Orbitron', monospace;
+        font-size: 24px;
+        font-weight: 900;
+        background: var(--speed-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-shadow: 
-          0 0 12px rgba(255, 255, 255, 0.4),
-          0 0 24px rgba(135, 206, 235, 0.3);
-        animation: logo-glow 5s ease-in-out infinite;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 30px rgba(255, 0, 64, 0.5);
+        animation: title-glow 3s ease-in-out infinite;
       }
       
       @keyframes cloud-float {
@@ -141,25 +180,27 @@
       }
 
       .back-btn {
-        padding: 10px 20px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 248, 255, 0.7) 100%);
-        color: #4682B4;
-        border: 2px solid rgba(135, 206, 235, 0.3);
-        border-radius: 20px;
+        padding: 12px 24px;
+        background: var(--metallic-gradient);
+        border: 2px solid var(--racing-red);
+        border-radius: 6px;
+        color: var(--white);
         cursor: pointer;
         text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: skewX(-3deg);
       }
       
       .back-btn:hover {
-        background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 
-          0 6px 20px rgba(135, 206, 235, 0.4),
-          0 0 15px rgba(135, 206, 235, 0.3);
+        transform: skewX(-3deg) translateY(-3px) scale(1.05);
+        box-shadow: var(--speed-shadow);
+        border-color: var(--gold-accent);
+        background: var(--turbo-gradient);
       }
 
       .study-container {
@@ -191,22 +232,38 @@
       }
 
       .image-section {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--carbon-surface);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+        border: 2px solid rgba(255, 0, 64, 0.3);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: var(--turbo-shadow);
         position: relative;
         z-index: 10;
       }
 
+      .image-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--speed-gradient);
+        border-radius: 12px 12px 0 0;
+        animation: racing-pulse 2s ease-in-out infinite;
+      }
+
       .section-title {
+        font-family: 'Orbitron', monospace;
         font-size: 18px;
-        font-weight: 600;
-        color: #4682B4;
-        margin-bottom: 15px;
-        text-shadow: 0 2px 4px rgba(135, 206, 235, 0.2);
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 15px rgba(255, 0, 64, 0.5);
+        animation: title-glow 3s ease-in-out infinite;
       }
 
       .original-image {
@@ -224,15 +281,27 @@
       }
 
       .generated-image-section {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--carbon-surface);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+        border: 2px solid rgba(0, 212, 255, 0.3);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: var(--neon-shadow);
         flex: 1;
         position: relative;
         z-index: 10;
+      }
+
+      .generated-image-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--turbo-gradient);
+        border-radius: 12px 12px 0 0;
+        animation: turbo-charge 1.5s ease-in-out infinite;
       }
 
       .generated-image-placeholder {
@@ -255,17 +324,29 @@
       }
 
       .conversation-section {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--carbon-surface);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: var(--gold-shadow);
         flex: 1;
         display: flex;
         flex-direction: column;
         position: relative;
         z-index: 10;
+      }
+
+      .conversation-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-accent), var(--racing-red));
+        border-radius: 12px 12px 0 0;
+        animation: racing-pulse 2s ease-in-out infinite;
       }
 
       .chat-container {
@@ -307,14 +388,26 @@
       }
 
       .controls-section {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--carbon-surface);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+        border: 2px solid rgba(57, 255, 20, 0.3);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 20px 60px rgba(57, 255, 20, 0.2);
         position: relative;
         z-index: 10;
+      }
+
+      .controls-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--neon-green), var(--electric-blue));
+        border-radius: 12px 12px 0 0;
+        animation: turbo-charge 1.5s ease-in-out infinite;
       }
 
       .audio-controls {
@@ -325,28 +418,36 @@
       }
 
       .control-btn {
-        padding: 15px 25px;
-        border: none;
-        border-radius: 12px;
+        padding: 16px 32px;
+        border: 2px solid var(--racing-red);
+        border-radius: 6px;
+        font-family: 'Rajdhani', sans-serif;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
         cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 120px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 140px;
+        position: relative;
+        overflow: hidden;
+        transform: skewX(-3deg);
       }
 
       .start-btn {
-        background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-        color: white;
+        background: var(--metallic-gradient);
+        border: 2px solid var(--neon-green);
+        color: var(--white);
         position: relative;
         overflow: hidden;
+        transform: skewX(-3deg);
       }
 
       .start-btn:hover:not(:disabled) {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 
-          0 10px 30px rgba(135, 206, 235, 0.5),
-          0 0 20px rgba(135, 206, 235, 0.4);
+        transform: skewX(-3deg) translateY(-4px) scale(1.05);
+        box-shadow: var(--speed-shadow);
+        border-color: var(--gold-accent);
+        background: var(--turbo-gradient);
       }
       
       .start-btn::before {
@@ -371,17 +472,19 @@
       }
 
       .stop-btn {
-        background: linear-gradient(135deg, #FFB6C1 0%, #FFA07A 100%);
-        color: white;
+        background: var(--metallic-gradient);
+        border: 2px solid var(--racing-red);
+        color: var(--white);
         position: relative;
         overflow: hidden;
+        transform: skewX(-3deg);
       }
 
       .stop-btn:hover:not(:disabled) {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 
-          0 10px 30px rgba(255, 182, 193, 0.5),
-          0 0 20px rgba(255, 182, 193, 0.4);
+        transform: skewX(-3deg) translateY(-4px) scale(1.05);
+        box-shadow: 0 0 40px rgba(255, 0, 64, 0.8);
+        border-color: var(--racing-red);
+        background: linear-gradient(135deg, var(--racing-red) 0%, #ff6b35 100%);
       }
       
       .stop-btn::before {
@@ -401,10 +504,11 @@
       }
 
       .control-btn:disabled {
-        background: #e2e8f0;
-        color: #94a3b8;
+        background: var(--metallic-surface);
+        color: rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.2);
         cursor: not-allowed;
-        transform: none;
+        transform: skewX(-3deg);
         box-shadow: none;
       }
 
@@ -417,57 +521,77 @@
       }
 
       .status.ready {
-        background: linear-gradient(135deg, #E0F6FF 0%, #B0E0E6 100%);
-        color: #4682B4;
-        border: 1px solid rgba(135, 206, 235, 0.3);
-        backdrop-filter: blur(5px);
+        background: var(--metallic-surface);
+        color: var(--neon-green);
+        border: 2px solid rgba(57, 255, 20, 0.3);
+        backdrop-filter: blur(10px);
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
 
       .status.recording {
-        background: linear-gradient(135deg, #F0F8FF 0%, #E0F6FF 100%);
-        color: #4682B4;
-        border: 1px solid rgba(70, 130, 180, 0.3);
-        backdrop-filter: blur(5px);
+        background: var(--metallic-surface);
+        color: var(--electric-blue);
+        border: 2px solid rgba(0, 212, 255, 0.3);
+        backdrop-filter: blur(10px);
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: racing-pulse 1s ease-in-out infinite;
       }
 
       .status.processing {
-        background: linear-gradient(135deg, #FFB6C1 0%, #FFA07A 100%);
-        color: #CD5C5C;
-        border: 1px solid rgba(205, 92, 92, 0.3);
-        backdrop-filter: blur(5px);
+        background: var(--metallic-surface);
+        color: var(--gold-accent);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        backdrop-filter: blur(10px);
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: turbo-charge 1.5s ease-in-out infinite;
       }
 
       .status.error {
-        background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
-        color: #DC143C;
-        border: 1px solid rgba(220, 20, 60, 0.3);
-        backdrop-filter: blur(5px);
+        background: var(--metallic-surface);
+        color: var(--racing-red);
+        border: 2px solid rgba(255, 0, 64, 0.3);
+        backdrop-filter: blur(10px);
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: speed-boost 0.5s ease-in-out infinite;
       }
 
       .finish-btn {
         width: 100%;
-        padding: 15px;
-        background: linear-gradient(135deg, #E6E6FA 0%, #B0E0E6 100%);
-        color: #4682B4;
-        border: 2px solid rgba(135, 206, 235, 0.3);
-        border-radius: 20px;
+        padding: 18px;
+        background: var(--metallic-gradient);
+        border: 2px solid var(--gold-accent);
+        border-radius: 8px;
+        color: var(--white);
+        font-family: 'Rajdhani', sans-serif;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
         cursor: pointer;
-        margin-top: 20px;
-        transition: all 0.4s ease;
+        margin-top: 25px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
-        backdrop-filter: blur(10px);
+        transform: skewX(-2deg);
       }
 
       .finish-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-        color: white;
-        box-shadow: 
-          0 12px 35px rgba(135, 206, 235, 0.5),
-          0 0 25px rgba(135, 206, 235, 0.4);
+        transform: skewX(-2deg) translateY(-4px) scale(1.02);
+        background: var(--speed-gradient);
+        box-shadow: var(--gold-shadow);
+        border-color: var(--racing-red);
       }
       
       .finish-btn::before {
@@ -511,11 +635,11 @@
     <div class="header">
       <div class="header-content">
         <div class="logo">
-          <h1>SPEAK-SEE-PIC! STUDY</h1>
+          <h1 class="racing-title">🏁 NOVA RACING STUDY</h1>
         </div>
         <div class="session-info">
           <div class="timer" id="timer">00:00</div>
-          <a href="/categories" class="back-btn">← Back to Categories</a>
+          <a href="/categories" class="back-btn racing-btn">🏁 Back to Tracks</a>
         </div>
       </div>
     </div>

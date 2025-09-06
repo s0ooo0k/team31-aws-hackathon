@@ -1,367 +1,304 @@
 <!doctype html>
 <html>
   <head>
-    <title>☁️ Nova Sky - English Adventure</title>
+    <title>🏎️ Nova Racing - Turbo Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/sky-theme.css" />
     <script src="/js/interactive.js"></script>
-    <script src="/js/sky-logo.js"></script>
+    <script src="/js/racing-effects.js"></script>
     <script src="/js/icon-replacer.js"></script>
     <style>
       body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         position: relative;
+      }
+      
+      .sky-header {
+        background: var(--carbon-surface);
+        backdrop-filter: blur(25px);
+        border-bottom: 2px solid rgba(255, 0, 64, 0.3);
+        padding: 20px 0;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 10;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 120px);
       }
 
       .login-container {
-        max-width: 450px;
-        width: 90%;
-        padding: 40px;
-        background: var(--floating-card);
-        backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 30px;
-        box-shadow: var(--shadow-soft);
+        max-width: 500px;
+        width: 100%;
+        padding: 50px;
         position: relative;
         z-index: 10;
-        animation: slideInUp 0.8s ease-out, gentle-sway 8s ease-in-out infinite;
+        animation: slideInUp 0.8s ease-out;
+        transform: skewX(-2deg);
+      }
+      
+      .sky-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .sky-logo h1 {
+        font-family: 'Orbitron', monospace;
+        font-size: 28px;
+        font-weight: 900;
+        background: var(--speed-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 0 0 30px rgba(255, 0, 64, 0.5);
+        animation: title-glow 3s ease-in-out infinite;
       }
 
       .logo {
         text-align: center;
         margin-bottom: 40px;
-        position: relative;
       }
-
+      
       .logo-icon {
         font-size: 60px;
         margin-bottom: 15px;
-        animation: float 4s ease-in-out infinite;
         display: block;
+        animation: turbo-spin 3s ease-in-out infinite;
       }
-
-      .logo h1 {
-        font-family: 'Poppins', sans-serif;
-        font-size: 32px;
-        font-weight: 600;
-        background: var(--ocean-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 8px;
-        text-shadow: 0 2px 15px rgba(135, 206, 235, 0.4);
+      
+      @keyframes turbo-spin {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(5deg) scale(1.1); }
       }
-
-      .logo p {
-        color: var(--ocean-blue);
-        font-size: 16px;
-        font-weight: 400;
-        opacity: 0.8;
-      }
-
+      
       .level-selector {
-        display: flex;
-        gap: 12px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
         margin-bottom: 30px;
-        justify-content: center;
       }
 
       .level-btn {
-        padding: 10px 20px;
-        background: var(--cloud-gradient);
-        border: 2px solid rgba(135, 206, 235, 0.3);
-        border-radius: 25px;
-        color: var(--ocean-blue);
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.4s ease;
+        width: 100%;
+        padding: 18px 24px;
+        font-size: 16px;
+        font-weight: 700;
         text-transform: uppercase;
-        animation: float 3s ease-in-out infinite;
+        letter-spacing: 1px;
       }
-
-      .level-btn:nth-child(2) { animation-delay: 0.5s; }
-      .level-btn:nth-child(3) { animation-delay: 1s; }
-
-      .level-btn.active,
-      .level-btn:hover {
-        background: var(--sunset-gradient);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
-      }
-
+      
       .form-group {
         margin-bottom: 25px;
-        position: relative;
       }
-
+      
       .form-group label {
         display: block;
         margin-bottom: 10px;
-        color: var(--ocean-blue);
         font-weight: 600;
         font-size: 14px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
-
+      
       .input-wrapper {
         position: relative;
       }
-
-      .form-group input {
-        width: 100%;
-        padding: 16px 20px;
-        background: rgba(255, 255, 255, 0.6);
-        border: 2px solid rgba(135, 206, 235, 0.3);
-        border-radius: 20px;
-        font-size: 16px;
-        color: var(--ocean-blue);
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-      }
-
-      .form-group input::placeholder {
-        color: rgba(70, 130, 180, 0.6);
-      }
-
-      .form-group input:focus {
-        outline: none;
-        border-color: var(--sky-blue);
-        box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
-        background: rgba(255, 255, 255, 0.8);
-      }
-
+      
       .input-icon {
         position: absolute;
         right: 15px;
         top: 50%;
         transform: translateY(-50%);
         font-size: 18px;
-        color: var(--sky-blue);
       }
-
-      .sky-btn {
-        width: 100%;
-        padding: 18px;
-        background: var(--sunset-gradient);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.4s ease;
-        margin-bottom: 25px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
-        animation: gentle-sway 6s ease-in-out infinite;
-      }
-
-      .sky-btn:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(255, 182, 193, 0.5);
-      }
-
-      .sky-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        transition: left 0.6s;
-      }
-
-      .sky-btn:hover::before {
-        left: 100%;
-      }
-
+      
       .social-login {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 15px;
         margin-bottom: 25px;
       }
-
+      
       .social-btn {
-        flex: 1;
-        padding: 15px;
-        background: var(--cloud-gradient);
-        border: 2px solid rgba(135, 206, 235, 0.3);
-        border-radius: 20px;
-        color: var(--ocean-blue);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 14px;
-        font-weight: 600;
-        backdrop-filter: blur(10px);
+        width: 100%;
+        padding: 18px 24px;
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
-
-      .social-btn:hover {
-        border-color: var(--sky-blue);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-cloud);
-      }
-
+      
       .divider {
         text-align: center;
         margin: 25px 0;
-        color: var(--ocean-blue);
         position: relative;
         font-size: 14px;
         font-weight: 500;
         opacity: 0.7;
       }
-
-      .divider::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(135, 206, 235, 0.4), transparent);
-      }
-
+      
       .divider span {
-        background: var(--sky-bg);
         padding: 0 20px;
       }
-
+      
       .signup-link {
         text-align: center;
       }
-
+      
       .signup-link a {
-        color: var(--ocean-blue);
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.3s ease;
       }
-
-      .signup-link a:hover {
-        color: var(--soft-pink);
-      }
-
+      
       .demo-info {
-        background: rgba(135, 206, 235, 0.1);
-        border: 1px solid rgba(135, 206, 235, 0.3);
-        border-radius: 20px;
-        padding: 20px;
-        margin-bottom: 25px;
-        font-size: 14px;
-        color: var(--ocean-blue);
+        padding: 25px;
+        margin-bottom: 30px;
+        font-size: 16px;
         text-align: center;
-        backdrop-filter: blur(10px);
+        background: var(--metallic-surface);
+        border-radius: 12px;
+        border: 2px solid rgba(255, 0, 64, 0.2);
+        box-shadow: var(--turbo-shadow);
       }
-
+      
       .demo-info strong {
-        color: var(--sky-blue);
         display: block;
         margin-bottom: 5px;
         font-size: 16px;
       }
-
+      
       .achievement-preview {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 25px;
+      }
+      
+      .mini-badge {
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        background: var(--metallic-gradient);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        color: var(--gold-accent);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: var(--gold-shadow);
+        transition: all 0.3s ease;
       }
 
-      .mini-badge {
-        padding: 6px 12px;
-        background: var(--dawn-gradient);
-        border-radius: 15px;
-        font-size: 11px;
-        color: var(--ocean-blue);
-        font-weight: 600;
-        border: 1px solid rgba(135, 206, 235, 0.2);
+      .mini-badge:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: var(--speed-shadow);
       }
     </style>
   </head>
   <body>
-    <div class="cloud-particles" id="particles"></div>
+    <div class="racing-particles" id="particles"></div>
 
-    <div class="login-container cloud-card">
-      <div class="logo">
-        <span class="logo-icon">☁️</span>
-        <h1 class="sky-title">NOVA SKY</h1>
-        <p>🌤️ English Adventure in the Clouds</p>
+    <div class="sky-header">
+      <div class="header-content">
+        <div class="sky-logo">
+          <span class="logo-icon">🏎️</span>
+          <h1>🏁 NOVA RACING 🏁</h1>
+        </div>
       </div>
+    </div>
+
+    <div class="container">
+      <div class="login-container carbon-card racing-hud">
+        <div class="logo">
+          <p class="racing-subtitle">⚡ TURBO ENGLISH ACADEMY ⚡</p>
+        </div>
 
       <div class="level-selector">
-        <button class="level-btn active sky-interactive" data-level="beginner">🌱 Breeze</button>
-        <button class="level-btn sky-interactive" data-level="intermediate">⛅ Cloud</button>
-        <button class="level-btn sky-interactive" data-level="advanced">🌟 Sky</button>
+        <button class="level-btn active racing-btn" data-level="beginner">🏎️ ROOKIE DRIVER</button>
+        <button class="level-btn racing-btn" data-level="intermediate">🏆 PRO RACER</button>
+        <button class="level-btn racing-btn" data-level="advanced">👑 F1 CHAMPION</button>
       </div>
 
       <div class="demo-info">
-        <strong>🌈 Sky Mode Active</strong>
-        Enter any credentials to soar through your English adventure!
+        <strong>🏎️ TURBO MODE ACTIVATED</strong>
+        Enter credentials to ignite your English performance!
       </div>
 
       <form id="login-form">
         <div class="form-group">
-          <label for="email">✉️ Sky Mail</label>
+          <label for="email">📧 RACING EMAIL</label>
           <div class="input-wrapper">
             <input
               type="email"
               id="email"
               name="email"
-              placeholder="your.email@skyquest.com"
+              placeholder="driver@novaracing.com"
               required
             />
-            <span class="input-icon">☁️</span>
+            <span class="input-icon">🏎️</span>
           </div>
         </div>
         <div class="form-group">
-          <label for="password">🔐 Cloud Key</label>
+          <label for="password">🔐 RACING KEY</label>
           <div class="input-wrapper">
             <input
               type="password"
               id="password"
               name="password"
-              placeholder="Enter your cloud key"
+              placeholder="Enter your racing key"
               required
             />
-            <span class="input-icon">🗝️</span>
+            <span class="input-icon">🏁</span>
           </div>
         </div>
-        <button type="submit" class="sky-btn" id="login-btn">
-          🚀 Soar to Adventure
+        <button type="submit" class="racing-btn" id="login-btn">
+          🚀 IGNITION START
         </button>
       </form>
 
       <div class="divider">
-        <span>☁️ Quick Flight ☁️</span>
+        <span>⚡ TURBO ACCESS ⚡</span>
       </div>
 
       <div class="social-login">
-        <button class="social-btn sky-interactive" onclick="signInWithGoogle()">
-          🌤️ Google Sky
+        <button class="social-btn racing-btn" onclick="signInWithGoogle()">
+          🏎️ Google Racing
         </button>
-        <button class="social-btn sky-interactive" onclick="signInWithFacebook()">
-          ⛅ Facebook Cloud
+        <button class="social-btn racing-btn" onclick="signInWithFacebook()">
+          🏁 Facebook Turbo
         </button>
       </div>
 
       <div class="signup-link">
         <p style="color: var(--ocean-blue); opacity: 0.8;">
-          New sky explorer? <a href="#" onclick="showSignUp()">🌈 Join the Sky</a>
+          New racer? <a href="#" onclick="showSignUp()">🏎️ Join the Race</a>
         </p>
       </div>
 
       <div class="achievement-preview">
-        <span class="mini-badge">🌤️ First Flight</span>
-        <span class="mini-badge">☁️ Cloud Walker</span>
-        <span class="mini-badge">🌟 Sky Master</span>
+        <span class="mini-badge">🏎️ First Lap</span>
+        <span class="mini-badge">🏁 Speed Demon</span>
+        <span class="mini-badge">👑 Racing Legend</span>
+        </div>
       </div>
     </div>
 
@@ -422,7 +359,7 @@
         const loginBtn = document.getElementById("login-btn");
 
         loginBtn.disabled = true;
-        loginBtn.innerHTML = "🌤️ Ascending to Sky...";
+        loginBtn.innerHTML = "🏎️ Starting Engine...";
 
         try {
           await simulateLogin(email, password);
@@ -432,7 +369,7 @@
             name: email.split("@")[0],
             level: selectedLevel,
             xp: 0,
-            achievements: ['🌤️ First Flight'],
+            achievements: ['🏎️ First Lap'],
             streak: 0,
             totalScore: 0,
             joinDate: new Date().toISOString()
@@ -451,7 +388,7 @@
         } finally {
           setTimeout(() => {
             loginBtn.disabled = false;
-            loginBtn.innerHTML = "🚀 Soar to Adventure";
+            loginBtn.innerHTML = "🚀 IGNITION START";
           }, 2000);
         }
       });
@@ -462,7 +399,7 @@
             if (email && password) {
               resolve();
             } else {
-              reject(new Error("☁️ Please enter your sky credentials!"));
+              reject(new Error("🏎️ Please enter your racing credentials!"));
             }
           }, 1200);
         });
@@ -479,7 +416,7 @@
 
       function createSkyParticle() {
         const particle = document.createElement('div');
-        particle.innerHTML = ['☁️', '🌤️', '⭐', '🌈', '✨'][Math.floor(Math.random() * 5)];
+        particle.innerHTML = ['🏎️', '🏁', '⚡', '🚀', '🔥'][Math.floor(Math.random() * 5)];
         particle.style.cssText = `
           position: fixed;
           left: ${Math.random() * window.innerWidth}px;
@@ -497,15 +434,15 @@
       }
 
       function signInWithGoogle() {
-        showSkyAlert("🌤️ Google Sky integration coming soon! Prepare for cloud adventures!");
+        showSkyAlert("🏎️ Google Racing integration coming soon! Prepare for turbo speed!");
       }
 
       function signInWithFacebook() {
-        showSkyAlert("⛅ Facebook Cloud will be available in the next sky update!");
+        showSkyAlert("🏁 Facebook Turbo will be available in the next racing update!");
       }
 
       function showSignUp() {
-        showSkyAlert("🌈 New sky explorer registration portal is under construction!");
+        showSkyAlert("🏎️ New racer registration portal is under construction!");
       }
 
       function showSkyAlert(message) {

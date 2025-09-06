@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>SPEAK-SEE-PIC! - Evaluation</title>
+    <title>🏎️ NOVA RACING - Performance Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/sky-theme.css" />
     <style>
@@ -11,43 +11,7 @@
         box-sizing: border-box;
       }
 
-      body {
-        background: 
-          radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 60%),
-          radial-gradient(circle at 80% 20%, rgba(255, 223, 0, 0.12) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(135, 206, 235, 0.22) 0%, transparent 50%),
-          linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #B0E0E6 100%);
-        min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-      }
 
-      body::before {
-        content: '';
-        position: fixed;
-        top: -20%;
-        left: -20%;
-        width: 140%;
-        height: 140%;
-        background: 
-          radial-gradient(circle 170px at 75% 25%, rgba(255, 223, 0, 0.35) 0%, rgba(255, 255, 255, 0.2) 30%, transparent 70%),
-          radial-gradient(circle 110px at 25% 45%, rgba(255, 255, 255, 0.65) 0%, transparent 60%),
-          radial-gradient(circle 85px at 65% 75%, rgba(255, 255, 255, 0.45) 0%, transparent 50%);
-        pointer-events: none;
-        z-index: -1;
-        animation: sunlight-float 24s ease-in-out infinite;
-      }
-
-      @keyframes sunlight-float {
-        0%, 100% { 
-          transform: translateX(0px) translateY(0px);
-          opacity: 0.6;
-        }
-        50% { 
-          transform: translateX(14px) translateY(-9px);
-          opacity: 0.9;
-        }
-      }
 
       .loading-spinner {
         position: fixed;
@@ -55,7 +19,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--carbon-gradient);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -64,14 +28,20 @@
       }
 
       .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid rgba(135, 206, 235, 0.2);
-        border-top: 4px solid #87CEEB;
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(255, 0, 64, 0.2);
+        border-top: 4px solid var(--racing-red);
+        border-right: 4px solid var(--electric-blue);
         border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-bottom: 20px;
-        box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
+        animation: turbo-spin 0.8s linear infinite;
+        margin-bottom: 25px;
+        box-shadow: var(--speed-shadow);
+      }
+
+      @keyframes turbo-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
 
       @keyframes spin {
@@ -84,10 +54,14 @@
       }
 
       .loading-text {
-        color: #4682B4;
-        font-size: 18px;
-        font-weight: 600;
-        text-shadow: 0 2px 4px rgba(135, 206, 235, 0.3);
+        color: var(--white);
+        font-family: 'Orbitron', monospace;
+        font-size: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 20px rgba(255, 0, 64, 0.5);
+        animation: title-glow 2s ease-in-out infinite;
       }
 
       .main-content {
@@ -95,7 +69,9 @@
       }
 
       .header {
-        background: transparent;
+        background: var(--carbon-surface);
+        backdrop-filter: blur(25px);
+        border-bottom: 2px solid rgba(255, 0, 64, 0.3);
         padding: 20px 0;
         margin-bottom: 30px;
         position: relative;
@@ -136,17 +112,17 @@
       }
       
       .logo h1 {
-        background: linear-gradient(135deg, #E0F6FF 0%, #87CEEB 50%, #4682B4 100%);
+        font-family: 'Orbitron', monospace;
+        font-size: 26px;
+        font-weight: 900;
+        background: var(--speed-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-size: 24px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-shadow: 
-          0 0 15px rgba(255, 255, 255, 0.5),
-          0 0 30px rgba(135, 206, 235, 0.3);
-        animation: logo-glow 5s ease-in-out infinite;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 30px rgba(255, 0, 64, 0.5);
+        animation: title-glow 3s ease-in-out infinite;
       }
       
       @keyframes cloud-float {
@@ -200,15 +176,27 @@
       }
 
       .image-comparison-section {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--carbon-surface);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 25px;
-        padding: 24px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+        border: 2px solid rgba(255, 0, 64, 0.3);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: var(--turbo-shadow);
         margin-bottom: 40px;
         position: relative;
         z-index: 10;
+      }
+
+      .image-comparison-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--speed-gradient);
+        border-radius: 12px 12px 0 0;
+        animation: racing-pulse 2s ease-in-out infinite;
       }
 
       .images-row {
@@ -219,22 +207,35 @@
       }
 
       .overall-performance {
-        background: rgba(255, 255, 255, 0.85);
+        background: var(--carbon-surface);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 25px;
-        padding: 24px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+        border: 2px solid rgba(0, 212, 255, 0.3);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: var(--neon-shadow);
         margin-bottom: 40px;
         position: relative;
         z-index: 10;
       }
 
+      .overall-performance::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--turbo-gradient);
+        border-radius: 12px 12px 0 0;
+        animation: turbo-charge 1.5s ease-in-out infinite;
+      }
+
       .image-comparison {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: var(--metallic-surface);
+        border: 2px solid rgba(255, 0, 64, 0.2);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: var(--turbo-shadow);
       }
 
       .section-title {
@@ -289,10 +290,11 @@
       }
 
       .evaluation-results {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: var(--metallic-surface);
+        border: 2px solid rgba(0, 212, 255, 0.2);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: var(--neon-shadow);
       }
 
       .overall-score {
@@ -364,9 +366,19 @@
 
       .metric-card {
         text-align: center;
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 12px;
+        padding: 25px;
+        background: var(--metallic-surface);
+        border: 2px solid rgba(255, 215, 0, 0.2);
+        border-radius: 8px;
+        box-shadow: var(--gold-shadow);
+        transition: all 0.3s ease;
+        transform: skewX(-2deg);
+      }
+
+      .metric-card:hover {
+        transform: skewX(-2deg) translateY(-3px) scale(1.02);
+        border-color: var(--racing-red);
+        box-shadow: var(--speed-shadow);
       }
 
       .metric-icon {
@@ -375,15 +387,21 @@
       }
 
       .metric-value {
-        font-size: 20px;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 5px;
+        font-family: 'Orbitron', monospace;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--gold-accent);
+        margin-bottom: 8px;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
       }
 
       .metric-label {
+        font-family: 'Rajdhani', sans-serif;
         font-size: 14px;
-        color: #64748b;
+        font-weight: 600;
+        color: var(--white);
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
 
       .metric-bar {
@@ -397,9 +415,11 @@
 
       .metric-fill {
         height: 100%;
-        background: linear-gradient(90deg, #10b981, #059669);
+        background: var(--speed-gradient);
         border-radius: 4px;
         transition: width 0.8s ease;
+        box-shadow: 0 0 10px rgba(255, 0, 64, 0.5);
+        animation: racing-pulse 2s ease-in-out infinite;
       }
 
       .feedback-section {
@@ -416,18 +436,28 @@
 
       .feedback-tab {
         flex: 1;
-        padding: 12px;
+        padding: 14px 20px;
         text-align: center;
         border-radius: 6px;
         cursor: pointer;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        background: var(--metallic-surface);
+        color: var(--white);
+        transform: skewX(-2deg);
       }
 
       .feedback-tab.active {
-        background: white;
-        color: #667eea;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--turbo-gradient);
+        color: var(--white);
+        border-color: var(--racing-red);
+        box-shadow: var(--speed-shadow);
+        transform: skewX(-2deg) translateY(-2px) scale(1.02);
       }
 
       .feedback-content {
@@ -473,29 +503,34 @@
       }
 
       .action-btn {
-        padding: 15px 30px;
-        border: none;
-        border-radius: 12px;
+        padding: 16px 32px;
+        border: 2px solid var(--racing-red);
+        border-radius: 6px;
+        font-family: 'Rajdhani', sans-serif;
         font-size: 16px;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
         display: inline-block;
+        position: relative;
+        overflow: hidden;
+        transform: skewX(-3deg);
       }
 
       .primary-btn {
-        background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-        color: white;
-        position: relative;
-        overflow: hidden;
+        background: var(--metallic-gradient);
+        border-color: var(--neon-green);
+        color: var(--white);
       }
 
       .primary-btn:hover {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 
-          0 12px 35px rgba(135, 206, 235, 0.5),
-          0 0 25px rgba(135, 206, 235, 0.4);
+        transform: skewX(-3deg) translateY(-4px) scale(1.05);
+        box-shadow: var(--speed-shadow);
+        border-color: var(--gold-accent);
+        background: var(--speed-gradient);
       }
       
       .primary-btn::before {
@@ -520,21 +555,17 @@
       }
 
       .secondary-btn {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 248, 255, 0.7) 100%);
-        color: #4682B4;
-        border: 2px solid rgba(135, 206, 235, 0.3);
+        background: var(--metallic-surface);
+        border-color: var(--electric-blue);
+        color: var(--white);
         backdrop-filter: blur(10px);
-        position: relative;
-        overflow: hidden;
       }
 
       .secondary-btn:hover {
-        background: linear-gradient(135deg, #B0E0E6 0%, #87CEEB 100%);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 
-          0 8px 25px rgba(135, 206, 235, 0.4),
-          0 0 15px rgba(135, 206, 235, 0.3);
+        background: var(--turbo-gradient);
+        border-color: var(--racing-red);
+        transform: skewX(-3deg) translateY(-3px) scale(1.02);
+        box-shadow: var(--neon-shadow);
       }
       
       .secondary-btn::before {
@@ -558,11 +589,26 @@
       }
 
       .response-analysis {
-        background: linear-gradient(135deg, #F0F8FF 0%, #E0F6FF 100%);
-        border-radius: 20px;
+        background: var(--carbon-surface);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        border-radius: 12px;
         padding: 40px;
         margin-bottom: 40px;
-        box-shadow: 0 8px 32px rgba(135, 206, 235, 0.2);
+        box-shadow: var(--gold-shadow);
+        position: relative;
+      }
+
+      .response-analysis::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--gold-accent), var(--racing-red));
+        border-radius: 12px 12px 0 0;
+        animation: racing-pulse 2s ease-in-out infinite;
       }
 
       .analysis-header {
@@ -594,18 +640,19 @@
 
       .user-responses,
       .model-answers {
-        background: white;
-        border-radius: 20px;
+        background: var(--metallic-surface);
+        border: 2px solid rgba(255, 215, 0, 0.2);
+        border-radius: 12px;
         padding: 30px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(102, 126, 234, 0.1);
+        box-shadow: var(--gold-shadow);
         transition: all 0.3s ease;
       }
 
       .user-responses:hover,
       .model-answers:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px) skewX(-1deg);
+        box-shadow: var(--speed-shadow);
+        border-color: var(--racing-red);
       }
 
       .analysis-section-title {
@@ -719,12 +766,18 @@
       }
 
       .vocab-count {
-        background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
+        background: var(--metallic-gradient);
+        border: 2px solid var(--gold-accent);
+        color: var(--gold-accent);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-family: 'Orbitron', monospace;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: var(--gold-shadow);
+        transform: skewX(-2deg);
       }
 
       .vocabulary-tags {
@@ -734,20 +787,27 @@
       }
 
       .vocab-tag {
-        background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-        color: white;
-        padding: 10px 16px;
-        border-radius: 25px;
+        background: var(--metallic-gradient);
+        border: 2px solid var(--electric-blue);
+        color: var(--white);
+        padding: 12px 18px;
+        border-radius: 6px;
+        font-family: 'Rajdhani', sans-serif;
         font-size: 13px;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(135, 206, 235, 0.3);
-        transition: all 0.3s ease;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: var(--neon-shadow);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
+        transform: skewX(-2deg);
       }
 
       .vocab-tag:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(135, 206, 235, 0.4);
+        transform: skewX(-2deg) translateY(-3px) scale(1.05);
+        border-color: var(--racing-red);
+        background: var(--turbo-gradient);
+        box-shadow: var(--speed-shadow);
       }
 
       .empty-responses {
@@ -795,7 +855,7 @@
       <div class="header">
         <div class="header-content">
           <div class="logo">
-            <h1>SPEAK-SEE-PIC! Evaluation</h1>
+            <h1 class="racing-title">🏆 NOVA RACING PERFORMANCE</h1>
           </div>
           <div class="session-info" id="session-info">Session completed</div>
         </div>
@@ -803,9 +863,9 @@
 
       <div class="container">
         <div class="page-title">
-          <h2>Your Learning Session Results</h2>
-          <p>
-            Here's how well you described the image and areas for improvement
+          <h2 class="racing-title">🏁 Your Racing Performance Results</h2>
+          <p class="racing-subtitle">
+            ⚡ Here's how fast you accelerated your English skills ⚡
           </p>
         </div>
 
@@ -967,14 +1027,14 @@
         </div>
 
         <div class="actions">
-        <a href="/study" class="action-btn primary-btn">
-          <span style="margin-right: 8px; font-size: 18px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));">✨</span> Try Another Image
+        <a href="/study" class="action-btn primary-btn racing-btn">
+          <span style="margin-right: 8px; font-size: 18px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));">🏎️</span> Next Racing Lap
         </a>
-        <a href="/categories" class="action-btn secondary-btn">
-          <span style="margin-right: 8px; font-size: 18px;">🌈</span> Choose Different Category
+        <a href="/categories" class="action-btn secondary-btn racing-btn">
+          <span style="margin-right: 8px; font-size: 18px;">🏁</span> Choose Different Track
         </a>
-        <a href="/categories" class="action-btn secondary-btn">
-          <span style="margin-right: 8px; font-size: 18px;">☁️</span> Back to Home
+        <a href="/categories" class="action-btn secondary-btn racing-btn">
+          <span style="margin-right: 8px; font-size: 18px;">🏎️</span> Back to Garage
         </a>
       </div>
     </div>

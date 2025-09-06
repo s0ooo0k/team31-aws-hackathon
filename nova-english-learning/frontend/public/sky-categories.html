@@ -1,10 +1,11 @@
 <!doctype html>
 <html>
   <head>
-    <title>☁️ Nova Sky - Cloud Adventures</title>
+    <title>🏎️ Nova Racing - Racing Tracks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/sky-theme.css" />
     <script src="/js/interactive.js"></script>
+    <script src="/js/racing-effects.js"></script>
     <script src="/js/icon-replacer.js"></script>
     <style>
       body {
@@ -335,13 +336,13 @@
     </style>
   </head>
   <body>
-    <div class="cloud-particles" id="particles"></div>
+    <div class="racing-particles" id="particles"></div>
 
     <div class="sky-header">
       <div class="header-content">
         <div class="sky-logo">
-          <span class="logo-icon">☁️</span>
-          <h1 class="sky-title">NOVA SKY</h1>
+          <span class="logo-icon">🏎️</span>
+          <h1 class="racing-title">🏁 NOVA RACING 🏁</h1>
         </div>
         <div class="user-panel">
           <div class="user-stats">
@@ -351,8 +352,8 @@
               <span class="xp-display" id="user-xp">0 XP</span>
             </div>
           </div>
-          <button class="logout-btn sky-interactive" onclick="logout()">
-            🌤️ Exit Sky
+          <button class="logout-btn racing-btn" onclick="logout()">
+            🏁 PIT STOP
           </button>
         </div>
       </div>
@@ -360,8 +361,8 @@
 
     <div class="container">
       <div class="sky-title">
-        <h2>🌈 Choose Your Sky Adventure</h2>
-        <p>☁️ Select a cloud journey to begin your English sky quest</p>
+        <h2 class="racing-title">🏎️ CHOOSE YOUR RACING TRACK</h2>
+        <p class="racing-subtitle">⚡ Select a performance category to turbo-charge your English skills ⚡</p>
       </div>
 
       <div id="categories-container">
@@ -372,8 +373,8 @@
       </div>
 
       <div class="mystery-adventure">
-        <button class="mystery-btn sky-interactive" onclick="selectRandomCategory()">
-          🌤️ ✨ Mystery Sky Journey ✨
+        <button class="mystery-btn racing-btn" onclick="selectRandomCategory()">
+          🏎️ ⚡ TURBO CHALLENGE ⚡
         </button>
       </div>
     </div>
@@ -411,12 +412,12 @@
       });
 
       function displayUserInfo(user) {
-        document.getElementById("user-name").textContent = `☁️ ${user.name}`;
+        document.getElementById("user-name").textContent = `🏎️ ${user.name}`;
         
         const levelMap = {
-          'beginner': { badge: '🌱 Breeze', color: 'var(--dawn-gradient)' },
-          'intermediate': { badge: '⛅ Cloud', color: 'var(--sunset-gradient)' },
-          'advanced': { badge: '🌟 Sky', color: 'var(--ocean-gradient)' }
+          'beginner': { badge: '🏎️ Rookie', color: 'var(--dawn-gradient)' },
+          'intermediate': { badge: '🏆 Pro Racer', color: 'var(--sunset-gradient)' },
+          'advanced': { badge: '👑 F1 Champion', color: 'var(--ocean-gradient)' }
         };
         
         const levelInfo = levelMap[user.level] || levelMap['intermediate'];
@@ -446,11 +447,11 @@
         const container = document.getElementById("categories-container");
 
         const adventureIcons = {
-          "daily-life": "🏠",
-          travel: "🌍",
-          business: "🏢",
-          social: "🎉",
-          academic: "🎓",
+          "daily-life": "🏎️",
+          travel: "🏁",
+          business: "🚀",
+          social: "⚡",
+          academic: "🏆",
         };
 
         const difficultyMap = {
@@ -462,11 +463,11 @@
         };
 
         const adventureDescriptions = {
-          "daily-life": "☁️ Float through everyday conversations and daily routines",
-          travel: "🌍 Soar across the world through language adventures",
-          business: "🏢 Rise above professional communication challenges",
-          social: "🎉 Dance through clouds of social interactions",
-          academic: "🎓 Ascend to academic vocabulary heights",
+          "daily-life": "🏎️ Race through everyday conversations at turbo speed",
+          travel: "🏁 Speed across global communication circuits",
+          business: "🚀 Accelerate through professional racing challenges",
+          social: "⚡ Turbo-charge your social interaction performance",
+          academic: "🏆 Champion-level academic vocabulary racing",
         };
 
         const adventuresHTML = `
@@ -479,7 +480,7 @@
                   <div class="adventure-name">${category.name}</div>
                   <div class="adventure-description">${adventureDescriptions[category.id] || category.description}</div>
                   <div class="adventure-stats">
-                    <span class="challenge-count">☁️ ${category.imageCount} Sky Challenges</span>
+                    <span class="challenge-count">🏎️ ${category.imageCount} Racing Laps</span>
                     <span class="difficulty-badge ${difficultyMap[category.id] || "cloud"}">${difficultyMap[category.id] || "cloud"}</span>
                   </div>
                 </div>
@@ -498,7 +499,7 @@
         localStorage.setItem("selectedCategory", categoryId);
 
         setTimeout(() => {
-          window.location.href = `/sky-study.html?category=${categoryId}`;
+          window.location.href = `/study.html?category=${categoryId}`;
         }, 1500);
       }
 
@@ -513,7 +514,7 @@
 
       function createSkySelectionParticle() {
         const particle = document.createElement('div');
-        particle.innerHTML = ['✨', '☁️', '🌟', '🌈'][Math.floor(Math.random() * 4)];
+        particle.innerHTML = ['🏎️', '🏁', '⚡', '🚀'][Math.floor(Math.random() * 4)];
         particle.style.cssText = `
           position: fixed;
           left: ${Math.random() * window.innerWidth}px;
@@ -532,12 +533,12 @@
 
       async function selectRandomCategory() {
         if (categories.length === 0) {
-          showSkyAlert("☁️ Sky adventures are still loading! Please wait for the clouds to gather...");
+          showSkyAlert("🏎️ Racing tracks are still loading! Please wait for the engines to warm up...");
           return;
         }
 
         const btn = document.querySelector('.mystery-btn');
-        btn.innerHTML = '🌤️ ✨ Selecting Mystery Sky... ✨';
+        btn.innerHTML = '🏎️ ⚡ Selecting Turbo Track... ⚡';
         btn.disabled = true;
 
         setTimeout(() => {
@@ -573,7 +574,7 @@
       }
 
       function logout() {
-        showSkyAlert("☁️ Descending from sky... See you in the next adventure!");
+        showSkyAlert("🏎️ Finishing race... See you at the next Grand Prix!");
         
         setTimeout(() => {
           localStorage.removeItem("user");
