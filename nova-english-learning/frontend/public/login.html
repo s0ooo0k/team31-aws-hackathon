@@ -4,6 +4,9 @@
     <title>SPEAK-SEE-PIC!- Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/global.css" />
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.24.min.js"></script>
+    <script src="https://unpkg.com/amazon-cognito-identity-js@6.3.12/dist/amazon-cognito-identity.min.js"></script>
+    <script src="/js/cognito-config.js"></script>
     <style>
       * {
         margin: 0;
@@ -98,50 +101,6 @@
         box-shadow: none;
       }
 
-      .divider {
-        text-align: center;
-        margin: 20px 0;
-        color: #666;
-        position: relative;
-      }
-
-      .divider::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: #e1e5e9;
-      }
-
-      .divider span {
-        background: white;
-        padding: 0 15px;
-      }
-
-      .social-login {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-
-      .social-btn {
-        flex: 1;
-        padding: 12px;
-        border: 2px solid #e1e5e9;
-        background: white;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 14px;
-      }
-
-      .social-btn:hover {
-        border-color: #667eea;
-        transform: translateY(-1px);
-      }
-
       .signup-link {
         text-align: center;
       }
@@ -162,14 +121,20 @@
         font-size: 14px;
       }
 
-      .demo-info {
-        background: #f0f8ff;
-        border: 1px solid #b3d9ff;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        color: #0066cc;
+      .signup-form {
+        display: none;
+      }
+
+      .form-toggle {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .form-toggle a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -180,116 +145,293 @@
         <p>AI-Powered Image Description Learning</p>
       </div>
 
-      <div class="demo-info">
-        <strong>Demo Mode:</strong> Enter any email and password to continue
-      </div>
-
       <div id="error-message" class="error-message"></div>
 
-      <form id="login-form">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-          />
+      <!-- 로그인 폼 -->
+      <div id="login-form-container">
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-btn" id="login-btn">Sign In</button>
+        </form>
+        
+        <div class="form-toggle">
+          <p>Don't have an account? <a onclick="showSignUp()">Sign up</a></p>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-        <button type="submit" class="login-btn" id="login-btn">Sign In</button>
-      </form>
-
-      <div class="divider">
-        <span>or</span>
       </div>
 
-      <div class="social-login">
-        <button class="social-btn" onclick="signInWithGoogle()">
-          📧 Google
-        </button>
-        <button class="social-btn" onclick="signInWithFacebook()">
-          📘 Facebook
-        </button>
+      <!-- 회원가입 폼 -->
+      <div id="signup-form-container" class="signup-form">
+        <form id="signup-form">
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input
+              type="email"
+              id="signup-email"
+              name="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input
+              type="password"
+              id="signup-password"
+              name="password"
+              placeholder="Enter your password (min 8 characters)"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirmPassword"
+              placeholder="Confirm your password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-btn" id="signup-btn">Sign Up</button>
+        </form>
+        
+        <div class="form-toggle">
+          <p>Already have an account? <a onclick="showLogin()">Sign in</a></p>
+        </div>
       </div>
 
-      <div class="signup-link">
-        <p>
-          Don't have an account? <a href="#" onclick="showSignUp()">Sign up</a>
+      <!-- 이메일 확인 폼 -->
+      <div id="verify-form-container" class="signup-form">
+        <h3 style="text-align: center; margin-bottom: 20px; color: #667eea;">Verify Your Email</h3>
+        <p style="text-align: center; margin-bottom: 20px; color: #666;">
+          We've sent a verification code to your email. Please enter it below.
         </p>
+        <form id="verify-form">
+          <div class="form-group">
+            <label for="verification-code">Verification Code</label>
+            <input
+              type="text"
+              id="verification-code"
+              name="code"
+              placeholder="Enter verification code"
+              required
+            />
+          </div>
+          <button type="submit" class="login-btn" id="verify-btn">Verify</button>
+        </form>
+        
+        <div class="form-toggle">
+          <p><a onclick="resendCode()">Resend code</a></p>
+        </div>
       </div>
     </div>
 
     <script>
+      let currentUser = null;
+
       // 로그인 폼 처리
-      document
-        .getElementById("login-form")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+      document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const loginBtn = document.getElementById("login-btn");
+        
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Signing in...";
+        
+        try {
+          await signIn(email, password);
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Sign In";
+        }
+      });
 
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-          const loginBtn = document.getElementById("login-btn");
+      // 회원가입 폼 처리
+      document.getElementById("signup-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+        const signupBtn = document.getElementById("signup-btn");
+        
+        if (password !== confirmPassword) {
+          showError("Passwords do not match");
+          return;
+        }
+        
+        if (password.length < 8) {
+          showError("Password must be at least 8 characters long");
+          return;
+        }
+        
+        signupBtn.disabled = true;
+        signupBtn.textContent = "Signing up...";
+        
+        try {
+          await signUp(email, password);
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          signupBtn.disabled = false;
+          signupBtn.textContent = "Sign Up";
+        }
+      });
 
-          loginBtn.disabled = true;
-          loginBtn.textContent = "Signing in...";
+      // 이메일 확인 폼 처리
+      document.getElementById("verify-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const code = document.getElementById("verification-code").value;
+        const verifyBtn = document.getElementById("verify-btn");
+        
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = "Verifying...";
+        
+        try {
+          await confirmSignUp(code);
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = "Verify";
+        }
+      });
 
-          try {
-            // 데모용 로그인 (실제로는 Cognito 연동)
-            await simulateLogin(email, password);
-
-            // 사용자 정보 저장
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
+      // Cognito 로그인
+      function signIn(email, password) {
+        return new Promise((resolve, reject) => {
+          const authenticationData = {
+            Username: email,
+            Password: password,
+          };
+          
+          const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+          
+          const userData = {
+            Username: email,
+            Pool: userPool,
+          };
+          
+          const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+          
+          cognitoUser.authenticateUser(authenticationDetails, {
+            onSuccess: (result) => {
+              localStorage.setItem("user", JSON.stringify({
                 email: email,
                 name: email.split("@")[0],
-                level: "intermediate",
-              })
-            );
-
-            // 카테고리 페이지로 이동
-            window.location.href = "/categories";
-          } catch (error) {
-            showError(error.message);
-          } finally {
-            loginBtn.disabled = false;
-            loginBtn.textContent = "Sign In";
-          }
-        });
-
-      async function simulateLogin(email, password) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (email && password) {
-              resolve();
-            } else {
-              reject(new Error("Please enter email and password"));
+                accessToken: result.getAccessToken().getJwtToken()
+              }));
+              window.location.href = "/categories.html";
+              resolve(result);
+            },
+            onFailure: (err) => {
+              reject(err);
             }
-          }, 1000);
+          });
         });
       }
 
-      function signInWithGoogle() {
-        alert("Google 로그인 기능은 추후 구현 예정입니다.");
+      // Cognito 회원가입
+      function signUp(email, password) {
+        return new Promise((resolve, reject) => {
+          const attributeList = [];
+          
+          const dataEmail = {
+            Name: 'email',
+            Value: email,
+          };
+          
+          const attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
+          attributeList.push(attributeEmail);
+          
+          userPool.signUp(email, password, attributeList, null, (err, result) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            
+            currentUser = result.user;
+            document.getElementById("signup-form-container").style.display = "none";
+            document.getElementById("verify-form-container").style.display = "block";
+            resolve(result);
+          });
+        });
       }
 
-      function signInWithFacebook() {
-        alert("Facebook 로그인 기능은 추후 구현 예정입니다.");
+      // 이메일 확인
+      function confirmSignUp(code) {
+        return new Promise((resolve, reject) => {
+          if (!currentUser) {
+            reject(new Error("No user to confirm"));
+            return;
+          }
+          
+          currentUser.confirmRegistration(code, true, (err, result) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            
+            showLogin();
+            showError("Account verified! Please sign in.");
+            resolve(result);
+          });
+        });
       }
 
+      // 확인 코드 재전송
+      function resendCode() {
+        if (!currentUser) {
+          showError("No user to resend code to");
+          return;
+        }
+        
+        currentUser.resendConfirmationCode((err, result) => {
+          if (err) {
+            showError(err.message);
+            return;
+          }
+          showError("Verification code resent!");
+        });
+      }
+
+      // UI 전환 함수들
       function showSignUp() {
-        alert("회원가입 페이지는 추후 구현 예정입니다.");
+        document.getElementById("login-form-container").style.display = "none";
+        document.getElementById("signup-form-container").style.display = "block";
+        document.getElementById("verify-form-container").style.display = "none";
+        clearError();
+      }
+
+      function showLogin() {
+        document.getElementById("login-form-container").style.display = "block";
+        document.getElementById("signup-form-container").style.display = "none";
+        document.getElementById("verify-form-container").style.display = "none";
+        clearError();
       }
 
       function showError(message) {
@@ -298,9 +440,14 @@
         errorDiv.style.display = "block";
       }
 
+      function clearError() {
+        const errorDiv = document.getElementById("error-message");
+        errorDiv.style.display = "none";
+      }
+
       // 이미 로그인된 경우 카테고리 페이지로 리다이렉트
       if (localStorage.getItem("user")) {
-        window.location.href = "/categories";
+        window.location.href = "/categories.html";
       }
     </script>
   </body>
