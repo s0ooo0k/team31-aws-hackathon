@@ -439,8 +439,6 @@
         font-weight: 500;
       }
 
-
-
       .status.ready {
         background: #dcfce7;
         color: #166534;
@@ -545,7 +543,6 @@
             src=""
             alt="Study image"
           />
-
         </div>
       </div>
 
@@ -626,8 +623,6 @@
 
       // Set을 이용한 중복 메시지 방지
       let lastProcessedMessages = new Set();
-
-
 
       console.log("🔧 Frontend: Image generation variables initialized");
 
@@ -960,8 +955,7 @@
           const contextualPrompt = `You are an English conversation tutor helping a user describe an image.
 
 Image Context: ${currentImage.description}
-Expected Vocabulary: ${currentImage.expectedVocabulary.join(", ")}
-Guiding Questions: ${currentImage.guidingQuestions.join(", ")}
+Guiding Questions: ${currentImage.guidingQuestions ? currentImage.guidingQuestions.join(", ") : "What do you see in this image?"}
 
 Your role:
 - Ask ONE specific follow-up question at a time
@@ -1203,8 +1197,6 @@ Start by encouraging them to describe what they see.`;
         // 평가 페이지로 이동
         window.location.href = "/evaluation";
       }
-
-
 
       // 페이지 언로드 시 정리
       window.addEventListener("beforeunload", () => {

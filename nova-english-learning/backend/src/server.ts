@@ -704,7 +704,7 @@ io.on("connection", (socket) => {
         const contextualPrompt =
           EnglishTutorPrompt +
           `\n\nImage Context: ${imageData.description}\n` +
-          `Guiding Questions: ${imageData.guidingQuestions.join(", ")}\n\n` +
+          `Guiding Questions: ${imageData.guidingQuestions ? imageData.guidingQuestions.join(", ") : "What do you see in this image?"}\n\n` +
           `Start by encouraging the user to describe what they see in the image.`;
 
         socket.emit("contextSet", { success: true });
