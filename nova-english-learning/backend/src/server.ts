@@ -3,7 +3,7 @@ import http from "http";
 import path from "path";
 import cors from "cors";
 import { Server } from "socket.io";
-import { fromIni } from "@aws-sdk/credential-providers";
+import dotenv from "dotenv";
 import {
   BedrockRuntimeClient,
   InvokeModelCommand,
@@ -12,8 +12,8 @@ import { NovaSonicBidirectionalStreamClient } from "./client";
 import { ImageCategories, EnglishTutorPrompt, createEvidenceBasedPrompt } from "./consts";
 import { Buffer } from "node:buffer";
 
-// AWS 설정
-const AWS_PROFILE_NAME = process.env.AWS_PROFILE || "bedrock-test";
+// .env 파일 로드
+dotenv.config();
 
 // Express 앱 및 서버 생성
 const app = express();
@@ -37,14 +37,20 @@ const bedrockClient = new NovaSonicBidirectionalStreamClient({
   },
   clientConfig: {
     region: process.env.AWS_REGION || "us-east-1",
-    credentials: fromIni({ profile: AWS_PROFILE_NAME }),
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
   },
 });
 
 // Nova Canvas 클라이언트 생성
 const bedrockRuntimeClient = new BedrockRuntimeClient({
   region: process.env.AWS_REGION || "us-east-1",
-  credentials: fromIni({ profile: AWS_PROFILE_NAME }),
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
 // 세션 정리 (5분 비활성 시 자동 종료)
