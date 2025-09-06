@@ -1,0 +1,29 @@
+{
+  "family": "nova-english-learning-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::891377211610:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "nova-english-learning",
+      "image": "891377211610.dkr.ecr.us-east-1.amazonaws.com/nova-english-learning:manual-deploy",
+      "portMappings": [
+        {
+          "containerPort": 3001,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/nova-english-learning",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
