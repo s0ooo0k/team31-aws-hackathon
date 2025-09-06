@@ -1,25 +1,44 @@
 
 # SPEEK-SEE-PIC : Amazon Nova Family 활용한 Gen AI 기반 실시간 영어 스트리밍 회화 학습 서비스
 
-SPEEK-SEE-PIC은 Amazon Nova Sonic을 활용한 실시간 AI 양방향 스트리밍 대화형 영어 학습 플랫폼입니다. WebSocket 기반 실시간 통신과 이미지 기반 상황 서술 학습을 통해 자연스러운 영어 회화 연습이 가능한 웹 애플리케이션입니다.
+SPEEK-SEE-PIC은 Amazon Nova Family(Nova Sonic, Nova Pro, Nova Canvas)를 활용한 실시간 AI 양방향 스트리밍 대화형 영어 학습 플랫폼입니다. WebSocket 기반 실시간 통신과 이미지 기반 상황 서술 학습을 통해 자연스러운 영어 회화 연습이 가능한 웹 애플리케이션입니다.
 
 ## 어플리케이션 개요
 
-SPEEK-SEE-PIC은 Amazon Nova Sonic의 음성 대화 기능을 활용하여 실시간 영어 학습 경험을 제공합니다. 복잡한 설치 과정 없이 웹 브라우저에서 바로 접속하여 AI와 영어 대화를 시작할 수 있습니다.
+SPEEK-SEE-PIC은 Amazon Nova Family의 강력한 AI 기능들을 종합적으로 활용하여 실시간 영어 학습 경험을 제공합니다.
+
+### 🎯 Nova Family 통합 활용
+- **Nova Sonic**: 실시간 음성 대화 및 발음 교정
+- **Nova Pro**: 학습 이미지의 구체적인 내용을 자세한 텍스트로 분석 및 설명
+- **Nova Canvas**: 사용자가 실시간으로 말하는 내용을 반영한 실시간 이미지 생성
+
+복잡한 설치 과정 없이 웹 브라우저에서 바로 접속하여 AI와 영어 대화를 시작할 수 있습니다.
 
 이 서비스는 Node.js/TypeScript 백엔드와 바닐라 JavaScript 프론트엔드로 구성되어 있으며, AWS ECS Fargate에서 컨테이너로 실행됩니다. 사용자 인증은 Amazon Cognito를 통해 처리되며, 실시간 음성 스트리밍은 Socket.IO를 통해 구현되었습니다.
 
-동물, 소셜, K-POP 등 다양한 상황별 이미지를 제공하여 실제 생활에서 사용할 수 있는 실용적인 영어 표현을 노바 소닉과 진짜 사람과 대화하는 것 같이 실감나는 학습할 수 있습니다. Nova Sonic과의 자연스러운 대화를 통해 발음 교정과 실시간 피드백을 받을 수 있습니다.
+동물, 소셜, K-POP 등 다양한 상황별 이미지를 Nova Canvas로 생성하여 실제 생활에서 사용할 수 있는 실용적인 영어 표현을 학습할 수 있습니다. Nova Sonic과의 자연스러운 대화를 통해 발음 교정과 실시간 피드백을 받을 수 있습니다.
 
 ## 주요 기능
 
-- **실시간 음성 대화**: Amazon Nova Sonic과 WebSocket을 통한 실시간 음성 스트리밍으로 자연스러운 영어 대화가 가능합니다. 브라우저에서 마이크 권한만 허용하면 바로 대화를 시작할 수 있습니다.
+### 🎙️ Nova Sonic 기반 실시간 음성 대화
+- **실시간 음성 스트리밍**: WebSocket을 통한 즉시 응답으로 자연스러운 영어 대화
+- **발음 교정 및 피드백**: AI가 실시간으로 발음을 분석하고 개선점 제시
+- **음성 인식 정확도**: 다양한 억양과 발음 패턴을 정확히 인식
 
-- **이미지 기반 상황 학습**: AWS, 애니메이션, 자연 등 실생활 상황을 담은 이미지를 제공하여 상황별 영어 표현을 학습할 수 있습니다.
+### 🧠 Nova Pro 기반 멀티모달 이미지 분석
+- **이미지 내용 텍스트 변환**: 학습 이미지가 어떤 이미지인지 구체적으로 자세한 텍스트로 출력
+- **상황 맥락 제공**: 이미지 속 상황, 인물, 배경 등을 상세히 분석하여 대화 주제 제공
+- **시각적 요소 설명**: 이미지의 색상, 구도, 객체 등을 영어로 설명하여 어휘 학습 지원
 
-- **사용자 인증 시스템**: Amazon Cognito를 통한 안전한 사용자 인증 및 세션 관리를 제공합니다. 이메일 기반 회원가입과 로그인을 지원합니다.
+### 🎨 Nova Canvas 기반 실시간 이미지 생성
+- **실시간 대화 반영 이미지 생성**: 사용자가 실시간으로 말하는 내용을 반영하여 즉시 이미지로 생성
+- **동적 시각화**: 대화 주제와 사용자 발화 내용에 맞는 상황별 이미지를 실시간으로 생성하여 몰입감 증대
+- **맥락 연결 학습**: 사용자의 말과 시각적 요소를 연결하여 기억력 향상
 
-- **반응형 웹 인터페이스**: 모바일과 데스크톱 모두에서 최적화된 사용자 경험을 제공합니다. 직관적인 UI로 누구나 쉽게 사용할 수 있습니다.
+### 🔐 통합 시스템 기능
+- **사용자 인증 시스템**: Amazon Cognito를 통한 안전한 사용자 인증 및 세션 관리
+- **반응형 웹 인터페이스**: 모바일과 데스크톱 모두에서 최적화된 사용자 경험
+- **실시간 동기화**: 모든 Nova 모델 간의 seamless한 데이터 연동
 
 ## 동영상 데모
 ![데모](docs/speek-see-pic-demo.gif)
@@ -125,7 +144,7 @@ aws ssm put-parameter \
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                            ECS Fargate 컨테이너                               │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐  │
-│  │   Express.js    │  │   Socket.IO     │  │   Nova Sonic Client        │  │
+│  │   Express.js    │  │   Socket.IO     │  │   Nova Family Client       │  │
 │  │   (HTTP 서버)    │  │   (WebSocket)   │  │   (Bedrock SDK)            │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -135,8 +154,8 @@ aws ssm put-parameter \
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              AWS 서비스                                       │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐  │
-│  │   Cognito       │  │   Nova Sonic    │  │   CloudWatch               │  │
-│  │   (사용자 인증)    │  │   (AI 대화)      │  │   (로그 및 모니터링)          │  │
+│  │   Cognito       │  │   Nova Family   │  │   CloudWatch               │  │
+│  │   (사용자 인증)    │  │   (AI 서비스)     │  │   (로그 및 모니터링)          │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -145,7 +164,7 @@ aws ssm put-parameter \
 - **컨테이너 플랫폼**: Amazon ECS Fargate
 - **컨테이너 레지스트리**: Amazon ECR
 - **사용자 인증**: Amazon Cognito User Pool
-- **AI 서비스**: Amazon Nova Sonic (Bedrock)
+- **AI 서비스**: Amazon Nova Family (Nova Sonic, Nova Pro, Nova Canvas)
 - **모니터링**: Amazon CloudWatch
 - **네트워킹**: VPC, Security Groups
 - **데이터베이스**: DynamoDB, S3
@@ -178,7 +197,7 @@ aws ecr delete-repository --repository-name nova-english-learning --force
 - **Container**: Docker, Amazon ECS Fargate
 - **Database**: DynamoDB, S3
 - **Authentication**: Amazon Cognito User Pool
-- **AI Service**: Amazon Nova Sonic (Bedrock)
+- **AI Services**: Amazon Nova Family (Nova Sonic, Nova Pro, Nova Canvas)
 - **Infrastructure**: AWS CloudFormation, Amazon ECR
 - **Real-time Communication**: WebSocket (Socket.IO)
 - **CI/CD**: AWS CodeBuild (buildspec.yml)
@@ -190,9 +209,9 @@ nova-english-learning/
 ├── backend/                 # Node.js/TypeScript 서버
 │   ├── src/
 │   │   ├── server.ts        # Express 서버 + Socket.IO 설정
-│   │   ├── client.ts        # Nova Sonic Bedrock 클라이언트
+│   │   ├── client.ts        # Nova Family Bedrock 클라이언트
 │   │   ├── types.ts         # WebSocket 이벤트 타입 정의
-│   │   └── consts.ts        # Nova Sonic 설정 상수
+│   │   └── consts.ts        # Nova Family 설정 상수
 │   ├── package.json         # 의존성: express, socket.io, @aws-sdk
 │   └── tsconfig.json        # TypeScript 컴파일 설정
 ├── frontend/                # 정적 웹 애플리케이션
@@ -216,6 +235,8 @@ nova-english-learning/
 ### 핵심 기술 구현
 - **실시간 통신**: Socket.IO를 통한 양방향 WebSocket 연결
 - **음성 처리**: Web Audio API + Nova Sonic 스트리밍
+- **이미지 분석**: Nova Pro를 통한 이미지 내용의 구체적인 텍스트 변환
+- **실시간 이미지 생성**: Nova Canvas를 통한 사용자 발화 내용 기반 동적 시각화
 - **인증 플로우**: Cognito SDK를 통한 JWT 토큰 기반 인증
 - **컨테이너화**: Docker multi-stage build로 최적화된 이미지
 - **서버리스 컨테이너**: ECS Fargate로 인프라 관리 없는 배포
@@ -224,6 +245,8 @@ nova-english-learning/
 
 ### 1. 기대 효과
 - **실시간 대화 학습**: Nova Sonic과의 즉시 응답으로 자연스러운 영어 대화 연습
+- **이미지 분석 학습**: Nova Pro를 통한 이미지 내용의 구체적인 텍스트 변환 및 영어 설명 제공
+- **실시간 시각화**: Nova Canvas로 사용자 발화 내용을 즉시 이미지로 생성하여 몰입형 학습
 - **접근성 향상**: 웹 브라우저만으로 언제 어디서나 영어 학습 가능
 - **상황별 학습**: 이미지 기반 맥락 학습으로 실용적인 영어 표현 습득
 - **확장 가능한 아키텍처**: ECS Fargate 기반으로 사용자 증가에 따른 자동 확장
@@ -250,13 +273,13 @@ nova-english-learning/
 
 #### @Developer - 풀스택 개발 전문가  
 - **기술스택**: 10년차 React, Node.js, TypeScript, AWS 전문가
-- **핵심역할**: Nova Sonic S2S 모델 웹 구현, 실시간 음성 처리 아키텍처
-- **활용예시**: `@Developer Nova Sonic S2S 모델을 웹에서 어떻게 구현할까요?`
+- **핵심역할**: Nova Family 통합 구현, 실시간 음성-이미지 연동, 멀티모달 AI 연동
+- **활용예시**: `@Developer Nova Pro 이미지 분석과 Nova Canvas 실시간 이미지 생성을 연동해주세요`
 
 #### @CloudOps - AWS 인프라 전문가
 - **전문분야**: 7년차 AWS 클라우드 인프라 엔지니어 - 서버리스 및 컨테이너 전문가
-- **핵심역할**: AWS 서버리스 아키텍처, 컨테이너 오케스트레이션, Amazon Bedrock 인프라
-- **활용예시**: `@CloudOps Nova 기반 영어 학습 서비스의 AWS 아키텍처를 설계해주세요`
+- **핵심역할**: AWS 서버리스 아키텍처, 컨테이너 오케스트레이션, Amazon Bedrock Nova Family 인프라
+- **활용예시**: `@CloudOps Nova Family 통합 영어 학습 서비스의 AWS 아키텍처를 설계해주세요`
 
 #### @QATester - 테스트 자동화 및 품질 보증 전문가
 - **전문분야**: 10년차 QA Engineer - 테스트 자동화 및 품질 보증 전문가
@@ -268,19 +291,7 @@ nova-english-learning/
 - **팀구성**: 영어교육기획자, 풀스택개발자, 클라우드인프라엔지니어, QA엔지니어
 - **활용예시**: `@ProjectLead Nova 영어 학습 서비스 개발 로드맵을 수립해주세요`
 
-### 🚀 Amazon Q 에이전트 활용 방법
-
-#### 1. IDE 환경에서 직접 활용
-```bash
-# 프로젝트 클론 후 IDE에서 Amazon Q 플러그인 설치
-git clone <repository-url>
-cd qqq
-
-# VS Code 또는 IntelliJ에서 Amazon Q 확장/플러그인 설치
-# .amazonq/agents/ 폴더가 자동으로 인식됨
-```
-
-#### 2. 개발 단계별 에이전트 활용
+### 🚀 개발 단계별 Amazon Q 에이전트 활용 방법
 
 **Phase 1: 기획 및 설계**
 ```
@@ -291,9 +302,9 @@ cd qqq
 
 **Phase 2: 개발 및 구현**
 ```
-@Developer Nova Sonic S2S 모델을 웹에서 어떻게 구현할까요?
-@CloudOps 실시간 음성 처리를 위한 인프라 구성은?
-@QATester 이미지 기반 영어 학습 기능의 테스트 케이스를 작성해주세요
+@Developer Nova Pro 이미지 분석과 Nova Canvas 실시간 이미지 생성을 연동해주세요
+@CloudOps 실시간 음성-이미지 처리를 위한 인프라 구성은?
+@QATester Nova Pro 이미지 분석 정확도 테스트 케이스를 작성해주세요
 ```
 
 **Phase 3: 테스트 및 배포**
@@ -309,10 +320,10 @@ cd qqq
 @ProjectLead Nova Sonic 기반 대화형 영어 학습 서비스 개발 로드맵을 수립해주세요
 
 # 각 분야별 전문가 의견 수렴
-@ProductManager 게이미피케이션 요소를 어떻게 적용할까요?
-@Developer 사용자 인증 및 세션 관리 시스템을 구현해주세요
-@CloudOps 비용 최적화를 위한 서버리스 설계 방안은?
-@QATester 실시간 음성 처리 성능 테스트 방법은?
+@ProductManager 이미진 분석 기반 영어 학습의 교육적 효과는?
+@Developer Nova Pro 이미지 분석과 Nova Canvas 실시간 생성을 연동해주세요
+@CloudOps Nova Family 3개 모델 동시 사용 시 인프라 고려사항은?
+@QATester Nova Pro 이미지 분석 정확도와 Nova Canvas 생성 품질 테스트 방법은?
 ```
 
 ### 📋 에이전트 설정 파일 위치
@@ -328,7 +339,7 @@ cd qqq
 ```
 
 ### 💡 활용 팁
-- **구체적인 질문**: "Nova Sonic 연동 방법"보다 "Nova Sonic S2S 모델을 웹에서 어떻게 구현할까요?"
+- **구체적인 질문**: "Nova 연동 방법"보다 "Nova Pro 이미지 분석 결과를 Nova Canvas 실시간 생성에 어떻게 활용할까요?"
 - **역할별 전문성 활용**: 기획은 @ProductManager, 개발은 @Developer, 인프라는 @CloudOps, 테스트는 @QATester
 - **단계별 진행**: @ProjectLead로 전체 계획 수립 후 각 전문가에게 세부 작업 요청
 - **결과물 문서화**: 각 에이전트의 답변을 `docs/` 폴더에 정리하여 팀 공유
