@@ -150,3 +150,6 @@ pnpm-lock.yaml
 
 # Husky
 .husky/_
+# Deployment task definitions (auto-generated)
+task-definition-*.json
+*-task-definition.json

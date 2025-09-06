@@ -11,6 +11,7 @@ ALB: nova-english-alb-v2
 CloudFront: E2KC4USFO0754G
 
 ### 주의할점
-Docker로 이미지 빌드할 때는 linux/amd64에 맞춰서 빌드하기
-ex. docker build --platform linux/amd64 -t nova-english-learning ./nova-english-learning
-
+1. Docker로 이미지 빌드할 때는 linux/amd64에 맞춰서 빌드하기
+    ex. docker build --platform linux/amd64 -t nova-english-learning ./nova-english-learning
+2. 만약, /nova-english-learning/backend 안에 .env가 없다면 배포를 즉시 중단하고 알려줘.
+3. task-definition.json 파일이 필요하다면 생성하되, git에 커밋되지 않도록 gitignore 확인.
