@@ -1,0 +1,80 @@
+[
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_1.png",
+    "imageId": "pic_1",
+    "category": "k-pop",
+    "description": "Three cartoon characters are standing close to each other. They are standing near a glass door. The character on the left has purple hair and is wearing a pink hoodie. The character in the middle has pink hair and is wearing a black cap and glasses. The character on the right has black hair and is wearing a yellow hat. Behind them, there are trees and a blue sky."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_2.png",
+    "imageId": "pic_2",
+    "category": "nature",
+    "description": "The image depicts a serene riverside village with traditional wooden houses. The houses are built on stilts, showcasing a unique architectural style. The river is calm, with several small boats floating on its green waters. Lush greenery surrounds the village, with trees and hills in the background. The sky is clear, indicating a sunny day. The overall atmosphere is peaceful and picturesque, highlighting the harmony between nature and human habitation."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_3.png",
+    "imageId": "pic_3",
+    "category": "social",
+    "description": "Four people are sitting on chairs in an outdoor area. The chairs are colorful, with one being pink and another being multicolored. A woman is holding a laptop on her lap. Another woman is wearing glasses and sneakers. A man is sitting on a chair with his legs crossed. Another man is holding his chin with his hand. The floor is made of tiles. The atmosphere is casual and relaxed."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_4.jpeg",
+    "imageId": "pic_4",
+    "category": "social",
+    "description": "The image shows a soccer match in progress. A player in a white jersey with the letters \"AIA\" is running towards the ball. He is surrounded by three opponents in black and red jerseys. The soccer field is green, and the ball is white with blue and purple accents. The background shows a crowd of spectators, some of whom are blurry due to the motion. The atmosphere is dynamic and competitive."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_5.jpeg",
+    "imageId": "pic_5",
+    "category": "social",
+    "description": "The image depicts a group of people dressed in traditional Korean attire, engaging in a performance on a grassy field. They are holding large, round, golden shields and swords. The participants wear red and blue costumes with white undergarments, black boots, and ornate hats. In the background, there are colorful flags and balloons, and a traditional Korean building with a curved roof. Spectators are watching from the side, creating a festive atmosphere."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_6.jpeg",
+    "imageId": "pic_6",
+    "category": "k-pop",
+    "description": "The image shows three cartoon characters standing together. They are holding cups with straws and appear to be eating. The character on the left has pink hair and is wearing a black top. The middle character has purple hair and is wearing a yellow jacket. The character on the right has black hair and is wearing a black and white outfit. The background is purple and blue."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_7.jpeg",
+    "imageId": "pic_7",
+    "category": "animation",
+    "description": "The image depicts a cartoon character in a room with a red carpet and red walls. The character is wearing a blue suit with a white shirt and a brown bow tie. He is giving a thumbs up with his right hand. There are two chairs with red cushions and a desk with a lamp. The room has a warm, cozy atmosphere with dim lighting. The walls are decorated with framed pictures and shelves with various items."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_8.jpeg",
+    "imageId": "pic_8",
+    "category": "animation",
+    "description": "The image depicts a dynamic scene with several anime characters in action. The central figure, a boy with red hair, wields a large sword. Surrounding him are other characters, each with distinct appearances and weapons. The background is dark, with hints of a forest, suggesting a nighttime setting. The characters' expressions are intense, indicating a battle or confrontation. The colors are vibrant, with contrasting shades enhancing the dramatic atmosphere."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_9.png",
+    "imageId": "pic_9",
+    "category": "animation",
+    "description": "Three cartoon characters are standing close to each other. They are standing near a glass door. The character on the left has purple hair and is wearing a pink hoodie. The character in the middle has pink hair and is wearing glasses and a black cap. The character on the right is wearing a yellow hat. Behind them, there are trees and a blue sky."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_10.jpeg",
+    "imageId": "pic_10",
+    "category": "animal",
+    "description": "A person is sitting on the street, feeding a cat with a red and pink treat. The cat is eagerly reaching up with its mouth open. The person is wearing a gray hoodie and shorts. The cat is orange with a fluffy tail. In the background, there is a building with many windows and a parked car. The street is empty, and the sky is clear."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_11.jpeg",
+    "imageId": "pic_11",
+    "category": "social",
+    "description": "A man is sitting in an office chair, wearing a denim shirt and glasses. He is typing on a keyboard with two monitors displaying code. The desk is made of white material, and there is a black mouse on it. The atmosphere is focused and professional, with the man concentrating on his work. The monitors show lines of code, indicating a technical or programming-related task. The background includes a glass window with natural light coming through."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_12.jpeg",
+    "imageId": "pic_12",
+    "category": "AWS",
+    "description": "Two men are standing next to each other in front of a white door. The man on the left is wearing an orange shirt and holding a laptop. The man on the right is wearing a black shirt and holding a can of Coca-Cola. Behind them is a projector screen and a whiteboard with a poster on it. The wall is painted in a light beige color."
+  },
+  {
+    "imageUrl": "https://d1d6oeec7imlh5.cloudfront.net/pic_13.jpeg",
+    "imageId": "pic_13",
+    "category": "social",
+    "description": "The image shows a top-down view of a city street. The street is lined with buildings on the left and trees on the right. The buildings have red roofs and white walls. The street is empty, with no cars or people visible. The trees are lush and green, with some having circular structures on top. The sky is clear and blue."
+  }
+]

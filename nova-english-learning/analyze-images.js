@@ -7,14 +7,36 @@ const fs = require("fs").promises;
 
 // 이미지 URL 목록
 const imageUrls = [
-  "https://i.ibb.co/b5pgjy84/young-woman-arranging-her-cake-shop.jpg",
-  "https://images.unsplash.com/photo-1556910585-09baa3a3998e?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://i.ibb.co/bjP16wN5/young-lady-reading-near-bookshelf.jpg",
-  "https://i.ibb.co/zHVCWJQ0/elegant-mother-with-cute-daughter.jpg",
-  "https://contents-cdn.viewus.co.kr/image/2025/08/CP-2023-0089/image-49294418-b27c-4e2f-85e1-ad8842ac8047.png",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_1.png",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_2.png",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_3.png",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_4.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_5.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_6.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_7.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_8.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_9.png",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_10.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_11.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_12.jpeg",
+  "https://d1d6oeec7imlh5.cloudfront.net/pic_13.jpeg",
 ];
 
-const categories = ["Coffee Shop", "Restaurant", "Library", "Park", "Kpop"];
+const categories = [
+  "k-pop",
+  "nature",
+  "social",
+  "social",
+  "social",
+  "k-pop",
+  "animation",
+  "animation",
+  "animation",
+  "animal",
+  "social",
+  "AWS",
+  "social",
+];
 
 async function analyzeImageWithNovaPro(imageUrl, category) {
   try {
@@ -44,7 +66,9 @@ async function analyzeImageWithNovaPro(imageUrl, category) {
               },
               {
                 image: {
-                  format: imageUrl.toLowerCase().includes('.png') ? "png" : "jpeg",
+                  format: imageUrl.toLowerCase().includes(".png")
+                    ? "png"
+                    : "jpeg",
                   source: {
                     bytes: base64Image,
                   },
@@ -81,7 +105,7 @@ async function analyzeAllImages() {
     "🚀 Starting Nova Pro image analysis for English learning evaluation...\n"
   );
 
-  const results = {};
+  const results = [];
 
   for (let i = 0; i < imageUrls.length; i++) {
     const description = await analyzeImageWithNovaPro(
@@ -89,7 +113,12 @@ async function analyzeAllImages() {
       categories[i]
     );
     if (description) {
-      results[categories[i]] = description;
+      results.push({
+        imageUrl: imageUrls[i],
+        imageId: `pic_${i + 1}`,
+        category: categories[i],
+        description: description
+      });
     }
 
     // API 호출 간격 조절
@@ -108,14 +137,14 @@ async function analyzeAllImages() {
 
   // consts.ts 업데이트용 코드 생성
   let constsUpdate = "\n// Generated image descriptions for consts.ts:\n";
-  Object.entries(results).forEach(([category, description]) => {
-    constsUpdate += `\n// ${category}:\ndetailedDescription: \`${description}\`,\n`;
+  results.forEach((result, index) => {
+    constsUpdate += `\n// ${result.imageId} (${result.category}):\ndetailedDescription: \`${result.description}\`,\n`;
   });
 
   await fs.writeFile("consts-update.txt", constsUpdate);
   console.log("💾 consts.ts update code saved to: consts-update.txt");
 
-  console.log("\n✅ Analysis complete! Check the generated files.");
+  console.log(`\n✅ Analysis complete! Processed ${results.length} images. Check the generated files.`);
 
   return results;
 }

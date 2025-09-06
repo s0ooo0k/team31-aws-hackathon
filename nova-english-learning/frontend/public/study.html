@@ -74,14 +74,12 @@
 
       .header {
         background: transparent;
-        padding: 20px 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
+        padding: 25px 0;
+        margin-bottom: 40px;
       }
 
       .header-content {
-        max-width: 1400px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 0 20px;
         display: flex;
@@ -90,13 +88,10 @@
       }
 
       .logo h1 {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-size: 20px;
-        font-weight: 700;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        color: #667eea;
+        font-size: 28px;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .session-info {
@@ -136,6 +131,32 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .page-title h2 {
+        font-size: 36px;
+        color: #1e293b;
+        margin-bottom: 15px;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .page-title p {
+        font-size: 20px;
+        color: #475569;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
       .study-container {
         max-width: 1400px;
         margin: 0 auto;
@@ -143,7 +164,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         gap: 20px;
-        height: calc(100vh - 80px);
+        height: calc(100vh - 200px);
       }
 
       .left-panel {
@@ -358,29 +379,47 @@
       }
 
       .start-btn {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
+        background: linear-gradient(
+          135deg,
+          rgba(134, 239, 172, 0.8),
+          rgba(187, 247, 208, 0.8)
+        );
+        color: #166534;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        border: 1px solid rgba(134, 239, 172, 0.3);
+        box-shadow: 0 4px 15px rgba(134, 239, 172, 0.2);
       }
 
       .start-btn:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        background: linear-gradient(
+          135deg,
+          rgba(134, 239, 172, 0.9),
+          rgba(187, 247, 208, 0.9)
+        );
+        box-shadow: 0 8px 25px rgba(134, 239, 172, 0.3);
       }
 
       .stop-btn {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
+        background: linear-gradient(
+          135deg,
+          rgba(252, 165, 165, 0.8),
+          rgba(254, 202, 202, 0.8)
+        );
+        color: #991b1b;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        border: 1px solid rgba(252, 165, 165, 0.3);
+        box-shadow: 0 4px 15px rgba(252, 165, 165, 0.2);
       }
 
       .stop-btn:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        background: linear-gradient(
+          135deg,
+          rgba(252, 165, 165, 0.9),
+          rgba(254, 202, 202, 0.9)
+        );
+        box-shadow: 0 8px 25px rgba(252, 165, 165, 0.3);
       }
 
       .control-btn:disabled {
@@ -399,6 +438,8 @@
         border-radius: 8px;
         font-weight: 500;
       }
+
+
 
       .status.ready {
         background: #dcfce7;
@@ -427,9 +468,13 @@
       .finish-btn {
         width: 100%;
         padding: 15px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: linear-gradient(
+          135deg,
+          rgba(147, 197, 253, 0.8),
+          rgba(196, 181, 253, 0.8)
+        );
+        color: #4c1d95;
+        border: 1px solid rgba(147, 197, 253, 0.3);
         border-radius: 16px;
         font-size: 16px;
         font-weight: 600;
@@ -437,12 +482,17 @@
         margin-top: 20px;
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 15px rgba(147, 197, 253, 0.2);
       }
 
       .finish-btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(
+          135deg,
+          rgba(147, 197, 253, 0.9),
+          rgba(196, 181, 253, 0.9)
+        );
+        box-shadow: 0 12px 35px rgba(147, 197, 253, 0.3);
       }
 
       @media (max-width: 1200px) {
@@ -469,12 +519,19 @@
     <div class="header">
       <div class="header-content">
         <div class="logo">
-          <h1>SPEAK-SEE-PIC! STUDY</h1>
+          <h1>SPEEK-SEE-PIC!</h1>
         </div>
         <div class="session-info">
           <div class="timer" id="timer">00:00</div>
           <a href="/categories" class="back-btn">← Back to Categories</a>
         </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="page-title">
+        <h2>English Learning Session</h2>
+        <p>Describe the image and practice your English conversation skills</p>
       </div>
     </div>
 
@@ -488,9 +545,7 @@
             src=""
             alt="Study image"
           />
-          <div class="image-info" id="image-info">
-            Loading image information...
-          </div>
+
         </div>
       </div>
 
@@ -572,6 +627,8 @@
       // Set을 이용한 중복 메시지 방지
       let lastProcessedMessages = new Set();
 
+
+
       console.log("🔧 Frontend: Image generation variables initialized");
 
       // 페이지 로드 시 초기화
@@ -642,14 +699,7 @@
 
       function displayImage(imageData) {
         const img = document.getElementById("original-image");
-        const info = document.getElementById("image-info");
-
         img.src = imageData.url;
-        info.innerHTML = `
-                <strong>Category:</strong> ${imageData.category}<br>
-                <strong>Description:</strong> ${imageData.description}<br>
-                <strong>Expected Vocabulary:</strong> ${imageData.expectedVocabulary.join(", ")}
-            `;
       }
 
       function setupSocketEvents() {
@@ -1154,11 +1204,14 @@ Start by encouraging them to describe what they see.`;
         window.location.href = "/evaluation";
       }
 
+
+
       // 페이지 언로드 시 정리
       window.addEventListener("beforeunload", () => {
         if (timerInterval) {
           clearInterval(timerInterval);
         }
+
         if (socket) {
           socket.disconnect();
         }
