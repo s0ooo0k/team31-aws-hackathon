@@ -59,5 +59,9 @@
   "bugs": {
     "url": "https://github.com/your-org/nova-english-learning/issues"
   },
-  "homepage": "https://github.com/your-org/nova-english-learning#readme"
+  "homepage": "https://github.com/your-org/nova-english-learning#readme",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.883.0",
+    "@aws-sdk/credential-providers": "^3.883.0"
+  }
 }

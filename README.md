@@ -1,4 +1,4 @@
-# Nova English Learning Service
+# SPEEK-SEE-PIC! : English Learning Service with Amazon nova
 
 Amazon Nova Sonic을 활용한 AI 기반 대화형 영어 학습 플랫폼
 
@@ -7,6 +7,7 @@ Amazon Nova Sonic을 활용한 AI 기반 대화형 영어 학습 플랫폼
 Nova Sonic과의 실시간 대화를 통한 인터랙티브 영어 학습 서비스입니다. ECS Fargate 기반 컨테이너 아키텍처로 확장 가능하고 비용 효율적인 학습 플랫폼을 제공합니다.
 
 ### 핵심 기능
+
 - **AI 대화 학습**: Amazon Nova Sonic과의 실시간 영어 대화 연습
 - **음성 인식**: 실시간 음성 처리 및 발음 피드백
 - **개인화 학습**: 사용자 수준과 관심사 기반 맞춤형 학습 경로
@@ -16,23 +17,27 @@ Nova Sonic과의 실시간 대화를 통한 인터랙티브 영어 학습 서비
 ## 🏗️ 기술 스택
 
 ### 프론트엔드
+
 - **Framework**: React + TypeScript
 - **Hosting**: S3 Static Website + CloudFront CDN
 - **State Management**: React Context/Redux
 - **Styling**: CSS Modules/Styled Components
 
 ### 백엔드
+
 - **Runtime**: Node.js + Express.js
 - **Container**: ECS Fargate (서버리스 컨테이너)
 - **Load Balancer**: Application Load Balancer (ALB)
 - **Registry**: Amazon ECR
 
 ### AI 서비스
+
 - **대화형 AI**: Amazon Nova Sonic
 - **음성 처리**: 실시간 음성 인식 및 응답
 - **개인화**: 사용자 맞춤형 학습 시나리오
 
 ### 데이터 & 스토리지
+
 - **Database**: DynamoDB (이미지-텍스트 매핑, 사용자 진도)
 - **Object Storage**: S3 (이미지, 대화 기록)
 - **Authentication**: Amazon Cognito
@@ -40,6 +45,7 @@ Nova Sonic과의 실시간 대화를 통한 인터랙티브 영어 학습 서비
 ## 🚀 빠른 시작
 
 ### 개발 환경 설정
+
 ```bash
 # 저장소 클론
 git clone https://github.com/s0ooo0k/team31_0905.git
@@ -61,6 +67,7 @@ npm run dev  # http://localhost:3001
 ```
 
 ### Docker 로컬 테스트
+
 ```bash
 # Docker Compose로 전체 환경 실행
 cd docker
@@ -119,6 +126,7 @@ nova-english-learning/
 ## 🏛️ 시스템 아키텍처
 
 ### ECS Fargate 기반 컨테이너 아키텍처
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   React Web     │    │   CloudFront    │    │   Application   │
@@ -130,8 +138,8 @@ nova-english-learning/
 │   Amazon        │    │   ECS Fargate   │    │   Container     │
 │   Cognito       │◄──►│   Cluster       │◄──►│   Registry      │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │                       
-                                ▼                       
+                                │
+                                ▼
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Nova Sonic    │    │   S3 Storage    │    │   DynamoDB      │
 │   AI Service    │◄──►│   (Images +     │◄──►│   (Mapping +    │
@@ -140,6 +148,7 @@ nova-english-learning/
 ```
 
 ### 주요 특징
+
 - **확장성**: ECS Fargate 자동 스케일링
 - **비용 효율성**: 단일 AZ 배포로 ~$111/month
 - **고성능**: ALB + CloudFront CDN
@@ -148,30 +157,35 @@ nova-english-learning/
 ## 📋 개발 로드맵
 
 ### Phase 1: 기획 및 설계 (완료)
+
 - [x] 프로젝트 명세서 작성
 - [x] AWS 아키텍처 설계
 - [x] API 명세서 정의
 - [x] 개발 가이드 작성
 
 ### Phase 2: 인프라 구축
+
 - [ ] ECS Fargate 클러스터 구성
 - [ ] ALB 및 ECR 설정
 - [ ] DynamoDB 테이블 생성
 - [ ] S3 버킷 및 CloudFront 배포
 
 ### Phase 3: 백엔드 개발
+
 - [ ] Express API 서버 구현
 - [ ] Nova Sonic 연동
 - [ ] 인증 및 사용자 관리
 - [ ] 음성 처리 파이프라인
 
 ### Phase 4: 프론트엔드 개발
+
 - [ ] React 컴포넌트 구현
 - [ ] 음성 녹음 인터페이스
 - [ ] 실시간 대화 UI
 - [ ] 진도 추적 대시보드
 
 ### Phase 5: 테스트 및 배포
+
 - [ ] 단위/통합 테스트
 - [ ] E2E 테스트
 - [ ] CI/CD 파이프라인
@@ -180,6 +194,7 @@ nova-english-learning/
 ## 🔧 환경 설정
 
 ### AWS 서비스 권한
+
 - **Amazon Bedrock**: Nova Sonic 모델 접근
 - **ECS Fargate**: 컨테이너 실행
 - **ECR**: Docker 이미지 저장
@@ -190,6 +205,7 @@ nova-english-learning/
 - **CloudFront**: CDN
 
 ### 예상 비용 (단일 AZ)
+
 - ECS Fargate: $25/month
 - ALB: $16/month
 - Nova Sonic API: $50/month
