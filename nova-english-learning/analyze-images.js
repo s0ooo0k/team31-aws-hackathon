@@ -117,7 +117,7 @@ async function analyzeAllImages() {
         imageUrl: imageUrls[i],
         imageId: `pic_${i + 1}`,
         category: categories[i],
-        description: description
+        description: description,
       });
     }
 
@@ -144,7 +144,9 @@ async function analyzeAllImages() {
   await fs.writeFile("consts-update.txt", constsUpdate);
   console.log("💾 consts.ts update code saved to: consts-update.txt");
 
-  console.log(`\n✅ Analysis complete! Processed ${results.length} images. Check the generated files.`);
+  console.log(
+    `\n✅ Analysis complete! Processed ${results.length} images. Check the generated files.`
+  );
 
   return results;
 }
