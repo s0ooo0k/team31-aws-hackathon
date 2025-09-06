@@ -1,887 +1,1301 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>Nova English Learning - Evaluation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <title>SPEAK-SEE-PIC! - Evaluation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/global.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #f8fafc;
+        min-height: 100vh;
+      }
+
+      .loading-spinner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-        
-        body {
-            background: #f8fafc;
-            min-height: 100vh;
+        100% {
+          transform: rotate(360deg);
         }
-        
-        .header {
-            background: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+      }
+
+      .loading-text {
+        color: #667eea;
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .main-content {
+        display: none;
+      }
+
+      .header {
+        background: white;
+        padding: 20px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo h1 {
+        color: #667eea;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .session-info {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .page-title h2 {
+        font-size: 32px;
+        color: #1e293b;
+        margin-bottom: 10px;
+      }
+
+      .page-title p {
+        font-size: 18px;
+        color: #64748b;
+      }
+
+      .image-comparison-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 40px;
+      }
+
+      .images-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 20px;
+      }
+
+      .overall-performance {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 40px;
+      }
+
+      .image-comparison {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .image-container {
+        position: relative;
+        margin-bottom: 15px;
+      }
+
+      .comparison-image {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-label {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .similarity-score {
+        text-align: center;
+        margin-top: 15px;
+        padding: 15px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+
+      .score-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+      }
+
+      .score-label {
+        font-size: 14px;
+        color: #64748b;
+      }
+
+      .evaluation-results {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .overall-score {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        color: white;
+      }
+
+      .overall-score-value {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .overall-score-label {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .metric-card {
+        text-align: center;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 12px;
+      }
+
+      .metric-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .metric-value {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 5px;
+      }
+
+      .metric-label {
+        font-size: 14px;
+        color: #64748b;
+      }
+
+      .metric-bar {
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .metric-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        border-radius: 4px;
+        transition: width 0.8s ease;
+      }
+
+      .feedback-section {
+        margin-top: 30px;
+      }
+
+      .feedback-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        padding: 4px;
+      }
+
+      .feedback-tab {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .feedback-tab.active {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .feedback-content {
+        display: none;
+      }
+
+      .feedback-content.active {
+        display: block;
+      }
+
+      .feedback-list {
+        list-style: none;
+      }
+
+      .feedback-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .feedback-item:last-child {
+        border-bottom: none;
+      }
+
+      .feedback-icon {
+        font-size: 16px;
+        margin-top: 2px;
+      }
+
+      .feedback-text {
+        flex: 1;
+        line-height: 1.5;
+        color: #374151;
+      }
+
+      .actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+      }
+
+      .action-btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .primary-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .primary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .secondary-btn {
+        background: #f1f5f9;
+        color: #64748b;
+      }
+
+      .secondary-btn:hover {
+        background: #e2e8f0;
+      }
+
+      .response-analysis {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .analysis-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .analysis-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .analysis-subtitle {
+        font-size: 16px;
+        color: #64748b;
+      }
+
+      .analysis-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .user-responses,
+      .model-answers {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .user-responses:hover,
+      .model-answers:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+      }
+
+      .analysis-section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .title-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+
+      .user-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .model-icon {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      }
+
+      .response-content {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 25px;
+        max-height: 350px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+      }
+
+      .user-message {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 18px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        position: relative;
+      }
+
+      .user-message::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.2) 0%,
+          transparent 100%
+        );
+        border-radius: 18px;
+        pointer-events: none;
+      }
+
+      .user-message:last-child {
+        margin-bottom: 0;
+      }
+
+      .model-content {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 5px solid #0ea5e9;
+        padding: 25px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        line-height: 1.7;
+        color: #0f172a;
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.1);
+        position: relative;
+      }
+
+      .model-content::before {
+        content: "✨";
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 20px;
+        opacity: 0.6;
+      }
+
+      .vocabulary-section {
+        margin-top: 25px;
+      }
+
+      .vocab-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .vocab-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      .vocab-count {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .vocabulary-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .vocab-tag {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 10px 16px;
+        border-radius: 25px;
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .vocab-tag:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      }
+
+      .empty-responses {
+        text-align: center;
+        color: #64748b;
+        font-style: italic;
+        padding: 60px 20px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px;
+        border: 2px dashed #cbd5e1;
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .images-row {
+          grid-template-columns: 1fr;
         }
-        
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo h1 {
-            color: #667eea;
-            font-size: 24px;
-            font-weight: 700;
-        }
-        
-        .session-info {
-            color: #64748b;
-            font-size: 14px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .page-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .page-title h2 {
-            font-size: 32px;
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
-        
-        .page-title p {
-            font-size: 18px;
-            color: #64748b;
-        }
-        
-        .evaluation-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .image-comparison {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .image-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-        
-        .comparison-image {
-            width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .image-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .similarity-score {
-            text-align: center;
-            margin-top: 15px;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
-        
-        .score-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        
-        .score-label {
-            font-size: 14px;
-            color: #64748b;
-        }
-        
-        .evaluation-results {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        
-        .overall-score {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            color: white;
-        }
-        
-        .overall-score-value {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .overall-score-label {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        
+
         .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+          grid-template-columns: 1fr;
         }
-        
-        .metric-card {
-            text-align: center;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 12px;
+
+        .analysis-grid {
+          grid-template-columns: 1fr;
         }
-        
-        .metric-icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .metric-value {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 5px;
-        }
-        
-        .metric-label {
-            font-size: 14px;
-            color: #64748b;
-        }
-        
-        .metric-bar {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-        
-        .metric-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981, #059669);
-            border-radius: 4px;
-            transition: width 0.8s ease;
-        }
-        
-        .feedback-section {
-            margin-top: 30px;
-        }
-        
-        .feedback-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            padding: 4px;
-        }
-        
-        .feedback-tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .feedback-tab.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .feedback-content {
-            display: none;
-        }
-        
-        .feedback-content.active {
-            display: block;
-        }
-        
-        .feedback-list {
-            list-style: none;
-        }
-        
-        .feedback-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        
-        .feedback-item:last-child {
-            border-bottom: none;
-        }
-        
-        .feedback-icon {
-            font-size: 16px;
-            margin-top: 2px;
-        }
-        
-        .feedback-text {
-            flex: 1;
-            line-height: 1.5;
-            color: #374151;
-        }
-        
+
         .actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 40px;
+          flex-direction: column;
         }
-        
-        .action-btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .primary-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .secondary-btn {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-        
-        .secondary-btn:hover {
-            background: #e2e8f0;
-        }
-        
-        .response-analysis {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .user-responses, .model-answers {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        
-        .response-content {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .user-message {
-            background: #667eea;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        .user-message:last-child {
-            margin-bottom: 0;
-        }
-        
-        .model-content {
-            background: #f0f9ff;
-            border-left: 4px solid #0ea5e9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            line-height: 1.6;
-            color: #0f172a;
-        }
-        
-        .vocabulary-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .vocab-tag {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .empty-responses {
-            text-align: center;
-            color: #64748b;
-            font-style: italic;
-            padding: 40px 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .evaluation-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .response-analysis {
-                grid-template-columns: 1fr;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">
-                <h1>SPEAK-SEE-PIC! Evaluation</h1>
-            </div>
-            <div class="session-info" id="session-info">
-                Session completed
-            </div>
-        </div>
+  </head>
+  <body>
+    <div class="loading-spinner" id="loading-spinner">
+      <div class="spinner"></div>
+      <div class="loading-text">Analyzing your performance...</div>
     </div>
 
-    <div class="container">
+    <div class="main-content" id="main-content">
+      <div class="header">
+        <div class="header-content">
+          <div class="logo">
+            <h1>SPEAK-SEE-PIC! Evaluation</h1>
+          </div>
+          <div class="session-info" id="session-info">Session completed</div>
+        </div>
+      </div>
+
+      <div class="container">
         <div class="page-title">
-            <h2>Your Learning Session Results</h2>
-            <p>Here's how well you described the image and areas for improvement</p>
+          <h2>Your Learning Session Results</h2>
+          <p>
+            Here's how well you described the image and areas for improvement
+          </p>
         </div>
 
-        <div class="evaluation-grid">
-            <div class="image-comparison">
-                <div class="section-title">Image Comparison</div>
-                
-                <div class="image-container">
-                    <img id="original-image" class="comparison-image" src="" alt="Original image">
-                    <div class="image-label">Original Image</div>
-                </div>
-                
-                <div class="image-container">
-                    <img id="generated-image" class="comparison-image" src="" alt="Generated image">
-                    <div class="image-label">AI Generated from Your Description</div>
-                </div>
-                
-                <div class="similarity-score">
-                    <div class="score-value" id="similarity-score">85%</div>
-                    <div class="score-label">Similarity Score</div>
-                </div>
+        <div class="image-comparison-section">
+          <div class="section-title">Image Comparison</div>
+          <div class="images-row">
+            <div class="image-container">
+              <img
+                id="original-image"
+                class="comparison-image"
+                src=""
+                alt="Original image"
+              />
+              <div class="image-label">Original Image</div>
             </div>
 
-            <div class="evaluation-results">
-                <div class="overall-score">
-                    <div class="overall-score-value" id="overall-score">B+</div>
-                    <div class="overall-score-label">Overall Performance</div>
-                </div>
-
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-icon">🎯</div>
-                        <div class="metric-value" id="accuracy-score">85</div>
-                        <div class="metric-label">Accuracy</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" id="accuracy-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-icon">📊</div>
-                        <div class="metric-value" id="completeness-score">75</div>
-                        <div class="metric-label">Completeness</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" id="completeness-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="metric-card">
-                        <div class="metric-icon">📚</div>
-                        <div class="metric-value" id="vocabulary-score">80</div>
-                        <div class="metric-label">Vocabulary</div>
-                        <div class="metric-bar">
-                            <div class="metric-fill" id="vocabulary-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="feedback-section">
-                    <div class="feedback-tabs">
-                        <div class="feedback-tab active" onclick="showFeedback('strengths')">
-                            ✅ Strengths
-                        </div>
-                        <div class="feedback-tab" onclick="showFeedback('improvements')">
-                            📈 Improvements
-                        </div>
-                        <div class="feedback-tab" onclick="showFeedback('alternatives')">
-                            💡 Alternatives
-                        </div>
-                    </div>
-
-                    <div id="strengths" class="feedback-content active">
-                        <ul class="feedback-list" id="strengths-list">
-                            <!-- 동적으로 생성 -->
-                        </ul>
-                    </div>
-
-                    <div id="improvements" class="feedback-content">
-                        <ul class="feedback-list" id="improvements-list">
-                            <!-- 동적으로 생성 -->
-                        </ul>
-                    </div>
-
-                    <div id="alternatives" class="feedback-content">
-                        <ul class="feedback-list" id="alternatives-list">
-                            <!-- 동적으로 생성 -->
-                        </ul>
-                    </div>
-                </div>
+            <div class="image-container">
+              <img
+                id="generated-image"
+                class="comparison-image"
+                src=""
+                alt="Generated image"
+              />
+              <div class="image-label">AI Generated from Your Description</div>
             </div>
+          </div>
+
+          <div class="similarity-score">
+            <div class="score-value" id="similarity-score">85%</div>
+            <div class="score-label">Similarity Score</div>
+          </div>
+        </div>
+
+        <div class="overall-performance">
+          <div class="section-title">Overall Performance Report</div>
+
+          <div class="overall-score">
+            <div class="overall-score-value" id="overall-score">B+</div>
+            <div class="overall-score-label">Overall Performance</div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon">🎯</div>
+              <div class="metric-value" id="accuracy-score">85</div>
+              <div class="metric-label">Accuracy</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-fill"
+                  id="accuracy-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">📊</div>
+              <div class="metric-value" id="completeness-score">75</div>
+              <div class="metric-label">Completeness</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-fill"
+                  id="completeness-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">📚</div>
+              <div class="metric-value" id="vocabulary-score">80</div>
+              <div class="metric-label">Vocabulary</div>
+              <div class="metric-bar">
+                <div
+                  class="metric-fill"
+                  id="vocabulary-bar"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-section">
+            <div class="feedback-tabs">
+              <div
+                class="feedback-tab active"
+                onclick="showFeedback('strengths')"
+              >
+                ✅ Strengths
+              </div>
+              <div class="feedback-tab" onclick="showFeedback('improvements')">
+                📈 Improvements
+              </div>
+              <div class="feedback-tab" onclick="showFeedback('alternatives')">
+                💡 Alternatives
+              </div>
+            </div>
+
+            <div id="strengths" class="feedback-content active">
+              <ul class="feedback-list" id="strengths-list">
+                <!-- 동적으로 생성 -->
+              </ul>
+            </div>
+
+            <div id="improvements" class="feedback-content">
+              <ul class="feedback-list" id="improvements-list">
+                <!-- 동적으로 생성 -->
+              </ul>
+            </div>
+
+            <div id="alternatives" class="feedback-content">
+              <ul class="feedback-list" id="alternatives-list">
+                <!-- 동적으로 생성 -->
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div class="response-analysis">
-            <div class="user-responses">
-                <div class="section-title">📝 Your Responses</div>
-                <div class="response-content" id="user-responses">
-                    <!-- 동적으로 생성 -->
-                </div>
+        <div class="analysis-header">
+          <h3 class="analysis-title">Detailed Analysis Report</h3>
+          <p class="analysis-subtitle">
+            Compare your responses with the model answer and expand your
+            vocabulary
+          </p>
+        </div>
+
+        <div class="analysis-grid">
+          <div class="user-responses">
+            <div class="analysis-section-title">
+              <div class="title-icon user-icon">📝</div>
+              <span>Your Responses</span>
             </div>
-            
-            <div class="model-answers">
-                <div class="section-title">✨ Model Answer</div>
-                <div class="model-content" id="model-description">
-                    <!-- 동적으로 생성 -->
-                </div>
-                
-                <div class="section-title">🎯 Suggested Vocabulary</div>
-                <div class="vocabulary-tags" id="vocabulary-tags">
-                    <!-- 동적으로 생성 -->
-                </div>
+            <div class="response-content" id="user-responses">
+              <!-- 동적으로 생성 -->
             </div>
+          </div>
+
+          <div class="model-answers">
+            <div class="analysis-section-title">
+              <div class="title-icon model-icon">✨</div>
+              <span>Model Answer</span>
+            </div>
+            <div class="model-content" id="model-description">
+              <!-- 동적으로 생성 -->
+            </div>
+
+            <div class="vocabulary-section">
+              <div class="vocab-header">
+                <div class="title-icon model-icon">🎯</div>
+                <span class="vocab-title">Suggested Vocabulary</span>
+                <span class="vocab-count" id="vocab-count">0 words</span>
+              </div>
+              <div class="vocabulary-tags" id="vocabulary-tags">
+                <!-- 동적으로 생성 -->
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="actions">
-            <a href="/study" class="action-btn primary-btn">🔄 Try Another Image</a>
-            <a href="/categories" class="action-btn secondary-btn">📂 Choose Different Category</a>
-            <a href="/categories" class="action-btn secondary-btn">🏠 Back to Home</a>
-        </div>
+        <a href="/study" class="action-btn primary-btn">🔄 Try Another Image</a>
+        <a href="/categories" class="action-btn secondary-btn"
+          >📂 Choose Different Category</a
+        >
+        <a href="/categories" class="action-btn secondary-btn"
+          >🏠 Back to Home</a
+        >
+      </div>
     </div>
 
     <script>
-        let sessionData = null;
-        let evaluation = null;
+      let sessionData = null;
+      let evaluation = null;
 
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', () => {
-            // 로그인 확인
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-            if (!user) {
-                window.location.href = '/login';
-                return;
-            }
-
-            // 세션 데이터 로드
-            sessionData = JSON.parse(localStorage.getItem('sessionData') || 'null');
-            if (!sessionData) {
-                window.location.href = '/categories';
-                return;
-            }
-
-            // 평가 생성 및 표시
-            generateEvaluation().then(() => {
-                displayResults();
-            });
-        });
-
-        async function generateEvaluation() {
-            try {
-                // 사용자 메시지만 추출
-                const userMessages = sessionData.conversationHistory
-                    .filter(msg => msg.role === 'user')
-                    .map(msg => msg.message);
-                
-                console.log('Evaluating with API:', {
-                    imageId: sessionData.image.imageId,
-                    userMessages: userMessages,
-                    messageCount: userMessages.length
-                });
-                
-                // 평가 API 호출
-                const response = await fetch('/api/evaluate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        imageId: sessionData.image.imageId,
-                        userMessages: userMessages,
-                        conversationHistory: sessionData.conversationHistory
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    const data = result.data;
-                    
-                    evaluation = {
-                        overallScore: data.totalScore,
-                        overallGrade: getGrade(data.totalScore),
-                        accuracy: data.breakdown.accuracy,
-                        completeness: data.breakdown.completeness,
-                        vocabulary: data.breakdown.vocabulary,
-                        detail: data.breakdown.detail,
-                        similarityScore: Math.min(95, Math.max(60, data.breakdown.completeness)),
-                        
-                        strengths: data.feedback.strengths || [],
-                        improvements: data.feedback.improvements || [],
-                        alternatives: data.feedback.alternatives || [],
-                        overallFeedback: data.feedback.overall || '',
-                        
-                        userMessageCount: data.userMessageCount
-                    };
-                    
-                    console.log('Evaluation completed:', evaluation);
-                } else {
-                    throw new Error(result.error || 'Evaluation failed');
-                }
-                
-            } catch (error) {
-                console.error('Error generating evaluation:', error);
-                
-                // 사용자 메시지 개수 확인
-                const userMessageCount = sessionData.conversationHistory
-                    .filter(msg => msg.role === 'user').length;
-                
-                // 폴백: 기본 평가 생성
-                const improvements = ['더 구체적인 세부사항을 포함해보세요'];
-                
-                // 사용자 답변이 5개 이하일 때 추가 피드백
-                if (userMessageCount <= 5) {
-                    improvements.unshift(`더 많은 답변이 필요합니다. 현재 ${userMessageCount}개의 답변만 제공했습니다. 최소 8-10개의 답변으로 이미지를 자세히 설명해보세요`);
-                    improvements.push('대화에 더 적극적으로 참여하고 긴 문장으로 답변해보세요');
-                }
-                
-                evaluation = {
-                    overallScore: userMessageCount <= 5 ? 65 : 75,
-                    overallGrade: userMessageCount <= 5 ? 'C+' : 'B',
-                    accuracy: userMessageCount <= 5 ? 65 : 75,
-                    completeness: userMessageCount <= 5 ? 60 : 70,
-                    vocabulary: userMessageCount <= 5 ? 70 : 80,
-                    detail: userMessageCount <= 5 ? 65 : 75,
-                    similarityScore: userMessageCount <= 5 ? 70 : 80,
-                    strengths: userMessageCount <= 5 ? 
-                        ['영어로 대화를 시도했습니다', '기본적인 묘사를 제공했습니다'] :
-                        ['대화에 적극적으로 참여했습니다', '다양한 표현을 사용했습니다'],
-                    improvements: improvements,
-                    alternatives: ['더 다양한 어휘를 사용해보세요', '감정이나 분위기도 표현해보세요'],
-                    overallFeedback: userMessageCount <= 5 ? 
-                        '더 많은 대화 참여와 자세한 설명이 필요합니다' :
-                        '좋은 참여도를 보였으나 더 구체적인 표현이 필요합니다'
-                };
-            }
+      // 페이지 로드 시 초기화
+      document.addEventListener("DOMContentLoaded", () => {
+        // 로그인 확인
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (!user) {
+          window.location.href = "/login";
+          return;
         }
 
-        function getGrade(score) {
-            if (score >= 90) return 'A+';
-            if (score >= 85) return 'A';
-            if (score >= 80) return 'B+';
-            if (score >= 75) return 'B';
-            if (score >= 70) return 'C+';
-            if (score >= 65) return 'C';
-            return 'D';
+        // 세션 데이터 로드
+        sessionData = JSON.parse(localStorage.getItem("sessionData") || "null");
+        if (!sessionData) {
+          window.location.href = "/categories";
+          return;
         }
 
-        function getDetailLevel(score) {
-            if (score >= 80) return 'High';
-            if (score >= 60) return 'Medium';
-            return 'Low';
+        // 3초 후 스피너 숨기고 메인 콘텐츠 표시
+        setTimeout(() => {
+          document.getElementById("loading-spinner").style.display = "none";
+          document.getElementById("main-content").style.display = "block";
+
+          // 평가 생성 및 표시
+          generateEvaluation().then(() => {
+            displayResults();
+          });
+        }, 5000);
+      });
+
+      async function generateEvaluation() {
+        try {
+          // 사용자 메시지만 추출
+          const userMessages = sessionData.conversationHistory
+            .filter((msg) => msg.role === "user")
+            .map((msg) => msg.message);
+
+          console.log("Evaluating with API:", {
+            imageId: sessionData.image.imageId,
+            userMessages: userMessages,
+            messageCount: userMessages.length,
+          });
+
+          // 평가 API 호출
+          const response = await fetch("/api/evaluate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              imageId: sessionData.image.imageId,
+              userMessages: userMessages,
+              conversationHistory: sessionData.conversationHistory,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            const data = result.data;
+
+            evaluation = {
+              overallScore: data.totalScore,
+              overallGrade: getGrade(data.totalScore),
+              accuracy: data.breakdown.accuracy,
+              completeness: data.breakdown.completeness,
+              vocabulary: data.breakdown.vocabulary,
+              detail: data.breakdown.detail,
+              similarityScore: Math.min(
+                95,
+                Math.max(60, data.breakdown.completeness)
+              ),
+
+              strengths: data.feedback.strengths || [],
+              improvements: data.feedback.improvements || [],
+              alternatives: data.feedback.alternatives || [],
+              overallFeedback: data.feedback.overall || "",
+
+              userMessageCount: data.userMessageCount,
+            };
+
+            console.log("Evaluation completed:", evaluation);
+          } else {
+            throw new Error(result.error || "Evaluation failed");
+          }
+        } catch (error) {
+          console.error("Error generating evaluation:", error);
+
+          // 사용자 메시지 개수 확인
+          const userMessageCount = sessionData.conversationHistory.filter(
+            (msg) => msg.role === "user"
+          ).length;
+
+          // 폴백: 기본 평가 생성
+          const improvements = ["더 구체적인 세부사항을 포함해보세요"];
+
+          // 사용자 답변이 5개 이하일 때 추가 피드백
+          if (userMessageCount <= 5) {
+            improvements.unshift(
+              `더 많은 답변이 필요합니다. 현재 ${userMessageCount}개의 답변만 제공했습니다. 최소 8-10개의 답변으로 이미지를 자세히 설명해보세요`
+            );
+            improvements.push(
+              "대화에 더 적극적으로 참여하고 긴 문장으로 답변해보세요"
+            );
+          }
+
+          evaluation = {
+            overallScore: userMessageCount <= 5 ? 65 : 75,
+            overallGrade: userMessageCount <= 5 ? "C+" : "B",
+            accuracy: userMessageCount <= 5 ? 65 : 75,
+            completeness: userMessageCount <= 5 ? 60 : 70,
+            vocabulary: userMessageCount <= 5 ? 70 : 80,
+            detail: userMessageCount <= 5 ? 65 : 75,
+            similarityScore: userMessageCount <= 5 ? 70 : 80,
+            strengths:
+              userMessageCount <= 5
+                ? ["영어로 대화를 시도했습니다", "기본적인 묘사를 제공했습니다"]
+                : [
+                    "대화에 적극적으로 참여했습니다",
+                    "다양한 표현을 사용했습니다",
+                  ],
+            improvements: improvements,
+            alternatives: [
+              "더 다양한 어휘를 사용해보세요",
+              "감정이나 분위기도 표현해보세요",
+            ],
+            overallFeedback:
+              userMessageCount <= 5
+                ? "더 많은 대화 참여와 자세한 설명이 필요합니다"
+                : "좋은 참여도를 보였으나 더 구체적인 표현이 필요합니다",
+          };
+        }
+      }
+
+      function getGrade(score) {
+        if (score >= 90) return "A+";
+        if (score >= 85) return "A";
+        if (score >= 80) return "B+";
+        if (score >= 75) return "B";
+        if (score >= 70) return "C+";
+        if (score >= 65) return "C";
+        return "D";
+      }
+
+      function getDetailLevel(score) {
+        if (score >= 80) return "High";
+        if (score >= 60) return "Medium";
+        return "Low";
+      }
+
+      function generatePersonalizedStrengths(userMessages) {
+        const strengths = [];
+        const allText = userMessages.join(" ").toLowerCase();
+
+        // 색상 언급 확인 - 근거 제시
+        const colorMatch = allText.match(
+          /\b(red|blue|green|yellow|black|white|brown|gray|pink|purple|orange)\b/
+        );
+        if (colorMatch) {
+          const colorExample = userMessages.find((msg) =>
+            msg.toLowerCase().includes(colorMatch[0])
+          );
+          strengths.push(
+            `색상을 정확하게 식별하고 표현했습니다. 답변에서 "${colorExample}"라고 말씀하셨는데, 이는 이미지의 색상을 잘 파악했다는 증거입니다.`
+          );
         }
 
-        function generatePersonalizedStrengths(userMessages) {
-            const strengths = [];
-            const allText = userMessages.join(' ').toLowerCase();
-            
-            // 색상 언급 확인 - 근거 제시
-            const colorMatch = allText.match(/\b(red|blue|green|yellow|black|white|brown|gray|pink|purple|orange)\b/);
-            if (colorMatch) {
-                const colorExample = userMessages.find(msg => msg.toLowerCase().includes(colorMatch[0]));
-                strengths.push(`색상을 정확하게 식별하고 표현했습니다. 답변에서 "${colorExample}"라고 말씀하셨는데, 이는 이미지의 색상을 잘 파악했다는 증거입니다.`);
-            }
-            
-            // 크기/수량 표현 확인 - 근거 제시
-            const sizeMatch = allText.match(/\b(big|small|large|huge|tiny|many|few|several|some)\b/);
-            if (sizeMatch) {
-                const sizeExample = userMessages.find(msg => msg.toLowerCase().includes(sizeMatch[0]));
-                strengths.push(`크기나 수량을 적절히 표현했습니다. "${sizeExample}"라는 답변에서 사물의 크기나 양을 구체적으로 묘사하려는 노력이 보입니다.`);
-            }
-            
-            // 위치/공간 표현 확인 - 근거 제시
-            const locationMatch = allText.match(/\b(on|in|under|behind|front|next|beside|near|far)\b/);
-            if (locationMatch) {
-                const locationExample = userMessages.find(msg => msg.toLowerCase().includes(locationMatch[0]));
-                strengths.push(`공간적 관계를 잘 파악하고 설명했습니다. "${locationExample}"에서 사물들의 위치 관계를 정확히 설명하고 있습니다.`);
-            }
-            
-            // 감정/분위기 표현 확인 - 근거 제시
-            const moodMatch = allText.match(/\b(happy|sad|busy|quiet|peaceful|crowded|comfortable|warm|cozy)\b/);
-            if (moodMatch) {
-                const moodExample = userMessages.find(msg => msg.toLowerCase().includes(moodMatch[0]));
-                strengths.push(`분위기나 감정을 잘 표현했습니다. "${moodExample}"라는 답변에서 단순한 묘사를 넘어 감정적 요소까지 포함시켰습니다.`);
-            }
-            
-            // 행동/동작 표현 확인 - 근거 제시
-            const actionMatch = allText.match(/\b(sitting|standing|walking|working|talking|eating|drinking|reading|typing)\b/);
-            if (actionMatch) {
-                const actionExample = userMessages.find(msg => msg.toLowerCase().includes(actionMatch[0]));
-                strengths.push(`인물들의 행동을 구체적으로 묘사했습니다. "${actionExample}"에서 사람들이 무엇을 하고 있는지 생생하게 표현했습니다.`);
-            }
-            
-            // 문장 길이 분석 - 근거 제시
-            const avgLength = userMessages.reduce((sum, msg) => sum + msg.split(' ').length, 0) / userMessages.length;
-            if (avgLength > 8) {
-                const longestMsg = userMessages.reduce((longest, current) => 
-                    current.split(' ').length > longest.split(' ').length ? current : longest);
-                strengths.push(`완전한 문장으로 자세히 설명하려고 노력했습니다. 특히 "${longestMsg}"와 같은 답변에서 평균 ${Math.round(avgLength)}단어로 구성된 완성도 높은 문장을 구사했습니다.`);
-            }
-            
-            // 다양한 어휘 사용 확인 - 근거 제시
-            const uniqueWords = [...new Set(allText.split(' ').filter(word => word.length > 3))];
-            if (uniqueWords.length > 15) {
-                strengths.push(`다양한 어휘를 사용하여 표현력을 보였습니다. 총 ${uniqueWords.length}개의 서로 다른 단어를 사용하여 반복을 피하고 풍부한 표현을 구사했습니다.`);
-            }
-            
-            // 기본 강점 - 근거 제시
-            if (userMessages.length > 0) {
-                strengths.push(`영어로 대화를 시도하는 적극적인 자세를 보였습니다. 총 ${userMessages.length}개의 응답을 통해 학습에 대한 의지와 참여도를 보여주었습니다.`);
-            }
-            
-            return strengths.slice(0, 6); // 최대 6개
+        // 크기/수량 표현 확인 - 근거 제시
+        const sizeMatch = allText.match(
+          /\b(big|small|large|huge|tiny|many|few|several|some)\b/
+        );
+        if (sizeMatch) {
+          const sizeExample = userMessages.find((msg) =>
+            msg.toLowerCase().includes(sizeMatch[0])
+          );
+          strengths.push(
+            `크기나 수량을 적절히 표현했습니다. "${sizeExample}"라는 답변에서 사물의 크기나 양을 구체적으로 묘사하려는 노력이 보입니다.`
+          );
         }
 
-        function generatePersonalizedImprovements(userMessages) {
-            const improvements = [];
-            const allText = userMessages.join(' ').toLowerCase();
-            const avgLength = userMessages.reduce((sum, msg) => sum + msg.split(' ').length, 0) / userMessages.length;
-            
-            // 답변 개수 부족 확인 - 최우선 피드백 (5개 이하일 때)
-            if (userMessages.length <= 5) {
-                improvements.push(`더 많은 답변이 필요합니다. 현재 ${userMessages.length}개의 답변만 제공하셨는데, 이는 이미지를 충분히 설명하기에 부족합니다. 이미지의 세부사항을 더 자세히 관찰하고 최소 8-10개의 답변으로 확장해보세요. 예를 들어, 색상, 위치, 사람들의 행동, 물건의 특징 등을 각각 별도로 설명해보세요.`);
-                improvements.push(`대화에 더 적극적으로 참여해보세요. 현재 답변 수(${userMessages.length}개)로는 영어 실력 향상에 한계가 있습니다. AI와 더 많은 대화를 나누며 다양한 표현을 연습해보세요.`);
-            }
-            
-            // 짧은 답변 개선 - 근거 제시
-            const shortAnswers = userMessages.filter(msg => msg.split(' ').length <= 3);
-            if (avgLength < 5 && shortAnswers.length > 0) {
-                improvements.push(`더 긴 문장으로 자세히 설명해보세요. 현재 평균 ${Math.round(avgLength)}단어로 답변하고 있는데, "${shortAnswers[0]}"와 같은 짧은 답변보다는 "${shortAnswers[0]} with detailed characteristics and specific features"처럼 구체적인 설명을 추가해보세요.`);
-            }
-            
-            // 색상 표현 부족 - 근거 제시
-            if (!/\b(red|blue|green|yellow|black|white|brown|gray|pink|purple|orange)\b/.test(allText)) {
-                const totalResponses = userMessages.length;
-                improvements.push(`색상 표현이 부족합니다. ${totalResponses}개의 답변 모두에서 색상을 언급하지 않으셨습니다. 이미지에서 보이는 색상들을 'bright blue', 'warm yellow', 'deep red' 등으로 구체적으로 표현해보세요.`);
-            }
-            
-            // 감정/분위기 표현 부족 - 근거 제시
-            if (!/\b(happy|sad|busy|quiet|peaceful|crowded|comfortable|warm|cozy|relaxed|energetic)\b/.test(allText)) {
-                const neutralAnswers = userMessages.filter(msg => msg.length > 5);
-                if (neutralAnswers.length > 0) {
-                    improvements.push(`분위기나 감정 표현이 부족합니다. "${neutralAnswers[0]}"와 같은 답변에서 단순한 사실 나열을 넘어 'cozy', 'peaceful', 'busy' 같은 감정적 요소를 추가하면 더 풍부한 표현이 됩니다.`);
-                } else {
-                    improvements.push(`분위기나 감정 표현이 전혀 없습니다. 모든 답변이 객관적 사실만 나열하고 있어 아쉽습니다. 이미지에서 느껴지는 분위기를 'cozy', 'peaceful', 'busy' 같은 단어로 표현해보세요.`);
-                }
-            }
-            
-            // 위치 표현 부족 - 근거 제시
-            if (!/\b(on|in|under|behind|front|next|beside|near|far|left|right|center)\b/.test(allText)) {
-                const objectMentions = userMessages.filter(msg => /\b(table|chair|laptop|cup|book|person|people)\b/.test(msg.toLowerCase()));
-                if (objectMentions.length > 0) {
-                    improvements.push(`위치 관계 설명이 부족합니다. "${objectMentions[0]}"에서 사물들을 언급하셨지만, 이들이 어디에 위치하는지 'on the table', 'next to', 'behind' 등으로 구체적인 위치를 설명해보세요.`);
-                } else {
-                    improvements.push(`위치 관계 표현이 전혀 없습니다. 모든 답변에서 사물들의 공간적 관계를 설명하지 않으셨습니다. 'on the table', 'next to the window' 등으로 위치를 명확히 해보세요.`);
-                }
-            }
-            
-            // 행동 묘사 부족 - 근거 제시
-            if (!/\b(sitting|standing|walking|working|talking|eating|drinking|reading|typing|smiling)\b/.test(allText)) {
-                const peopleMentions = userMessages.filter(msg => /\b(people|person|man|woman|student)\b/.test(msg.toLowerCase()));
-                if (peopleMentions.length > 0) {
-                    improvements.push(`행동 묘사가 부족합니다. "${peopleMentions[0]}"에서 사람들을 언급하셨지만, 그들이 무엇을 하고 있는지 'working', 'typing', 'talking' 등으로 구체적인 행동을 설명해보세요.`);
-                } else {
-                    improvements.push(`행동 묘사가 전혀 없습니다. 이미지 속 사람들의 행동을 'working', 'talking', 'reading' 등으로 생생하게 표현해보세요.`);
-                }
-            }
-            
-            // 형용사 사용 부족 - 근거 제시
-            const adjectives = (allText.match(/\b(big|small|large|beautiful|nice|good|new|old|modern|comfortable)\b/g) || []);
-            if (adjectives.length < 3) {
-                improvements.push(`형용사 사용이 부족합니다. 현재 ${adjectives.length}개만 사용하셨습니다. ${adjectives.length > 0 ? `사용한 형용사(${adjectives.join(', ')})` : '형용사를 전혀 사용하지 않으셨습니다'}. 'spacious', 'modern', 'comfortable' 등 더 다양한 형용사로 묘사를 풍부하게 해보세요.`);
-            }
-            
-            // 반복 표현 확인 - 근거 제시
-            const words = allText.split(' ').filter(word => word.length > 3);
-            const wordCount = {};
-            words.forEach(word => wordCount[word] = (wordCount[word] || 0) + 1);
-            const repeatedWords = Object.keys(wordCount).filter(word => wordCount[word] > 2);
-            if (repeatedWords.length > 0) {
-                const exampleMsgs = userMessages.filter(msg => msg.toLowerCase().includes(repeatedWords[0]));
-                improvements.push(`"${repeatedWords[0]}" 단어를 ${wordCount[repeatedWords[0]]}번 반복 사용했습니다. "${exampleMsgs[0]}"와 "${exampleMsgs[1] || ''}"에서 같은 단어를 반복하셨는데, 다양한 동의어를 사용하면 더 풍부한 표현이 됩니다.`);
-            }
-            
-            return improvements.slice(0, 6); // 최대 6개 (답변 개수 피드백 포함)
+        // 위치/공간 표현 확인 - 근거 제시
+        const locationMatch = allText.match(
+          /\b(on|in|under|behind|front|next|beside|near|far)\b/
+        );
+        if (locationMatch) {
+          const locationExample = userMessages.find((msg) =>
+            msg.toLowerCase().includes(locationMatch[0])
+          );
+          strengths.push(
+            `공간적 관계를 잘 파악하고 설명했습니다. "${locationExample}"에서 사물들의 위치 관계를 정확히 설명하고 있습니다.`
+          );
         }
 
-        function generatePersonalizedAlternatives(userMessages) {
-            const alternatives = [];
-            const allText = userMessages.join(' ').toLowerCase();
-            
-            // 사용자가 실제 사용한 단어들을 찾아서 근거와 함께 대안 제시
-            
-            // 'big' 사용 분석
-            const bigUsages = userMessages.filter(msg => msg.toLowerCase().includes('big'));
-            if (bigUsages.length > 0) {
-                alternatives.push(`"big" 표현을 개선해보세요. "${bigUsages[0]}"에서 'big'을 사용하셨는데, 'enormous', 'spacious', 'massive' 등 더 구체적인 형용사를 사용하면 "${bigUsages[0].replace(/\bbig\b/gi, 'enormous')}"처럼 더 생생한 표현이 됩니다.`);
-            }
-            
-            // 'nice/good' 사용 분석
-            const niceUsages = userMessages.filter(msg => /\b(nice|good)\b/i.test(msg));
-            if (niceUsages.length > 0) {
-                const word = niceUsages[0].match(/\b(nice|good)\b/i)[0];
-                const enhanced = niceUsages[0].replace(/\bnice\b/gi, 'pleasant').replace(/\bgood\b/gi, 'excellent');
-                alternatives.push(`"${word}" 표현을 개선해보세요. "${niceUsages[0]}"에서 '${word}'를 사용하셨는데, 'pleasant', 'attractive', 'appealing' 등을 사용하면 "${enhanced}"처럼 더 정확한 표현이 됩니다.`);
-            }
-            
-            // 'people' 사용 분석
-            const peopleUsages = userMessages.filter(msg => msg.toLowerCase().includes('people'));
-            if (peopleUsages.length > 0) {
-                alternatives.push(`"people" 표현을 다양화해보세요. "${peopleUsages[0]}"에서 'people'을 사용하셨는데, 상황에 따라 'individuals', 'customers', 'visitors', 'colleagues' 등 더 구체적인 표현을 사용하면 "${peopleUsages[0].replace(/\bpeople\b/gi, 'individuals')}"처럼 더 정확해집니다.`);
-            }
-            
-            // 'small' 사용 분석
-            const smallUsages = userMessages.filter(msg => msg.toLowerCase().includes('small'));
-            if (smallUsages.length > 0) {
-                alternatives.push(`"small" 표현을 구체화해보세요. "${smallUsages[0]}"에서 'small'을 사용하셨는데, 'tiny', 'compact', 'petite', 'miniature' 등을 사용하면 "${smallUsages[0].replace(/\bsmall\b/gi, 'compact')}"처럼 더 생생한 묘사가 됩니다.`);
-            }
-            
-            // 'many' 사용 분석
-            const manyUsages = userMessages.filter(msg => msg.toLowerCase().includes('many'));
-            if (manyUsages.length > 0) {
-                alternatives.push(`"many" 표현을 풍부하게 해보세요. "${manyUsages[0]}"에서 'many'를 사용하셨는데, 'numerous', 'several', 'countless', 'a variety of' 등을 사용하면 "${manyUsages[0].replace(/\bmany\b/gi, 'numerous')}"처럼 더 정교한 표현이 됩니다.`);
-            }
-            
-            // 반복 사용된 단어 분석
-            const words = allText.split(' ').filter(word => word.length > 3);
-            const wordCount = {};
-            words.forEach(word => wordCount[word] = (wordCount[word] || 0) + 1);
-            const repeatedWords = Object.keys(wordCount).filter(word => wordCount[word] > 2);
-            
-            if (repeatedWords.length > 0) {
-                const word = repeatedWords[0];
-                const usageCount = wordCount[word];
-                const exampleMsgs = userMessages.filter(msg => msg.toLowerCase().includes(word));
-                alternatives.push(`"${word}" 반복 사용을 개선해보세요. 이 단어를 ${usageCount}번 사용하셨습니다(예: "${exampleMsgs[0]}", "${exampleMsgs[1] || ''}"). 같은 의미의 다른 단어들을 사용하면 더 다양하고 풍부한 표현이 됩니다.`);
-            }
-            
-            // 기본 대안 (사용자가 사용하지 않은 경우)
-            if (alternatives.length < 3) {
-                const shortestAnswer = userMessages.reduce((shortest, current) => 
-                    current.length < shortest.length ? current : shortest, userMessages[0] || "It's nice");
-                
-                if (shortestAnswer && shortestAnswer.split(' ').length <= 3) {
-                    alternatives.push(`문장을 확장해보세요. 현재 가장 짧은 답변인 "${shortestAnswer}"를 "${shortestAnswer} with detailed characteristics and specific features"처럼 구체적인 설명을 추가하면 더 완성도 높은 답변이 됩니다.`);
-                }
-                
-                // 사용하지 않은 표현들에 대한 제안
-                if (!/\b(red|blue|green|yellow)\b/.test(allText)) {
-                    alternatives.push(`색상 표현을 추가해보세요. 전체 ${userMessages.length}개 답변에서 색상을 언급하지 않으셨습니다. 'bright red', 'deep blue', 'warm yellow' 등의 색상 표현을 추가하면 더 생생한 묘사가 됩니다.`);
-                }
-                
-                if (!/\b(peaceful|busy|quiet|cozy)\b/.test(allText)) {
-                    alternatives.push(`분위기 표현을 추가해보세요. 전체 답변에서 분위기나 감정을 표현하지 않으셨습니다. 'peaceful', 'busy', 'cozy', 'vibrant' 등의 단어로 이미지의 분위기를 표현해보세요.`);
-                }
-            }
-            
-            return alternatives.slice(0, 6); // 최대 6개
+        // 감정/분위기 표현 확인 - 근거 제시
+        const moodMatch = allText.match(
+          /\b(happy|sad|busy|quiet|peaceful|crowded|comfortable|warm|cozy)\b/
+        );
+        if (moodMatch) {
+          const moodExample = userMessages.find((msg) =>
+            msg.toLowerCase().includes(moodMatch[0])
+          );
+          strengths.push(
+            `분위기나 감정을 잘 표현했습니다. "${moodExample}"라는 답변에서 단순한 묘사를 넘어 감정적 요소까지 포함시켰습니다.`
+          );
         }
 
-        function displayResults() {
-            // 이미지 표시
-            document.getElementById('original-image').src = sessionData.image.url;
-            
-            // 생성된 이미지가 있으면 표시, 없으면 플레이스홀더
-            const generatedImg = document.getElementById('generated-image');
-            if (sessionData.image.generatedImageUrl) {
-                generatedImg.src = sessionData.image.generatedImageUrl;
-                generatedImg.style.display = 'block';
-            } else {
-                // 생성된 이미지가 없는 경우 플레이스홀더 표시
-                generatedImg.style.display = 'none';
-                const container = generatedImg.parentElement;
-                if (!container.querySelector('.no-image-placeholder')) {
-                    const placeholder = document.createElement('div');
-                    placeholder.className = 'no-image-placeholder';
-                    placeholder.style.cssText = `
+        // 행동/동작 표현 확인 - 근거 제시
+        const actionMatch = allText.match(
+          /\b(sitting|standing|walking|working|talking|eating|drinking|reading|typing)\b/
+        );
+        if (actionMatch) {
+          const actionExample = userMessages.find((msg) =>
+            msg.toLowerCase().includes(actionMatch[0])
+          );
+          strengths.push(
+            `인물들의 행동을 구체적으로 묘사했습니다. "${actionExample}"에서 사람들이 무엇을 하고 있는지 생생하게 표현했습니다.`
+          );
+        }
+
+        // 문장 길이 분석 - 근거 제시
+        const avgLength =
+          userMessages.reduce((sum, msg) => sum + msg.split(" ").length, 0) /
+          userMessages.length;
+        if (avgLength > 8) {
+          const longestMsg = userMessages.reduce((longest, current) =>
+            current.split(" ").length > longest.split(" ").length
+              ? current
+              : longest
+          );
+          strengths.push(
+            `완전한 문장으로 자세히 설명하려고 노력했습니다. 특히 "${longestMsg}"와 같은 답변에서 평균 ${Math.round(avgLength)}단어로 구성된 완성도 높은 문장을 구사했습니다.`
+          );
+        }
+
+        // 다양한 어휘 사용 확인 - 근거 제시
+        const uniqueWords = [
+          ...new Set(allText.split(" ").filter((word) => word.length > 3)),
+        ];
+        if (uniqueWords.length > 15) {
+          strengths.push(
+            `다양한 어휘를 사용하여 표현력을 보였습니다. 총 ${uniqueWords.length}개의 서로 다른 단어를 사용하여 반복을 피하고 풍부한 표현을 구사했습니다.`
+          );
+        }
+
+        // 기본 강점 - 근거 제시
+        if (userMessages.length > 0) {
+          strengths.push(
+            `영어로 대화를 시도하는 적극적인 자세를 보였습니다. 총 ${userMessages.length}개의 응답을 통해 학습에 대한 의지와 참여도를 보여주었습니다.`
+          );
+        }
+
+        return strengths.slice(0, 6); // 최대 6개
+      }
+
+      function generatePersonalizedImprovements(userMessages) {
+        const improvements = [];
+        const allText = userMessages.join(" ").toLowerCase();
+        const avgLength =
+          userMessages.reduce((sum, msg) => sum + msg.split(" ").length, 0) /
+          userMessages.length;
+
+        // 답변 개수 부족 확인 - 최우선 피드백 (5개 이하일 때)
+        if (userMessages.length <= 5) {
+          improvements.push(
+            `더 많은 답변이 필요합니다. 현재 ${userMessages.length}개의 답변만 제공하셨는데, 이는 이미지를 충분히 설명하기에 부족합니다. 이미지의 세부사항을 더 자세히 관찰하고 최소 8-10개의 답변으로 확장해보세요. 예를 들어, 색상, 위치, 사람들의 행동, 물건의 특징 등을 각각 별도로 설명해보세요.`
+          );
+          improvements.push(
+            `대화에 더 적극적으로 참여해보세요. 현재 답변 수(${userMessages.length}개)로는 영어 실력 향상에 한계가 있습니다. AI와 더 많은 대화를 나누며 다양한 표현을 연습해보세요.`
+          );
+        }
+
+        // 짧은 답변 개선 - 근거 제시
+        const shortAnswers = userMessages.filter(
+          (msg) => msg.split(" ").length <= 3
+        );
+        if (avgLength < 5 && shortAnswers.length > 0) {
+          improvements.push(
+            `더 긴 문장으로 자세히 설명해보세요. 현재 평균 ${Math.round(avgLength)}단어로 답변하고 있는데, "${shortAnswers[0]}"와 같은 짧은 답변보다는 "${shortAnswers[0]} with detailed characteristics and specific features"처럼 구체적인 설명을 추가해보세요.`
+          );
+        }
+
+        // 색상 표현 부족 - 근거 제시
+        if (
+          !/\b(red|blue|green|yellow|black|white|brown|gray|pink|purple|orange)\b/.test(
+            allText
+          )
+        ) {
+          const totalResponses = userMessages.length;
+          improvements.push(
+            `색상 표현이 부족합니다. ${totalResponses}개의 답변 모두에서 색상을 언급하지 않으셨습니다. 이미지에서 보이는 색상들을 'bright blue', 'warm yellow', 'deep red' 등으로 구체적으로 표현해보세요.`
+          );
+        }
+
+        // 감정/분위기 표현 부족 - 근거 제시
+        if (
+          !/\b(happy|sad|busy|quiet|peaceful|crowded|comfortable|warm|cozy|relaxed|energetic)\b/.test(
+            allText
+          )
+        ) {
+          const neutralAnswers = userMessages.filter((msg) => msg.length > 5);
+          if (neutralAnswers.length > 0) {
+            improvements.push(
+              `분위기나 감정 표현이 부족합니다. "${neutralAnswers[0]}"와 같은 답변에서 단순한 사실 나열을 넘어 'cozy', 'peaceful', 'busy' 같은 감정적 요소를 추가하면 더 풍부한 표현이 됩니다.`
+            );
+          } else {
+            improvements.push(
+              `분위기나 감정 표현이 전혀 없습니다. 모든 답변이 객관적 사실만 나열하고 있어 아쉽습니다. 이미지에서 느껴지는 분위기를 'cozy', 'peaceful', 'busy' 같은 단어로 표현해보세요.`
+            );
+          }
+        }
+
+        // 위치 표현 부족 - 근거 제시
+        if (
+          !/\b(on|in|under|behind|front|next|beside|near|far|left|right|center)\b/.test(
+            allText
+          )
+        ) {
+          const objectMentions = userMessages.filter((msg) =>
+            /\b(table|chair|laptop|cup|book|person|people)\b/.test(
+              msg.toLowerCase()
+            )
+          );
+          if (objectMentions.length > 0) {
+            improvements.push(
+              `위치 관계 설명이 부족합니다. "${objectMentions[0]}"에서 사물들을 언급하셨지만, 이들이 어디에 위치하는지 'on the table', 'next to', 'behind' 등으로 구체적인 위치를 설명해보세요.`
+            );
+          } else {
+            improvements.push(
+              `위치 관계 표현이 전혀 없습니다. 모든 답변에서 사물들의 공간적 관계를 설명하지 않으셨습니다. 'on the table', 'next to the window' 등으로 위치를 명확히 해보세요.`
+            );
+          }
+        }
+
+        // 행동 묘사 부족 - 근거 제시
+        if (
+          !/\b(sitting|standing|walking|working|talking|eating|drinking|reading|typing|smiling)\b/.test(
+            allText
+          )
+        ) {
+          const peopleMentions = userMessages.filter((msg) =>
+            /\b(people|person|man|woman|student)\b/.test(msg.toLowerCase())
+          );
+          if (peopleMentions.length > 0) {
+            improvements.push(
+              `행동 묘사가 부족합니다. "${peopleMentions[0]}"에서 사람들을 언급하셨지만, 그들이 무엇을 하고 있는지 'working', 'typing', 'talking' 등으로 구체적인 행동을 설명해보세요.`
+            );
+          } else {
+            improvements.push(
+              `행동 묘사가 전혀 없습니다. 이미지 속 사람들의 행동을 'working', 'talking', 'reading' 등으로 생생하게 표현해보세요.`
+            );
+          }
+        }
+
+        // 형용사 사용 부족 - 근거 제시
+        const adjectives =
+          allText.match(
+            /\b(big|small|large|beautiful|nice|good|new|old|modern|comfortable)\b/g
+          ) || [];
+        if (adjectives.length < 3) {
+          improvements.push(
+            `형용사 사용이 부족합니다. 현재 ${adjectives.length}개만 사용하셨습니다. ${adjectives.length > 0 ? `사용한 형용사(${adjectives.join(", ")})` : "형용사를 전혀 사용하지 않으셨습니다"}. 'spacious', 'modern', 'comfortable' 등 더 다양한 형용사로 묘사를 풍부하게 해보세요.`
+          );
+        }
+
+        // 반복 표현 확인 - 근거 제시
+        const words = allText.split(" ").filter((word) => word.length > 3);
+        const wordCount = {};
+        words.forEach((word) => (wordCount[word] = (wordCount[word] || 0) + 1));
+        const repeatedWords = Object.keys(wordCount).filter(
+          (word) => wordCount[word] > 2
+        );
+        if (repeatedWords.length > 0) {
+          const exampleMsgs = userMessages.filter((msg) =>
+            msg.toLowerCase().includes(repeatedWords[0])
+          );
+          improvements.push(
+            `"${repeatedWords[0]}" 단어를 ${wordCount[repeatedWords[0]]}번 반복 사용했습니다. "${exampleMsgs[0]}"와 "${exampleMsgs[1] || ""}"에서 같은 단어를 반복하셨는데, 다양한 동의어를 사용하면 더 풍부한 표현이 됩니다.`
+          );
+        }
+
+        return improvements.slice(0, 6); // 최대 6개 (답변 개수 피드백 포함)
+      }
+
+      function generatePersonalizedAlternatives(userMessages) {
+        const alternatives = [];
+        const allText = userMessages.join(" ").toLowerCase();
+
+        // 사용자가 실제 사용한 단어들을 찾아서 근거와 함께 대안 제시
+
+        // 'big' 사용 분석
+        const bigUsages = userMessages.filter((msg) =>
+          msg.toLowerCase().includes("big")
+        );
+        if (bigUsages.length > 0) {
+          alternatives.push(
+            `"big" 표현을 개선해보세요. "${bigUsages[0]}"에서 'big'을 사용하셨는데, 'enormous', 'spacious', 'massive' 등 더 구체적인 형용사를 사용하면 "${bigUsages[0].replace(/\bbig\b/gi, "enormous")}"처럼 더 생생한 표현이 됩니다.`
+          );
+        }
+
+        // 'nice/good' 사용 분석
+        const niceUsages = userMessages.filter((msg) =>
+          /\b(nice|good)\b/i.test(msg)
+        );
+        if (niceUsages.length > 0) {
+          const word = niceUsages[0].match(/\b(nice|good)\b/i)[0];
+          const enhanced = niceUsages[0]
+            .replace(/\bnice\b/gi, "pleasant")
+            .replace(/\bgood\b/gi, "excellent");
+          alternatives.push(
+            `"${word}" 표현을 개선해보세요. "${niceUsages[0]}"에서 '${word}'를 사용하셨는데, 'pleasant', 'attractive', 'appealing' 등을 사용하면 "${enhanced}"처럼 더 정확한 표현이 됩니다.`
+          );
+        }
+
+        // 'people' 사용 분석
+        const peopleUsages = userMessages.filter((msg) =>
+          msg.toLowerCase().includes("people")
+        );
+        if (peopleUsages.length > 0) {
+          alternatives.push(
+            `"people" 표현을 다양화해보세요. "${peopleUsages[0]}"에서 'people'을 사용하셨는데, 상황에 따라 'individuals', 'customers', 'visitors', 'colleagues' 등 더 구체적인 표현을 사용하면 "${peopleUsages[0].replace(/\bpeople\b/gi, "individuals")}"처럼 더 정확해집니다.`
+          );
+        }
+
+        // 'small' 사용 분석
+        const smallUsages = userMessages.filter((msg) =>
+          msg.toLowerCase().includes("small")
+        );
+        if (smallUsages.length > 0) {
+          alternatives.push(
+            `"small" 표현을 구체화해보세요. "${smallUsages[0]}"에서 'small'을 사용하셨는데, 'tiny', 'compact', 'petite', 'miniature' 등을 사용하면 "${smallUsages[0].replace(/\bsmall\b/gi, "compact")}"처럼 더 생생한 묘사가 됩니다.`
+          );
+        }
+
+        // 'many' 사용 분석
+        const manyUsages = userMessages.filter((msg) =>
+          msg.toLowerCase().includes("many")
+        );
+        if (manyUsages.length > 0) {
+          alternatives.push(
+            `"many" 표현을 풍부하게 해보세요. "${manyUsages[0]}"에서 'many'를 사용하셨는데, 'numerous', 'several', 'countless', 'a variety of' 등을 사용하면 "${manyUsages[0].replace(/\bmany\b/gi, "numerous")}"처럼 더 정교한 표현이 됩니다.`
+          );
+        }
+
+        // 반복 사용된 단어 분석
+        const words = allText.split(" ").filter((word) => word.length > 3);
+        const wordCount = {};
+        words.forEach((word) => (wordCount[word] = (wordCount[word] || 0) + 1));
+        const repeatedWords = Object.keys(wordCount).filter(
+          (word) => wordCount[word] > 2
+        );
+
+        if (repeatedWords.length > 0) {
+          const word = repeatedWords[0];
+          const usageCount = wordCount[word];
+          const exampleMsgs = userMessages.filter((msg) =>
+            msg.toLowerCase().includes(word)
+          );
+          alternatives.push(
+            `"${word}" 반복 사용을 개선해보세요. 이 단어를 ${usageCount}번 사용하셨습니다(예: "${exampleMsgs[0]}", "${exampleMsgs[1] || ""}"). 같은 의미의 다른 단어들을 사용하면 더 다양하고 풍부한 표현이 됩니다.`
+          );
+        }
+
+        // 기본 대안 (사용자가 사용하지 않은 경우)
+        if (alternatives.length < 3) {
+          const shortestAnswer = userMessages.reduce(
+            (shortest, current) =>
+              current.length < shortest.length ? current : shortest,
+            userMessages[0] || "It's nice"
+          );
+
+          if (shortestAnswer && shortestAnswer.split(" ").length <= 3) {
+            alternatives.push(
+              `문장을 확장해보세요. 현재 가장 짧은 답변인 "${shortestAnswer}"를 "${shortestAnswer} with detailed characteristics and specific features"처럼 구체적인 설명을 추가하면 더 완성도 높은 답변이 됩니다.`
+            );
+          }
+
+          // 사용하지 않은 표현들에 대한 제안
+          if (!/\b(red|blue|green|yellow)\b/.test(allText)) {
+            alternatives.push(
+              `색상 표현을 추가해보세요. 전체 ${userMessages.length}개 답변에서 색상을 언급하지 않으셨습니다. 'bright red', 'deep blue', 'warm yellow' 등의 색상 표현을 추가하면 더 생생한 묘사가 됩니다.`
+            );
+          }
+
+          if (!/\b(peaceful|busy|quiet|cozy)\b/.test(allText)) {
+            alternatives.push(
+              `분위기 표현을 추가해보세요. 전체 답변에서 분위기나 감정을 표현하지 않으셨습니다. 'peaceful', 'busy', 'cozy', 'vibrant' 등의 단어로 이미지의 분위기를 표현해보세요.`
+            );
+          }
+        }
+
+        return alternatives.slice(0, 6); // 최대 6개
+      }
+
+      function displayResults() {
+        // 이미지 표시
+        document.getElementById("original-image").src = sessionData.image.url;
+
+        // 생성된 이미지가 있으면 표시, 없으면 플레이스홀더
+        const generatedImg = document.getElementById("generated-image");
+        if (sessionData.image.generatedImageUrl) {
+          generatedImg.src = sessionData.image.generatedImageUrl;
+          generatedImg.style.display = "block";
+        } else {
+          // 생성된 이미지가 없는 경우 플레이스홀더 표시
+          generatedImg.style.display = "none";
+          const container = generatedImg.parentElement;
+          if (!container.querySelector(".no-image-placeholder")) {
+            const placeholder = document.createElement("div");
+            placeholder.className = "no-image-placeholder";
+            placeholder.style.cssText = `
                         width: 100%;
                         height: 200px;
                         background: #f1f5f9;
@@ -894,101 +1308,137 @@
                         font-size: 16px;
                         text-align: center;
                     `;
-                    placeholder.innerHTML = '🎨<br>No AI image was generated<br>during this session';
-                    container.appendChild(placeholder);
-                }
-            }
-            
-            console.log('Session data image info:', {
-                originalUrl: sessionData.image.url,
-                generatedUrl: sessionData.image.generatedImageUrl,
-                hasGenerated: !!sessionData.image.generatedImageUrl
-            });
-            
-            // 세션 정보 표시
-            const duration = Math.floor(sessionData.duration / 1000);
-            const minutes = Math.floor(duration / 60);
-            const seconds = duration % 60;
-            document.getElementById('session-info').textContent = 
-                `Duration: ${minutes}:${seconds.toString().padStart(2, '0')} | ${sessionData.conversationHistory.length} messages`;
-            
-            // 점수 표시
-            document.getElementById('overall-score').textContent = evaluation.overallGrade;
-            document.getElementById('similarity-score').textContent = evaluation.similarityScore + '%';
-            
-            // Nova Pro 메트릭 표시
-            document.getElementById('accuracy-score').textContent = evaluation.accuracy;
-            document.getElementById('completeness-score').textContent = evaluation.completeness;
-            document.getElementById('vocabulary-score').textContent = evaluation.vocabulary;
-            
-            // 프로그레스 바 애니메이션
-            setTimeout(() => {
-                document.getElementById('accuracy-bar').style.width = evaluation.accuracy + '%';
-                document.getElementById('completeness-bar').style.width = evaluation.completeness + '%';
-                document.getElementById('vocabulary-bar').style.width = evaluation.vocabulary + '%';
-            }, 500);
-            
-            // 사용자 메시지 추출
-            const userMessages = sessionData.conversationHistory
-                .filter(msg => msg.role === 'user')
-                .map(msg => msg.message);
-            
-            // 증거 기반 피드백 표시 (Nova Pro에서 생성된 경우)
-            if (evaluation.strengths && evaluation.strengths.length > 0 && evaluation.strengths[0].evidence) {
-                displayEvidenceBasedFeedback('strengths-list', evaluation.strengths, '✅');
-                displayEvidenceBasedFeedback('improvements-list', evaluation.improvements, '📈');
-                displayEvidenceBasedFeedback('alternatives-list', evaluation.alternatives, '💡');
-            } else {
-                // 폴백: 개인화된 피드백 생성
-                const personalizedStrengths = generatePersonalizedStrengths(userMessages);
-                const personalizedImprovements = generatePersonalizedImprovements(userMessages);
-                const personalizedAlternatives = generatePersonalizedAlternatives(userMessages);
-                
-                displayFeedbackList('strengths-list', personalizedStrengths, '✅');
-                displayFeedbackList('improvements-list', personalizedImprovements, '📈');
-                displayFeedbackList('alternatives-list', personalizedAlternatives, '💡');
-            }
-            
-            // 사용자 답변과 모범 답변 표시
-            displayUserResponses();
-            displayModelAnswers();
+            placeholder.innerHTML =
+              "🎨<br>No AI image was generated<br>during this session";
+            container.appendChild(placeholder);
+          }
         }
 
-        function displayFeedbackList(containerId, items, icon) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            items.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'feedback-item';
-                li.innerHTML = `
+        console.log("Session data image info:", {
+          originalUrl: sessionData.image.url,
+          generatedUrl: sessionData.image.generatedImageUrl,
+          hasGenerated: !!sessionData.image.generatedImageUrl,
+        });
+
+        // 세션 정보 표시
+        const duration = Math.floor(sessionData.duration / 1000);
+        const minutes = Math.floor(duration / 60);
+        const seconds = duration % 60;
+        document.getElementById("session-info").textContent =
+          `Duration: ${minutes}:${seconds.toString().padStart(2, "0")} | ${sessionData.conversationHistory.length} messages`;
+
+        // 점수 표시
+        document.getElementById("overall-score").textContent =
+          evaluation.overallGrade;
+        document.getElementById("similarity-score").textContent =
+          evaluation.similarityScore + "%";
+
+        // Nova Pro 메트릭 표시
+        document.getElementById("accuracy-score").textContent =
+          evaluation.accuracy;
+        document.getElementById("completeness-score").textContent =
+          evaluation.completeness;
+        document.getElementById("vocabulary-score").textContent =
+          evaluation.vocabulary;
+
+        // 프로그레스 바 애니메이션
+        setTimeout(() => {
+          document.getElementById("accuracy-bar").style.width =
+            evaluation.accuracy + "%";
+          document.getElementById("completeness-bar").style.width =
+            evaluation.completeness + "%";
+          document.getElementById("vocabulary-bar").style.width =
+            evaluation.vocabulary + "%";
+        }, 500);
+
+        // 사용자 메시지 추출
+        const userMessages = sessionData.conversationHistory
+          .filter((msg) => msg.role === "user")
+          .map((msg) => msg.message);
+
+        // 증거 기반 피드백 표시 (Nova Pro에서 생성된 경우)
+        if (
+          evaluation.strengths &&
+          evaluation.strengths.length > 0 &&
+          evaluation.strengths[0].evidence
+        ) {
+          displayEvidenceBasedFeedback(
+            "strengths-list",
+            evaluation.strengths,
+            "✅"
+          );
+          displayEvidenceBasedFeedback(
+            "improvements-list",
+            evaluation.improvements,
+            "📈"
+          );
+          displayEvidenceBasedFeedback(
+            "alternatives-list",
+            evaluation.alternatives,
+            "💡"
+          );
+        } else {
+          // 폴백: 개인화된 피드백 생성
+          const personalizedStrengths =
+            generatePersonalizedStrengths(userMessages);
+          const personalizedImprovements =
+            generatePersonalizedImprovements(userMessages);
+          const personalizedAlternatives =
+            generatePersonalizedAlternatives(userMessages);
+
+          displayFeedbackList("strengths-list", personalizedStrengths, "✅");
+          displayFeedbackList(
+            "improvements-list",
+            personalizedImprovements,
+            "📈"
+          );
+          displayFeedbackList(
+            "alternatives-list",
+            personalizedAlternatives,
+            "💡"
+          );
+        }
+
+        // 사용자 답변과 모범 답변 표시
+        displayUserResponses();
+        displayModelAnswers();
+      }
+
+      function displayFeedbackList(containerId, items, icon) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.className = "feedback-item";
+          li.innerHTML = `
                     <span class="feedback-icon">${icon}</span>
                     <span class="feedback-text">${item}</span>
                 `;
-                container.appendChild(li);
-            });
-        }
-        
-        function displayEvidenceBasedFeedback(containerId, items, icon) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            items.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'feedback-item';
-                
-                if (typeof item === 'object' && item.point && item.evidence) {
-                    // 증거 기반 피드백 형식
-                    li.innerHTML = `
+          container.appendChild(li);
+        });
+      }
+
+      function displayEvidenceBasedFeedback(containerId, items, icon) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.className = "feedback-item";
+
+          if (typeof item === "object" && item.point && item.evidence) {
+            // 증거 기반 피드백 형식
+            li.innerHTML = `
                         <span class="feedback-icon">${icon}</span>
                         <div class="feedback-text">
                             <div style="font-weight: 600; margin-bottom: 4px;">${item.point}</div>
                             <div style="color: #64748b; font-size: 14px; font-style: italic;">${item.evidence}</div>
                         </div>
                     `;
-                } else if (typeof item === 'object' && item.original && item.better) {
-                    // 대안 표현 형식
-                    li.innerHTML = `
+          } else if (typeof item === "object" && item.original && item.better) {
+            // 대안 표현 형식
+            li.innerHTML = `
                         <span class="feedback-icon">${icon}</span>
                         <div class="feedback-text">
                             <div style="margin-bottom: 8px;">
@@ -999,67 +1449,76 @@
                             <div style="color: #64748b; font-size: 14px;">${item.reason}</div>
                         </div>
                     `;
-                } else {
-                    // 기본 형식
-                    li.innerHTML = `
+          } else {
+            // 기본 형식
+            li.innerHTML = `
                         <span class="feedback-icon">${icon}</span>
-                        <span class="feedback-text">${typeof item === 'string' ? item : item.point || item}</span>
+                        <span class="feedback-text">${typeof item === "string" ? item : item.point || item}</span>
                     `;
-                }
-                
-                container.appendChild(li);
-            });
-        }
+          }
 
-        function displayUserResponses() {
-            const container = document.getElementById('user-responses');
-            const userMessages = sessionData.conversationHistory
-                .filter(msg => msg.role === 'user')
-                .map(msg => msg.message);
-            
-            if (userMessages.length === 0) {
-                container.innerHTML = '<div class="empty-responses">사용자 답변이 없습니다.</div>';
-                return;
-            }
-            
-            container.innerHTML = userMessages.map(message => 
-                `<div class="user-message">${message}</div>`
-            ).join('');
-        }
-        
-        function displayModelAnswers() {
-            const descriptionContainer = document.getElementById('model-description');
-            const vocabularyContainer = document.getElementById('vocabulary-tags');
-            
-            // 모범 답변 (이미지 description)
-            descriptionContainer.textContent = sessionData.image.description;
-            
-            // 선택 가능 어휘 (expectedVocabulary)
-            vocabularyContainer.innerHTML = sessionData.image.expectedVocabulary
-                .map(vocab => `<span class="vocab-tag">${vocab}</span>`)
-                .join('');
-        }
-        
-        function showFeedback(type) {
-            // 모든 탭 비활성화
-            document.querySelectorAll('.feedback-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // 모든 콘텐츠 숨기기
-            document.querySelectorAll('.feedback-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // 선택된 탭과 콘텐츠 활성화
-            event.target.classList.add('active');
-            document.getElementById(type).classList.add('active');
-        }
-
-        // 페이지 언로드 시 세션 데이터 정리
-        window.addEventListener('beforeunload', () => {
-            localStorage.removeItem('sessionData');
+          container.appendChild(li);
         });
+      }
+
+      function displayUserResponses() {
+        const container = document.getElementById("user-responses");
+        const userMessages = sessionData.conversationHistory
+          .filter((msg) => msg.role === "user")
+          .map((msg) => msg.message);
+
+        if (userMessages.length === 0) {
+          container.innerHTML =
+            '<div class="empty-responses"><div class="empty-icon">💬</div>No user responses found.<br>Try speaking more during your next session!</div>';
+          return;
+        }
+
+        container.innerHTML = userMessages
+          .map(
+            (message, index) =>
+              `<div class="user-message">${index + 1}. ${message}</div>`
+          )
+          .join("");
+      }
+
+      function displayModelAnswers() {
+        const descriptionContainer =
+          document.getElementById("model-description");
+        const vocabularyContainer = document.getElementById("vocabulary-tags");
+        const vocabCountContainer = document.getElementById("vocab-count");
+
+        // 모범 답변 (이미지 description)
+        descriptionContainer.textContent = sessionData.image.description;
+
+        // 선택 가능 어휘 (expectedVocabulary)
+        const vocabCount = sessionData.image.expectedVocabulary.length;
+        vocabCountContainer.textContent = `${vocabCount} words`;
+
+        vocabularyContainer.innerHTML = sessionData.image.expectedVocabulary
+          .map((vocab) => `<span class="vocab-tag">${vocab}</span>`)
+          .join("");
+      }
+
+      function showFeedback(type) {
+        // 모든 탭 비활성화
+        document.querySelectorAll(".feedback-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // 모든 콘텐츠 숨기기
+        document.querySelectorAll(".feedback-content").forEach((content) => {
+          content.classList.remove("active");
+        });
+
+        // 선택된 탭과 콘텐츠 활성화
+        event.target.classList.add("active");
+        document.getElementById(type).classList.add("active");
+      }
+
+      // 페이지 언로드 시 세션 데이터 정리
+      window.addEventListener("beforeunload", () => {
+        localStorage.removeItem("sessionData");
+      });
     </script>
-</body>
+  </body>
 </html>

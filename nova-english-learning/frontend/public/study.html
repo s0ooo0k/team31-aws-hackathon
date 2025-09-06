@@ -290,19 +290,19 @@
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
       }
 
-      @media (max-width: 1024px) {
-        .study-container {
-          grid-template-columns: 1fr;
-          height: auto;
-        }
-      }
-
       @media (max-width: 1200px) {
         .study-container {
           grid-template-columns: 1fr 1fr;
         }
         .right-panel {
           grid-column: 1 / -1;
+        }
+      }
+      
+      @media (max-width: 1024px) {
+        .study-container {
+          grid-template-columns: 1fr;
+          height: auto;
         }
       }
     </style>
