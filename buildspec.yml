@@ -8,6 +8,8 @@ phases:
       - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo Creating .env file from Parameter Store...
+      - aws ssm get-parameter --name "/nova-english-learning/env" --with-decryption --query "Parameter.Value" --output text > nova-english-learning/.env
   build:
     commands:
       - echo Build started on `date`
