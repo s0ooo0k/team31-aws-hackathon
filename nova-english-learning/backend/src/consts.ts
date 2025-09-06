@@ -93,127 +93,106 @@ Analyze what the user mentioned vs. what they missed, and provide specific evide
 // 카테고리별 이미지 데이터
 export const ImageCategories = [
   {
-    id: 'daily-life',
-    name: 'Daily Life',
-    description: 'Everyday activities and scenes',
+    id: 'animation',
+    name: 'Animation',
+    description: 'Animated characters and cartoon scenes',
     images: [
       {
-        imageId: 'daily_001',
-        url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500',
-        description: 'A busy coffee shop with people working on laptops, warm lighting, and wooden tables.',
-        expectedVocabulary: ['laptop', 'coffee shop', 'barista', 'customers', 'atmosphere', 'wooden table', 'warm lighting'],
+        imageId: 'animation_001',
+        url: 'https://contents-cdn.viewus.co.kr/image/2025/08/CP-2023-0089/image-49294418-b27c-4e2f-85e1-ad8842ac8047.png',
+        description: 'Three cartoon characters standing together near a window with trees and blue sky in the background.',
+        expectedVocabulary: ['cartoon', 'characters', 'standing', 'window', 'trees', 'sky', 'colorful', 'animated'],
         guidingQuestions: [
-          'What color is the laptop?',
-          'What are the people doing?',
-          'How would you describe the atmosphere?',
-          'What material is the table made of?'
+          'How many characters do you see?',
+          'What are they wearing?',
+          'What can you see in the background?',
+          'How would you describe the style?'
         ],
         evaluationCriteria: {
           keyElements: [
-            'coffee shop', 'café', 'barista', 'staff member', 'customer', 'person sitting',
-            'laptop', 'computer', 'table', 'chair', 'counter', 'menu', 'chalkboard',
-            'plants', 'lighting', 'industrial lights', 'warm atmosphere', 'cozy',
-            'white chairs', 'colored cushions', 'wooden elements', 'modern design'
+            'three', 'cartoon characters', 'standing', 'close together', 'glass window',
+            'pink hoodie', 'white top', 'glasses', 'yellow hat', 'trees', 'blue sky',
+            'bright', 'cheerful', 'animated', 'colorful'
           ],
-          detailedDescription: `A cozy, modern café with warm, welcoming ambiance. Two people visible: a barista in dark shirt behind counter, and a customer in dark jacket and cap sitting at table with laptop. White curved-back chairs with yellow, brown, and white cushions. White tables with modern design. Rustic counter with chalkboard menu. Large leafy plant in center, smaller potted plants on counter. Industrial-style hanging lights. Neutral color scheme with white, green plants, black chalkboard, warm cushion tones. Materials include wood (tables, chairs), metal (lighting fixtures), fabric (cushions), glass (bottles, jars). Relaxed, professional atmosphere suitable for work and socializing.`
-        }
-      },
-      {
-        imageId: 'daily_002',
-        url: 'https://i.ibb.co/b5pgjy84/young-woman-arranging-her-cake-shop.jpg',
-        description: 'A woman pouring tea in a cozy kitchen with wooden cabinets and warm lighting.',
-        expectedVocabulary: ['woman', 'pouring', 'tea', 'kitchen', 'cabinets', 'counter', 'apron', 'cozy'],
-        guidingQuestions: [
-          'What is the woman doing?',
-          'What is she wearing?',
-          'What objects are on the counter?',
-          'How would you describe the atmosphere?'
-        ],
-        evaluationCriteria: {
-          keyElements: [
-            'woman', 'pouring', 'hot water', 'glass cup', 'counter', 'white shirt', 'gray apron',
-            'white cups', 'coffee filter', 'plate', 'dessert', 'wooden cabinets', 'kitchen items',
-            'cozy', 'warm', 'soft lighting'
-          ],
-          detailedDescription: `A woman is pouring hot water into a glass cup on a counter. She is wearing a white shirt and a gray apron. The counter has a few white cups, a coffee filter, and a plate with a dessert. Behind her, there are wooden cabinets with various kitchen items. The atmosphere is cozy and warm, with soft lighting illuminating the scene.`
+          detailedDescription: `Three cartoon characters are standing close to each other. They are standing near a glass window. The character on the left is wearing a pink hoodie. The character in the middle is wearing a white top and glasses. The character on the right is wearing a yellow hat. Behind them, there are trees and a blue sky. The atmosphere is bright and cheerful.`
         }
       }
     ]
   },
   {
-    id: 'travel',
-    name: 'Travel',
-    description: 'Travel and vacation scenes',
+    id: 'k-pop',
+    name: 'K-Pop',
+    description: 'Korean pop culture and music scenes',
     images: [
       {
-        imageId: 'travel_001',
-        url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500',
-        description: 'A peaceful park with green trees, walking paths, and people enjoying outdoor activities.',
-        expectedVocabulary: ['park', 'trees', 'path', 'nature', 'outdoor', 'peaceful', 'green'],
+        imageId: 'kpop_001',
+        url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500',
+        description: 'A colorful concert stage with bright lights and performers.',
+        expectedVocabulary: ['stage', 'lights', 'performers', 'concert', 'colorful', 'music', 'entertainment'],
         guidingQuestions: [
-          'What activities are people doing?',
-          'How would you describe the trees?',
-          'What does the path look like?',
-          'What\'s the weather like?'
+          'What colors do you see on the stage?',
+          'How would you describe the lighting?',
+          'What is the atmosphere like?',
+          'What kind of event is this?'
         ],
         evaluationCriteria: {
           keyElements: [
-            'forest', 'woodland', 'trees', 'tall trees', 'path', 'dirt path', 'narrow path',
-            'green foliage', 'leaves', 'brown trunks', 'rocks', 'scattered rocks',
-            'underbrush', 'ground', 'dirt', 'sunlight', 'dappled light', 'shadows',
-            'peaceful', 'tranquil', 'serene', 'natural', 'winding path', 'canopy'
+            'concert', 'stage', 'bright lights', 'colorful', 'performers', 'music',
+            'entertainment', 'audience', 'vibrant', 'energetic', 'spotlights'
           ],
-          detailedDescription: `A serene forest setting with narrow dirt path winding through dense woodland. Tall, slender trees with dark brown trunks and vibrant green foliage create tunnel-like canopy effect. No people visible - focus on natural environment. Path made of compacted dirt, curving as it disappears into forest. Scattered rocks of various sizes along path and among trees. Rich earthy color scheme: dark brown tree trunks, vibrant green leaves, brown and tan dirt path. Sunlight filters through trees creating dappled light on ground. Tranquil, undisturbed atmosphere suggesting midday lighting. Rough bark texture, uneven path surface, natural shadows add depth and realism.`
+          detailedDescription: `A vibrant concert stage with bright, colorful lights creating an energetic atmosphere. Multiple spotlights illuminate the performance area with various colors including pink, blue, and white. The stage setup suggests a K-pop or music performance with professional lighting equipment and staging.`
         }
       }
     ]
   },
   {
-    id: 'business',
-    name: 'Business',
-    description: 'Office and work environments',
+    id: 'animal',
+    name: 'Animal',
+    description: 'Animals and wildlife scenes',
     images: [
       {
-        imageId: 'business_001',
-        url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500',
-        description: 'A modern office space with desks, computers, chairs, and people working.',
-        expectedVocabulary: ['office', 'desk', 'computer', 'chair', 'modern', 'workspace', 'professional'],
+        imageId: 'animal_001',
+        url: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500',
+        description: 'A cute golden retriever dog sitting in a park with green grass and trees.',
+        expectedVocabulary: ['dog', 'golden retriever', 'sitting', 'park', 'grass', 'trees', 'cute', 'pet'],
         guidingQuestions: [
-          'How would you describe the office design?',
-          'What equipment do you see?',
-          'What are the people wearing?',
-          'How does the workspace look organized?'
+          'What kind of animal do you see?',
+          'What is the animal doing?',
+          'Where is the animal located?',
+          'How would you describe the animal\'s appearance?'
         ],
         evaluationCriteria: {
           keyElements: [
-            'office', 'corridor', 'modern', 'minimalist', 'cubicles', 'workspaces',
-            'teal couch', 'wooden shelving', 'black refrigerator', 'microwave',
-            'recessed lights', 'pendant lights', 'navy blue walls', 'light beige floor',
-            'kitchenette', 'seating area', 'clean', 'organized', 'professional',
-            'contemporary', 'bright lighting', 'empty', 'tranquil'
+            'dog', 'golden retriever', 'sitting', 'park', 'green grass', 'trees',
+            'cute', 'furry', 'golden fur', 'friendly', 'outdoor', 'nature'
           ],
-          detailedDescription: `Modern, minimalist office corridor stretching into distance with cubicles and workspaces on both sides. No people visible, emphasizing emptiness and tranquility. Long teal couch against left wall with wooden shelving unit beside it. Black refrigerator and integrated microwave on right side forming kitchenette area. Deep navy blue walls with light beige flooring. Recessed ceiling lights provide even illumination, with pendant lights hanging in distance. Minimalist color scheme focusing on neutral and dark tones. Materials include smooth painted walls, polished concrete-like flooring, wood shelving, teal fabric upholstery, metal and glass appliances. Calm, professional, modern atmosphere with sense of order and efficiency.`
+          detailedDescription: `A beautiful golden retriever dog sitting peacefully in a park setting. The dog has golden, fluffy fur and appears friendly and well-groomed. The background shows green grass and trees, creating a natural outdoor environment perfect for pets and their owners.`
         }
-      },
+      }
+    ]
+  },
+  {
+    id: 'AWS',
+    name: 'AWS',
+    description: 'Cloud computing and technology scenes',
+    images: [
       {
-        imageId: 'business_002',
-        url: 'https://images.unsplash.com/photo-1556910585-09baa3a3998e?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        description: 'A modern kitchen with wooden shelves, kitchen items, and organized countertop.',
-        expectedVocabulary: ['kitchen', 'shelves', 'bowls', 'plates', 'sink', 'faucet', 'countertop', 'organized'],
+        imageId: 'aws_001',
+        url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500',
+        description: 'A modern data center with servers, cables, and blue lighting representing cloud infrastructure.',
+        expectedVocabulary: ['servers', 'data center', 'technology', 'cables', 'computers', 'cloud', 'infrastructure'],
         guidingQuestions: [
-          'What items are on the shelves?',
-          'What colors do you see?',
-          'How is the kitchen organized?',
-          'What materials can you identify?'
+          'What technology equipment do you see?',
+          'How would you describe the lighting?',
+          'What is the purpose of this facility?',
+          'What colors dominate the scene?'
         ],
         evaluationCriteria: {
           keyElements: [
-            'modern kitchen', 'wooden shelves', 'white wall', 'blue bowls', 'gray bowls',
-            'plates', 'pots', 'black faucet', 'sink', 'stainless steel', 'countertop',
-            'fruit bowl', 'red casserole dish', 'glass bottles', 'clean', 'organized',
-            'functionality', 'simplicity'
+            'data center', 'servers', 'technology', 'cables', 'blue lighting',
+            'computers', 'infrastructure', 'modern', 'digital', 'cloud computing'
           ],
-          detailedDescription: `The image depicts a modern kitchen with wooden shelves mounted on a white wall. The shelves hold various kitchen items, including blue and gray bowls, plates, and pots. A black faucet is visible above a sink with a stainless steel finish. On the countertop, there is a bowl of fruit, a red casserole dish, and two clear glass bottles. The atmosphere is clean and organized, with a focus on functionality and simplicity.`
+          detailedDescription: `A modern data center facility with rows of servers and computer equipment. Blue lighting illuminates the technological infrastructure, with numerous cables and server racks visible. The environment represents cloud computing and digital infrastructure typical of AWS and other cloud service providers.`
         }
       }
     ]
@@ -244,101 +223,33 @@ export const ImageCategories = [
           ],
           detailedDescription: `Group of six people sitting closely together on concrete ledge at scenic viewpoint, arms around each other showing camaraderie and friendship. Background features picturesque landscape with mountains, cable car system with suspended gondolas, and partly cloudy sky. Tourist spot, possibly coastal area. People wearing casual attire: gray t-shirts, blue patterned cap, blue and yellow tie-dye shirt, white shirt, blue shirt with hat and red bag, yellow shirt with hat. Relaxed, enjoyable atmosphere suggesting late afternoon with soft, warm lighting. Strong sense of togetherness and friendship evident from body language and positioning.`
         }
-      },
-      {
-        imageId: 'social_002',
-        url: 'https://i.ibb.co/zHVCWJQ0/elegant-mother-with-cute-daughter.jpg',
-        description: 'A girl and woman petting a golden retriever in a park with trees and grass.',
-        expectedVocabulary: ['girl', 'woman', 'dog', 'petting', 'park', 'trees', 'grass', 'golden retriever'],
-        guidingQuestions: [
-          'Who are the people in the image?',
-          'What are they doing?',
-          'What kind of dog is it?',
-          'Where are they located?'
-        ],
-        evaluationCriteria: {
-          keyElements: [
-            'girl', 'woman', 'petting', 'dog', 'golden retriever', 'park', 'white outfit',
-            'red shoes', 'blue top', 'white pants', 'white shoes', 'green grass',
-            'tall trees', 'house', 'brick wall', 'white roof', 'sunny', 'cheerful'
-          ],
-          detailedDescription: `In a park, a girl and a woman are petting a dog. The girl is wearing a white outfit and red shoes. The woman is wearing a blue top, white pants, and white shoes. The dog is a golden retriever. The park has green grass and tall trees. In the background, there is a house with a brick wall and a white roof. The atmosphere is sunny and cheerful.`
-        }
       }
     ]
   },
   {
-    id: 'academic',
-    name: 'Academic',
-    description: 'Educational and learning environments',
+    id: 'nature',
+    name: 'Nature',
+    description: 'Natural landscapes and outdoor scenes',
     images: [
       {
-        imageId: 'academic_001',
-        url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500',
-        description: 'A library with students studying, books, desks, and quiet atmosphere.',
-        expectedVocabulary: ['library', 'students', 'books', 'studying', 'quiet', 'desk', 'academic'],
+        imageId: 'nature_001',
+        url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500',
+        description: 'A peaceful forest path with green trees, natural lighting, and serene atmosphere.',
+        expectedVocabulary: ['forest', 'trees', 'path', 'nature', 'outdoor', 'peaceful', 'green', 'natural'],
         guidingQuestions: [
-          'What are the students doing?',
-          'How would you describe the atmosphere?',
-          'What study materials do you see?',
-          'How is the space organized?'
+          'What type of environment is this?',
+          'How would you describe the trees?',
+          'What does the path look like?',
+          'What\'s the lighting like?'
         ],
         evaluationCriteria: {
           keyElements: [
-            'library', 'bookstore', 'bookshelves', 'books', 'rows of shelves',
-            'light bulbs', 'string lights', 'warm lighting', 'yellow glow',
-            'different sized bulbs', 'dark floor', 'wood shelves', 'paper books',
-            'metal fixtures', 'cozy', 'inviting', 'intellectual atmosphere',
-            'evening lighting', 'soft shadows', 'perspective view'
+            'forest', 'woodland', 'trees', 'tall trees', 'path', 'dirt path', 'narrow path',
+            'green foliage', 'leaves', 'brown trunks', 'rocks', 'scattered rocks',
+            'underbrush', 'ground', 'dirt', 'sunlight', 'dappled light', 'shadows',
+            'peaceful', 'tranquil', 'serene', 'natural', 'winding path', 'canopy'
           ],
-          detailedDescription: `Library or bookstore section with multiple rows of bookshelves extending into background. No people visible - focus on books and lighting. Densely packed shelves with books of various sizes, colors, and genres. String of light bulbs suspended above shelves providing soft, warm yellow lighting. Bulbs are different sizes creating artistic touch. Dark wooden bookshelves with traditional appearance. Dark floor material, possibly wood or tile. Warm color scheme with yellow/orange light contrasting darker tones of shelves and books. Cozy, inviting, intellectual atmosphere. Evening/night time suggested by warm lighting against darker surroundings. Low angle perspective emphasizing shelf height and warm glow, with soft shadows adding depth.`
-        }
-      },
-      {
-        imageId: 'academic_002',
-        url: 'https://i.ibb.co/bjP16wN5/young-lady-reading-near-bookshelf.jpg',
-        description: 'A young woman reading a book while standing near bookshelves in a library.',
-        expectedVocabulary: ['woman', 'reading', 'book', 'bookshelves', 'library', 'standing', 'quiet', 'studying'],
-        guidingQuestions: [
-          'What is the woman doing?',
-          'What is she wearing?',
-          'Where is she standing?',
-          'How would you describe the environment?'
-        ],
-        evaluationCriteria: {
-          keyElements: [
-            'young woman', 'reading', 'book', 'standing', 'bookshelves', 'library',
-            'white blouse', 'black skirt', 'wooden floor', 'books', 'quiet',
-            'peaceful', 'studying', 'intellectual'
-          ],
-          detailedDescription: `A young woman is reading a book while standing near tall bookshelves in a library. She is wearing a white blouse and a black skirt. The bookshelves are filled with books of various sizes and colors. The wooden floor adds warmth to the scene. The atmosphere is quiet and peaceful, perfect for reading and studying.`
-        }
-      }
-    ]
-  },
-  {
-    id: 'entertainment',
-    name: 'Entertainment',
-    description: 'Entertainment and pop culture scenes',
-    images: [
-      {
-        imageId: 'entertainment_001',
-        url: 'https://contents-cdn.viewus.co.kr/image/2025/08/CP-2023-0089/image-49294418-b27c-4e2f-85e1-ad8842ac8047.png',
-        description: 'Three cartoon characters standing together near a window with trees and blue sky in the background.',
-        expectedVocabulary: ['cartoon', 'characters', 'standing', 'window', 'trees', 'sky', 'colorful', 'animated'],
-        guidingQuestions: [
-          'How many characters do you see?',
-          'What are they wearing?',
-          'What can you see in the background?',
-          'How would you describe the style?'
-        ],
-        evaluationCriteria: {
-          keyElements: [
-            'three', 'cartoon characters', 'standing', 'close together', 'glass window',
-            'pink hoodie', 'white top', 'glasses', 'yellow hat', 'trees', 'blue sky',
-            'bright', 'cheerful', 'animated', 'colorful'
-          ],
-          detailedDescription: `Three cartoon characters are standing close to each other. They are standing near a glass window. The character on the left is wearing a pink hoodie. The character in the middle is wearing a white top and glasses. The character on the right is wearing a yellow hat. Behind them, there are trees and a blue sky. The atmosphere is bright and cheerful.`
+          detailedDescription: `A serene forest setting with narrow dirt path winding through dense woodland. Tall, slender trees with dark brown trunks and vibrant green foliage create tunnel-like canopy effect. No people visible - focus on natural environment. Path made of compacted dirt, curving as it disappears into forest. Scattered rocks of various sizes along path and among trees. Rich earthy color scheme: dark brown tree trunks, vibrant green leaves, brown and tan dirt path. Sunlight filters through trees creating dappled light on ground. Tranquil, undisturbed atmosphere suggesting midday lighting. Rough bark texture, uneven path surface, natural shadows add depth and realism.`
         }
       }
     ]
