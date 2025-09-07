@@ -8,7 +8,6 @@
 
 ## Setup Process
 
-
 1. CodeBuild project monitors GitHub repository
 2. On push to main branch, builds Docker image
 3. Pushes image to ECR with commit hash tag
