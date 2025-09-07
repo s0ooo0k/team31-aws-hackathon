@@ -12,14 +12,77 @@
       }
 
       body {
-        background: #f8fafc;
+        background: #fafafa;
         min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .floating-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: -1;
+        animation: float 20s infinite ease-in-out;
+      }
+
+      .orb-1 {
+        width: 450px;
+        height: 450px;
+        background: linear-gradient(135deg, #ffb3a7, #ff8a95);
+        top: 10%;
+        left: -20%;
+        animation-delay: 0s;
+      }
+
+      .orb-2 {
+        width: 320px;
+        height: 320px;
+        background: linear-gradient(135deg, #e8d5ff, #c4b5fd);
+        bottom: 5%;
+        right: -15%;
+        animation-delay: -5s;
+      }
+
+      .orb-3 {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, #b8e0ff, #93c5fd);
+        top: 20%;
+        right: 15%;
+        animation-delay: -10s;
+      }
+
+      .orb-4 {
+        width: 250px;
+        height: 250px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        top: 60%;
+        left: 10%;
+        animation-delay: -15s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) translateX(0px) rotate(0deg);
+        }
+        25% {
+          transform: translateY(-30px) translateX(20px) rotate(90deg);
+        }
+        50% {
+          transform: translateY(20px) translateX(-25px) rotate(180deg);
+        }
+        75% {
+          transform: translateY(-25px) translateX(15px) rotate(270deg);
+        }
       }
 
       .header {
-        background: white;
-        padding: 20px 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background: transparent;
+        padding: 25px 0;
         margin-bottom: 40px;
       }
 
@@ -34,8 +97,9 @@
 
       .logo h1 {
         color: #667eea;
-        font-size: 24px;
-        font-weight: 700;
+        font-size: 28px;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .user-info {
@@ -45,22 +109,34 @@
       }
 
       .user-name {
-        color: #333;
-        font-weight: 500;
+        color: #1e293b;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
 
       .logout-btn {
-        padding: 8px 16px;
-        background: #f1f5f9;
-        color: #64748b;
-        border: none;
-        border-radius: 6px;
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        color: #4c1d95;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 8px;
         cursor: pointer;
         font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
 
       .logout-btn:hover {
-        background: #e2e8f0;
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
       .container {
@@ -75,14 +151,18 @@
       }
 
       .page-title h2 {
-        font-size: 32px;
+        font-size: 36px;
         color: #1e293b;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .page-title p {
-        font-size: 18px;
-        color: #64748b;
+        font-size: 20px;
+        color: #475569;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       }
 
       .categories-grid {
@@ -93,25 +173,51 @@
       }
 
       .category-card {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
-        border: 2px solid transparent;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .category-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s ease;
       }
 
       .category-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        border-color: #667eea;
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+
+      .category-card:hover::before {
+        left: 100%;
       }
 
       .category-icon {
-        font-size: 48px;
+        width: 64px;
+        height: 64px;
         margin-bottom: 16px;
         display: block;
+        object-fit: contain;
+        border-radius: 12px;
       }
 
       .category-name {
@@ -170,20 +276,53 @@
       }
 
       .random-btn {
-        padding: 16px 32px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 40px;
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.8),
+          rgba(118, 75, 162, 0.8)
+        );
         color: white;
         border: none;
-        border-radius: 12px;
-        font-size: 18px;
-        font-weight: 600;
+        border-radius: 16px;
+        font-size: 20px;
+        font-weight: 700;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(15px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .random-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s ease;
       }
 
       .random-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transform: translateY(-5px) scale(1.05);
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.9),
+          rgba(118, 75, 162, 0.9)
+        );
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+      }
+
+      .random-btn:hover::before {
+        left: 100%;
       }
 
       .loading {
@@ -205,6 +344,10 @@
     </style>
   </head>
   <body>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+    <div class="floating-orb orb-4"></div>
     <div class="header">
       <div class="header-content">
         <div class="logo">
@@ -275,22 +418,28 @@
       function renderCategories() {
         const container = document.getElementById("categories-container");
 
-        // 카테고리 아이콘 매핑
+        // 디버깅: 카테고리 데이터 확인 (제거 예정)
+        // console.log('Categories data:', categories);
+        // categories.forEach(cat => console.log('Category ID:', cat.id, 'Name:', cat.name));
+
+        // 카테고리 아이콘 매핑 (백엔드 ID와 정확히 일치)
         const categoryIcons = {
-          "daily-life": "☕",
-          travel: "✈️",
-          business: "💼",
-          social: "👥",
-          academic: "📚",
+          animation: "/assets/icon1.png",
+          "k-pop": "/assets/icon2.png",
+          animal: "/assets/icon3.png",
+          AWS: "/assets/icon4.png",
+          social: "/assets/icon5.png",
+          nature: "/assets/icon1.png",
         };
 
         // 난이도 매핑
         const difficultyMap = {
-          "daily-life": "easy",
-          travel: "medium",
-          business: "hard",
+          animation: "easy",
+          "k-pop": "medium",
+          animal: "easy",
+          AWS: "hard",
           social: "medium",
-          academic: "hard",
+          nature: "easy",
         };
 
         const categoriesHTML = `
@@ -299,7 +448,8 @@
                       .map(
                         (category) => `
                         <div class="category-card" onclick="selectCategory('${category.id}')">
-                            <span class="category-icon">${categoryIcons[category.id] || "🎯"}</span>
+                            <img class="category-icon" src="${categoryIcons[category.id] || "/assets/12-removebg-preview.png"}" alt="${category.name}" onerror="console.log('Image failed to load:', this.src); this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                            <div class="category-icon" style="display:none; font-size:48px; text-align:center; line-height:64px; background:#f1f5f9; color:#64748b; border-radius:12px;">🎯</div>
                             <div class="category-name">${category.name}</div>
                             <div class="category-description">${category.description}</div>
                             <div class="category-stats">

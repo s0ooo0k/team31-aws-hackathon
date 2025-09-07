@@ -12,8 +12,63 @@
       }
 
       body {
-        background: #f8fafc;
+        background: #fafafa;
         min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+      
+      .floating-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: -1;
+        animation: float 20s infinite ease-in-out;
+      }
+      
+      .orb-1 {
+        width: 450px;
+        height: 450px;
+        background: linear-gradient(135deg, #ffb3a7, #ff8a95);
+        top: 10%;
+        left: -20%;
+        animation-delay: 0s;
+      }
+      
+      .orb-2 {
+        width: 320px;
+        height: 320px;
+        background: linear-gradient(135deg, #e8d5ff, #c4b5fd);
+        bottom: 5%;
+        right: -15%;
+        animation-delay: -5s;
+      }
+      
+      .orb-3 {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, #b8e0ff, #93c5fd);
+        top: 20%;
+        right: 15%;
+        animation-delay: -10s;
+      }
+      
+      .orb-4 {
+        width: 250px;
+        height: 250px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        top: 60%;
+        left: 10%;
+        animation-delay: -15s;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+        25% { transform: translateY(-30px) translateX(20px) rotate(90deg); }
+        50% { transform: translateY(20px) translateX(-25px) rotate(180deg); }
+        75% { transform: translateY(-25px) translateX(15px) rotate(270deg); }
       }
 
       .loading-spinner {
@@ -31,21 +86,24 @@
       }
 
       .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid #e2e8f0;
-        border-top: 4px solid #667eea;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+        width: 60px;
+        height: 60px;
         margin-bottom: 20px;
+        animation: slideLeftRight 2s ease-in-out infinite;
       }
 
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+      .spinner img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      @keyframes slideLeftRight {
+        0%, 100% {
+          transform: translateX(-20px);
         }
-        100% {
-          transform: rotate(360deg);
+        50% {
+          transform: translateX(20px);
         }
       }
 
@@ -60,10 +118,9 @@
       }
 
       .header {
-        background: white;
-        padding: 20px 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
+        background: transparent;
+        padding: 25px 0;
+        margin-bottom: 40px;
       }
 
       .header-content {
@@ -79,11 +136,19 @@
         color: #667eea;
         font-size: 24px;
         font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .session-info {
-        color: #64748b;
+        color: #1e293b;
         font-size: 14px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
 
       .container {
@@ -101,19 +166,31 @@
         font-size: 32px;
         color: #1e293b;
         margin-bottom: 10px;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .page-title p {
         font-size: 18px;
-        color: #64748b;
+        color: #475569;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       }
 
       .image-comparison-section {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.4);
         margin-bottom: 40px;
+        transition: all 0.3s ease;
+      }
+      
+      .image-comparison-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
       }
 
       .images-row {
@@ -124,11 +201,19 @@
       }
 
       .overall-performance {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.4);
         margin-bottom: 40px;
+        transition: all 0.3s ease;
+      }
+      
+      .overall-performance:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
       }
 
       .image-comparison {
@@ -190,10 +275,18 @@
       }
 
       .evaluation-results {
-        background: white;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+      }
+      
+      .evaluation-results:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
       }
 
       .overall-score {
@@ -346,8 +439,10 @@
       }
 
       .primary-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
         color: white;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .primary-btn:hover {
@@ -356,20 +451,32 @@
       }
 
       .secondary-btn {
-        background: #f1f5f9;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
         color: #64748b;
+        border: 1px solid rgba(255, 255, 255, 0.4);
       }
 
       .secondary-btn:hover {
-        background: #e2e8f0;
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
       }
 
       .response-analysis {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(15px);
         border-radius: 20px;
         padding: 40px;
         margin-bottom: 40px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+      }
+      
+      .response-analysis:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
       }
 
       .analysis-header {
@@ -382,10 +489,7 @@
         font-weight: 700;
         color: #1e293b;
         margin-bottom: 10px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       .analysis-subtitle {
@@ -401,11 +505,12 @@
 
       .user-responses,
       .model-answers {
-        background: white;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(15px);
         border-radius: 20px;
         padding: 30px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(102, 126, 234, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.4);
         transition: all 0.3s ease;
       }
 
@@ -593,9 +698,16 @@
     </style>
   </head>
   <body>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+    <div class="floating-orb orb-4"></div>
     <div class="loading-spinner" id="loading-spinner">
-      <div class="spinner"></div>
+      <div class="spinner">
+        <img src="/assets/icon1.png" alt="Loading" />
+      </div>
       <div class="loading-text">Analyzing your performance...</div>
+      <div class="study-tip" id="study-tip" style="margin-top: 20px; font-size: 14px; color: #64748b; font-style: italic; max-width: 400px; text-align: center;">💡 영어 공부 팁을 불러오는 중...</div>
     </div>
 
     <div class="main-content" id="main-content">
@@ -788,6 +900,22 @@
       let sessionData = null;
       let evaluation = null;
 
+      // 영어 공부 팁 배열
+      const studyTips = [
+        "매일 10분씩 꾸준히 하는 것이 한 번에 몰아서 하는 것보다 효과적입니다.",
+        "영어 단어를 외울 때는 문장과 함께 외우면 기억에 더 오래 남습니다.",
+        "영어 드라마나 영화를 자막 없이 보는 연습을 해보세요.",
+        "새로운 단어를 배우면 그 단어로 3개의 문장을 만들어보세요.",
+        "영어 일기를 쓰는 습관을 만들어보세요. 하루 3줄이라도 좋습니다.",
+        "발음 연습할 때는 거울을 보며 입 모양을 확인해보세요.",
+        "영어 팟캐스트를 들으며 통근하거나 운동하는 시간을 활용해보세요.",
+        "모르는 단어가 나와도 문맥으로 추측해보는 연습을 해보세요.",
+        "영어로 혼잣말하는 습관을 만들어보세요. 생각을 영어로 표현해보세요.",
+        "영어 공부할 때는 완벽하려 하지 말고 실수를 두려워하지 마세요."
+      ];
+
+      let tipInterval;
+
       // 페이지 로드 시 초기화
       document.addEventListener("DOMContentLoaded", () => {
         // 로그인 확인
@@ -804,8 +932,12 @@
           return;
         }
 
+        // 영어 공부 팁 표시 시작
+        startStudyTips();
+
         // 3초 후 스피너 숨기고 메인 콘텐츠 표시
         setTimeout(() => {
+          clearInterval(tipInterval);
           document.getElementById("loading-spinner").style.display = "none";
           document.getElementById("main-content").style.display = "block";
 
@@ -813,8 +945,26 @@
           generateEvaluation().then(() => {
             displayResults();
           });
-        }, 5000);
+        }, 7000);
       });
+
+      function startStudyTips() {
+        const tipElement = document.getElementById("study-tip");
+        let currentTipIndex = 0;
+        
+        // 첫 번째 팁 즉시 표시
+        tipElement.textContent = `💡 ${studyTips[currentTipIndex]}`;
+        currentTipIndex++;
+        
+        // 3초마다 새로운 팁 표시
+        tipInterval = setInterval(() => {
+          if (currentTipIndex >= studyTips.length) {
+            currentTipIndex = 0;
+          }
+          tipElement.textContent = `💡 ${studyTips[currentTipIndex]}`;
+          currentTipIndex++;
+        }, 3000);
+      }
 
       async function generateEvaluation() {
         try {

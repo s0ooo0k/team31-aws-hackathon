@@ -15,7 +15,9 @@ export const DefaultAudioInputConfiguration = {
   channelCount: 1,
 };
 
-export const DefaultTextConfiguration = { mediaType: "text/plain" as TextMediaType };
+export const DefaultTextConfiguration = {
+  mediaType: "text/plain" as TextMediaType,
+};
 
 export const DefaultAudioOutputConfiguration = {
   ...DefaultAudioInputConfiguration,
@@ -24,24 +26,24 @@ export const DefaultAudioOutputConfiguration = {
 };
 
 export const DefaultToolSchema = JSON.stringify({
-  "type": "object",
-  "properties": {},
-  "required": []
+  type: "object",
+  properties: {},
+  required: [],
 });
 
 export const WeatherToolSchema = JSON.stringify({
-  "type": "object",
-  "properties": {
-    "latitude": {
-      "type": "string",
-      "description": "Geographical WGS84 latitude of the location."
+  type: "object",
+  properties: {
+    latitude: {
+      type: "string",
+      description: "Geographical WGS84 latitude of the location.",
     },
-    "longitude": {
-      "type": "string",
-      "description": "Geographical WGS84 longitude of the location."
-    }
+    longitude: {
+      type: "string",
+      description: "Geographical WGS84 longitude of the location.",
+    },
   },
-  "required": ["latitude", "longitude"]
+  required: ["latitude", "longitude"],
 });
 
 // 영어 학습용 시스템 프롬프트
@@ -82,7 +84,7 @@ Reference Image Description:
 ${imageData.evaluationCriteria.detailedDescription}
 
 Key Elements to Look For:
-${imageData.evaluationCriteria.keyElements.join(', ')}
+${imageData.evaluationCriteria.keyElements.join(", ")}
 
 User's Description:
 "${userText}"
@@ -93,256 +95,481 @@ Analyze what the user mentioned vs. what they missed, and provide specific evide
 // 카테고리별 이미지 데이터
 export const ImageCategories = [
   {
-    id: 'daily-life',
-    name: 'Daily Life',
-    description: 'Everyday activities and scenes',
+    id: "k-pop",
+    name: "K-Pop",
+    description: "Korean pop culture and music scenes",
     images: [
       {
-        imageId: 'daily_001',
-        url: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500',
-        description: 'A busy coffee shop with people working on laptops, warm lighting, and wooden tables.',
-        expectedVocabulary: ['laptop', 'coffee shop', 'barista', 'customers', 'atmosphere', 'wooden table', 'warm lighting'],
+        imageId: "pic_1",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_1.png",
+        description:
+          "Three cartoon characters are standing close to each other. They are standing near a glass door. The character on the left has purple hair and is wearing a pink hoodie. The character in the middle has pink hair and is wearing a black cap and glasses. The character on the right has black hair and is wearing a yellow hat. Behind them, there are trees and a blue sky.",
         guidingQuestions: [
-          'What color is the laptop?',
-          'What are the people doing?',
-          'How would you describe the atmosphere?',
-          'What material is the table made of?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'coffee shop', 'café', 'barista', 'staff member', 'customer', 'person sitting',
-            'laptop', 'computer', 'table', 'chair', 'counter', 'menu', 'chalkboard',
-            'plants', 'lighting', 'industrial lights', 'warm atmosphere', 'cozy',
-            'white chairs', 'colored cushions', 'wooden elements', 'modern design'
+            "three",
+            "cartoon characters",
+            "glass door",
+            "purple hair",
+            "pink hoodie",
+            "pink hair",
+            "black cap",
+            "glasses",
+            "black hair",
+            "yellow hat",
+            "trees",
+            "blue sky",
           ],
-          detailedDescription: `A cozy, modern café with warm, welcoming ambiance. Two people visible: a barista in dark shirt behind counter, and a customer in dark jacket and cap sitting at table with laptop. White curved-back chairs with yellow, brown, and white cushions. White tables with modern design. Rustic counter with chalkboard menu. Large leafy plant in center, smaller potted plants on counter. Industrial-style hanging lights. Neutral color scheme with white, green plants, black chalkboard, warm cushion tones. Materials include wood (tables, chairs), metal (lighting fixtures), fabric (cushions), glass (bottles, jars). Relaxed, professional atmosphere suitable for work and socializing.`
-        }
+          detailedDescription:
+            "Three cartoon characters are standing close to each other. They are standing near a glass door. The character on the left has purple hair and is wearing a pink hoodie. The character in the middle has pink hair and is wearing a black cap and glasses. The character on the right has black hair and is wearing a yellow hat. Behind them, there are trees and a blue sky.",
+        },
       },
       {
-        imageId: 'daily_002',
-        url: 'https://i.ibb.co/b5pgjy84/young-woman-arranging-her-cake-shop.jpg',
-        description: 'A woman pouring tea in a cozy kitchen with wooden cabinets and warm lighting.',
-        expectedVocabulary: ['woman', 'pouring', 'tea', 'kitchen', 'cabinets', 'counter', 'apron', 'cozy'],
+        imageId: "pic_6",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_6.jpeg",
+        description:
+          "The image shows three cartoon characters standing together. They are holding cups with straws and appear to be eating. The character on the left has pink hair and is wearing a black top. The middle character has purple hair and is wearing a yellow jacket. The character on the right has black hair and is wearing a black and white outfit. The background is purple and blue.",
         guidingQuestions: [
-          'What is the woman doing?',
-          'What is she wearing?',
-          'What objects are on the counter?',
-          'How would you describe the atmosphere?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'woman', 'pouring', 'hot water', 'glass cup', 'counter', 'white shirt', 'gray apron',
-            'white cups', 'coffee filter', 'plate', 'dessert', 'wooden cabinets', 'kitchen items',
-            'cozy', 'warm', 'soft lighting'
+            "three cartoon characters",
+            "standing together",
+            "cups with straws",
+            "eating",
+            "pink hair",
+            "black top",
+            "purple hair",
+            "yellow jacket",
+            "black hair",
+            "black and white outfit",
+            "purple background",
+            "blue background",
           ],
-          detailedDescription: `A woman is pouring hot water into a glass cup on a counter. She is wearing a white shirt and a gray apron. The counter has a few white cups, a coffee filter, and a plate with a dessert. Behind her, there are wooden cabinets with various kitchen items. The atmosphere is cozy and warm, with soft lighting illuminating the scene.`
-        }
-      }
-    ]
+          detailedDescription:
+            "The image shows three cartoon characters standing together. They are holding cups with straws and appear to be eating. The character on the left has pink hair and is wearing a black top. The middle character has purple hair and is wearing a yellow jacket. The character on the right has black hair and is wearing a black and white outfit. The background is purple and blue.",
+        },
+      },
+    ],
   },
   {
-    id: 'travel',
-    name: 'Travel',
-    description: 'Travel and vacation scenes',
+    id: "nature",
+    name: "Nature",
+    description: "Natural landscapes and outdoor scenes",
     images: [
       {
-        imageId: 'travel_001',
-        url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500',
-        description: 'A peaceful park with green trees, walking paths, and people enjoying outdoor activities.',
-        expectedVocabulary: ['park', 'trees', 'path', 'nature', 'outdoor', 'peaceful', 'green'],
+        imageId: "pic_2",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_2.png",
+        description:
+          "The image depicts a serene riverside village with traditional wooden houses. The houses are built on stilts, showcasing a unique architectural style. The river is calm, with several small boats floating on its green waters. Lush greenery surrounds the village, with trees and hills in the background. The sky is clear, indicating a sunny day. The overall atmosphere is peaceful and picturesque, highlighting the harmony between nature and human habitation.",
         guidingQuestions: [
-          'What activities are people doing?',
-          'How would you describe the trees?',
-          'What does the path look like?',
-          'What\'s the weather like?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'forest', 'woodland', 'trees', 'tall trees', 'path', 'dirt path', 'narrow path',
-            'green foliage', 'leaves', 'brown trunks', 'rocks', 'scattered rocks',
-            'underbrush', 'ground', 'dirt', 'sunlight', 'dappled light', 'shadows',
-            'peaceful', 'tranquil', 'serene', 'natural', 'winding path', 'canopy'
+            "serene",
+            "riverside village",
+            "traditional wooden houses",
+            "stilts",
+            "architectural style",
+            "calm river",
+            "small boats",
+            "green waters",
+            "lush greenery",
+            "trees",
+            "hills",
+            "clear sky",
+            "sunny day",
+            "peaceful",
+            "picturesque",
           ],
-          detailedDescription: `A serene forest setting with narrow dirt path winding through dense woodland. Tall, slender trees with dark brown trunks and vibrant green foliage create tunnel-like canopy effect. No people visible - focus on natural environment. Path made of compacted dirt, curving as it disappears into forest. Scattered rocks of various sizes along path and among trees. Rich earthy color scheme: dark brown tree trunks, vibrant green leaves, brown and tan dirt path. Sunlight filters through trees creating dappled light on ground. Tranquil, undisturbed atmosphere suggesting midday lighting. Rough bark texture, uneven path surface, natural shadows add depth and realism.`
-        }
-      }
-    ]
+          detailedDescription:
+            "The image depicts a serene riverside village with traditional wooden houses. The houses are built on stilts, showcasing a unique architectural style. The river is calm, with several small boats floating on its green waters. Lush greenery surrounds the village, with trees and hills in the background. The sky is clear, indicating a sunny day. The overall atmosphere is peaceful and picturesque, highlighting the harmony between nature and human habitation.",
+        },
+      },
+    ],
   },
   {
-    id: 'business',
-    name: 'Business',
-    description: 'Office and work environments',
+    id: "social",
+    name: "Social",
+    description: "Social gatherings and interactions",
     images: [
       {
-        imageId: 'business_001',
-        url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500',
-        description: 'A modern office space with desks, computers, chairs, and people working.',
-        expectedVocabulary: ['office', 'desk', 'computer', 'chair', 'modern', 'workspace', 'professional'],
+        imageId: "pic_3",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_3.png",
+        description:
+          "Four people are sitting on chairs in an outdoor area. The chairs are colorful, with one being pink and another being multicolored. A woman is holding a laptop on her lap. Another woman is wearing glasses and sneakers. A man is sitting on a chair with his legs crossed. Another man is holding his chin with his hand. The floor is made of tiles. The atmosphere is casual and relaxed.",
         guidingQuestions: [
-          'How would you describe the office design?',
-          'What equipment do you see?',
-          'What are the people wearing?',
-          'How does the workspace look organized?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'office', 'corridor', 'modern', 'minimalist', 'cubicles', 'workspaces',
-            'teal couch', 'wooden shelving', 'black refrigerator', 'microwave',
-            'recessed lights', 'pendant lights', 'navy blue walls', 'light beige floor',
-            'kitchenette', 'seating area', 'clean', 'organized', 'professional',
-            'contemporary', 'bright lighting', 'empty', 'tranquil'
+            "four people",
+            "sitting",
+            "chairs",
+            "outdoor area",
+            "colorful chairs",
+            "pink",
+            "multicolored",
+            "woman",
+            "laptop",
+            "glasses",
+            "sneakers",
+            "man",
+            "legs crossed",
+            "chin",
+            "hand",
+            "tiles",
+            "casual",
+            "relaxed",
           ],
-          detailedDescription: `Modern, minimalist office corridor stretching into distance with cubicles and workspaces on both sides. No people visible, emphasizing emptiness and tranquility. Long teal couch against left wall with wooden shelving unit beside it. Black refrigerator and integrated microwave on right side forming kitchenette area. Deep navy blue walls with light beige flooring. Recessed ceiling lights provide even illumination, with pendant lights hanging in distance. Minimalist color scheme focusing on neutral and dark tones. Materials include smooth painted walls, polished concrete-like flooring, wood shelving, teal fabric upholstery, metal and glass appliances. Calm, professional, modern atmosphere with sense of order and efficiency.`
-        }
+          detailedDescription:
+            "Four people are sitting on chairs in an outdoor area. The chairs are colorful, with one being pink and another being multicolored. A woman is holding a laptop on her lap. Another woman is wearing glasses and sneakers. A man is sitting on a chair with his legs crossed. Another man is holding his chin with his hand. The floor is made of tiles. The atmosphere is casual and relaxed.",
+        },
       },
       {
-        imageId: 'business_002',
-        url: 'https://images.unsplash.com/photo-1556910585-09baa3a3998e?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        description: 'A modern kitchen with wooden shelves, kitchen items, and organized countertop.',
-        expectedVocabulary: ['kitchen', 'shelves', 'bowls', 'plates', 'sink', 'faucet', 'countertop', 'organized'],
+        imageId: "pic_4",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_4.jpeg",
+        description:
+          'The image shows a soccer match in progress. A player in a white jersey with the letters "AIA" is running towards the ball. He is surrounded by three opponents in black and red jerseys. The soccer field is green, and the ball is white with blue and purple accents. The background shows a crowd of spectators, some of whom are blurry due to the motion. The atmosphere is dynamic and competitive.',
         guidingQuestions: [
-          'What items are on the shelves?',
-          'What colors do you see?',
-          'How is the kitchen organized?',
-          'What materials can you identify?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'modern kitchen', 'wooden shelves', 'white wall', 'blue bowls', 'gray bowls',
-            'plates', 'pots', 'black faucet', 'sink', 'stainless steel', 'countertop',
-            'fruit bowl', 'red casserole dish', 'glass bottles', 'clean', 'organized',
-            'functionality', 'simplicity'
+            "soccer match",
+            "player",
+            "white jersey",
+            "AIA",
+            "running",
+            "ball",
+            "three opponents",
+            "black and red jerseys",
+            "green field",
+            "white ball",
+            "blue and purple accents",
+            "crowd",
+            "spectators",
+            "blurry",
+            "motion",
+            "dynamic",
+            "competitive",
           ],
-          detailedDescription: `The image depicts a modern kitchen with wooden shelves mounted on a white wall. The shelves hold various kitchen items, including blue and gray bowls, plates, and pots. A black faucet is visible above a sink with a stainless steel finish. On the countertop, there is a bowl of fruit, a red casserole dish, and two clear glass bottles. The atmosphere is clean and organized, with a focus on functionality and simplicity.`
-        }
-      }
-    ]
-  },
-  {
-    id: 'social',
-    name: 'Social',
-    description: 'Social gatherings and interactions',
-    images: [
-      {
-        imageId: 'social_001',
-        url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500',
-        description: 'Friends having dinner at a restaurant with food, drinks, and conversation.',
-        expectedVocabulary: ['restaurant', 'friends', 'dinner', 'food', 'drinks', 'conversation', 'social'],
-        guidingQuestions: [
-          'What kind of food do you see?',
-          'How are the people interacting?',
-          'What\'s the mood of the scene?',
-          'How would you describe the restaurant setting?'
-        ],
-        evaluationCriteria: {
-          keyElements: [
-            'six people', 'friends', 'group', 'sitting together', 'concrete ledge',
-            'arms around each other', 'camaraderie', 'friendship', 'scenic viewpoint',
-            'mountains', 'cable car', 'gondolas', 'tourist spot', 'landscape',
-            'gray t-shirt', 'blue cap', 'tie-dye shirt', 'white shirt', 'red bag',
-            'yellow shirt', 'hats', 'casual clothing', 'relaxed', 'enjoying view'
-          ],
-          detailedDescription: `Group of six people sitting closely together on concrete ledge at scenic viewpoint, arms around each other showing camaraderie and friendship. Background features picturesque landscape with mountains, cable car system with suspended gondolas, and partly cloudy sky. Tourist spot, possibly coastal area. People wearing casual attire: gray t-shirts, blue patterned cap, blue and yellow tie-dye shirt, white shirt, blue shirt with hat and red bag, yellow shirt with hat. Relaxed, enjoyable atmosphere suggesting late afternoon with soft, warm lighting. Strong sense of togetherness and friendship evident from body language and positioning.`
-        }
+          detailedDescription:
+            'The image shows a soccer match in progress. A player in a white jersey with the letters "AIA" is running towards the ball. He is surrounded by three opponents in black and red jerseys. The soccer field is green, and the ball is white with blue and purple accents. The background shows a crowd of spectators, some of whom are blurry due to the motion. The atmosphere is dynamic and competitive.',
+        },
       },
       {
-        imageId: 'social_002',
-        url: 'https://i.ibb.co/zHVCWJQ0/elegant-mother-with-cute-daughter.jpg',
-        description: 'A girl and woman petting a golden retriever in a park with trees and grass.',
-        expectedVocabulary: ['girl', 'woman', 'dog', 'petting', 'park', 'trees', 'grass', 'golden retriever'],
+        imageId: "pic_5",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_5.jpeg",
+        description:
+          "The image depicts a group of people dressed in traditional Korean attire, engaging in a performance on a grassy field. They are holding large, round, golden shields and swords. The participants wear red and blue costumes with white undergarments, black boots, and ornate hats. In the background, there are colorful flags and balloons, and a traditional Korean building with a curved roof. Spectators are watching from the side, creating a festive atmosphere.",
         guidingQuestions: [
-          'Who are the people in the image?',
-          'What are they doing?',
-          'What kind of dog is it?',
-          'Where are they located?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'girl', 'woman', 'petting', 'dog', 'golden retriever', 'park', 'white outfit',
-            'red shoes', 'blue top', 'white pants', 'white shoes', 'green grass',
-            'tall trees', 'house', 'brick wall', 'white roof', 'sunny', 'cheerful'
+            "group of people",
+            "traditional Korean attire",
+            "performance",
+            "grassy field",
+            "golden shields",
+            "swords",
+            "red and blue costumes",
+            "white undergarments",
+            "black boots",
+            "ornate hats",
+            "colorful flags",
+            "balloons",
+            "traditional Korean building",
+            "curved roof",
+            "spectators",
+            "festive atmosphere",
           ],
-          detailedDescription: `In a park, a girl and a woman are petting a dog. The girl is wearing a white outfit and red shoes. The woman is wearing a blue top, white pants, and white shoes. The dog is a golden retriever. The park has green grass and tall trees. In the background, there is a house with a brick wall and a white roof. The atmosphere is sunny and cheerful.`
-        }
-      }
-    ]
-  },
-  {
-    id: 'academic',
-    name: 'Academic',
-    description: 'Educational and learning environments',
-    images: [
-      {
-        imageId: 'academic_001',
-        url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500',
-        description: 'A library with students studying, books, desks, and quiet atmosphere.',
-        expectedVocabulary: ['library', 'students', 'books', 'studying', 'quiet', 'desk', 'academic'],
-        guidingQuestions: [
-          'What are the students doing?',
-          'How would you describe the atmosphere?',
-          'What study materials do you see?',
-          'How is the space organized?'
-        ],
-        evaluationCriteria: {
-          keyElements: [
-            'library', 'bookstore', 'bookshelves', 'books', 'rows of shelves',
-            'light bulbs', 'string lights', 'warm lighting', 'yellow glow',
-            'different sized bulbs', 'dark floor', 'wood shelves', 'paper books',
-            'metal fixtures', 'cozy', 'inviting', 'intellectual atmosphere',
-            'evening lighting', 'soft shadows', 'perspective view'
-          ],
-          detailedDescription: `Library or bookstore section with multiple rows of bookshelves extending into background. No people visible - focus on books and lighting. Densely packed shelves with books of various sizes, colors, and genres. String of light bulbs suspended above shelves providing soft, warm yellow lighting. Bulbs are different sizes creating artistic touch. Dark wooden bookshelves with traditional appearance. Dark floor material, possibly wood or tile. Warm color scheme with yellow/orange light contrasting darker tones of shelves and books. Cozy, inviting, intellectual atmosphere. Evening/night time suggested by warm lighting against darker surroundings. Low angle perspective emphasizing shelf height and warm glow, with soft shadows adding depth.`
-        }
+          detailedDescription:
+            "The image depicts a group of people dressed in traditional Korean attire, engaging in a performance on a grassy field. They are holding large, round, golden shields and swords. The participants wear red and blue costumes with white undergarments, black boots, and ornate hats. In the background, there are colorful flags and balloons, and a traditional Korean building with a curved roof. Spectators are watching from the side, creating a festive atmosphere.",
+        },
       },
       {
-        imageId: 'academic_002',
-        url: 'https://i.ibb.co/bjP16wN5/young-lady-reading-near-bookshelf.jpg',
-        description: 'A young woman reading a book while standing near bookshelves in a library.',
-        expectedVocabulary: ['woman', 'reading', 'book', 'bookshelves', 'library', 'standing', 'quiet', 'studying'],
+        imageId: "pic_11",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_11.jpeg",
+        description:
+          "A man is sitting in an office chair, wearing a denim shirt and glasses. He is typing on a keyboard with two monitors displaying code. The desk is made of white material, and there is a black mouse on it. The atmosphere is focused and professional, with the man concentrating on his work. The monitors show lines of code, indicating a technical or programming-related task. The background includes a glass window with natural light coming through.",
         guidingQuestions: [
-          'What is the woman doing?',
-          'What is she wearing?',
-          'Where is she standing?',
-          'How would you describe the environment?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'young woman', 'reading', 'book', 'standing', 'bookshelves', 'library',
-            'white blouse', 'black skirt', 'wooden floor', 'books', 'quiet',
-            'peaceful', 'studying', 'intellectual'
+            "man",
+            "office chair",
+            "denim shirt",
+            "glasses",
+            "typing",
+            "keyboard",
+            "two monitors",
+            "code",
+            "white desk",
+            "black mouse",
+            "focused",
+            "professional",
+            "concentrating",
+            "work",
+            "lines of code",
+            "technical",
+            "programming",
+            "glass window",
+            "natural light",
           ],
-          detailedDescription: `A young woman is reading a book while standing near tall bookshelves in a library. She is wearing a white blouse and a black skirt. The bookshelves are filled with books of various sizes and colors. The wooden floor adds warmth to the scene. The atmosphere is quiet and peaceful, perfect for reading and studying.`
-        }
-      }
-    ]
+          detailedDescription:
+            "A man is sitting in an office chair, wearing a denim shirt and glasses. He is typing on a keyboard with two monitors displaying code. The desk is made of white material, and there is a black mouse on it. The atmosphere is focused and professional, with the man concentrating on his work. The monitors show lines of code, indicating a technical or programming-related task. The background includes a glass window with natural light coming through.",
+        },
+      },
+      {
+        imageId: "pic_13",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_13.jpeg",
+        description:
+          "The image shows a top-down view of a city street. The street is lined with buildings on the left and trees on the right. The buildings have red roofs and white walls. The street is empty, with no cars or people visible. The trees are lush and green, with some having circular structures on top. The sky is clear and blue.",
+        guidingQuestions: [
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            "top-down view",
+            "city street",
+            "buildings",
+            "trees",
+            "red roofs",
+            "white walls",
+            "empty street",
+            "no cars",
+            "no people",
+            "lush green trees",
+            "circular structures",
+            "clear sky",
+            "blue sky",
+          ],
+          detailedDescription:
+            "The image shows a top-down view of a city street. The street is lined with buildings on the left and trees on the right. The buildings have red roofs and white walls. The street is empty, with no cars or people visible. The trees are lush and green, with some having circular structures on top. The sky is clear and blue.",
+        },
+      },
+    ],
   },
+
   {
-    id: 'entertainment',
-    name: 'Entertainment',
-    description: 'Entertainment and pop culture scenes',
+    id: "animation",
+    name: "Animation",
+    description: "Animated characters and cartoon scenes",
     images: [
       {
-        imageId: 'entertainment_001',
-        url: 'https://contents-cdn.viewus.co.kr/image/2025/08/CP-2023-0089/image-49294418-b27c-4e2f-85e1-ad8842ac8047.png',
-        description: 'Three cartoon characters standing together near a window with trees and blue sky in the background.',
-        expectedVocabulary: ['cartoon', 'characters', 'standing', 'window', 'trees', 'sky', 'colorful', 'animated'],
+        imageId: "pic_7",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_7.jpeg",
+        description:
+          "The image depicts a cartoon character in a room with a red carpet and red walls. The character is wearing a blue suit with a white shirt and a brown bow tie. He is giving a thumbs up with his right hand. There are two chairs with red cushions and a desk with a lamp. The room has a warm, cozy atmosphere with dim lighting. The walls are decorated with framed pictures and shelves with various items.",
         guidingQuestions: [
-          'How many characters do you see?',
-          'What are they wearing?',
-          'What can you see in the background?',
-          'How would you describe the style?'
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
         ],
         evaluationCriteria: {
           keyElements: [
-            'three', 'cartoon characters', 'standing', 'close together', 'glass window',
-            'pink hoodie', 'white top', 'glasses', 'yellow hat', 'trees', 'blue sky',
-            'bright', 'cheerful', 'animated', 'colorful'
+            "cartoon character",
+            "room",
+            "red carpet",
+            "red walls",
+            "blue suit",
+            "white shirt",
+            "brown bow tie",
+            "thumbs up",
+            "right hand",
+            "two chairs",
+            "red cushions",
+            "desk",
+            "lamp",
+            "warm",
+            "cozy atmosphere",
+            "dim lighting",
+            "framed pictures",
+            "shelves",
+            "various items",
           ],
-          detailedDescription: `Three cartoon characters are standing close to each other. They are standing near a glass window. The character on the left is wearing a pink hoodie. The character in the middle is wearing a white top and glasses. The character on the right is wearing a yellow hat. Behind them, there are trees and a blue sky. The atmosphere is bright and cheerful.`
-        }
-      }
-    ]
-  }
+          detailedDescription:
+            "The image depicts a cartoon character in a room with a red carpet and red walls. The character is wearing a blue suit with a white shirt and a brown bow tie. He is giving a thumbs up with his right hand. There are two chairs with red cushions and a desk with a lamp. The room has a warm, cozy atmosphere with dim lighting. The walls are decorated with framed pictures and shelves with various items.",
+        },
+      },
+      {
+        imageId: "pic_8",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_8.jpeg",
+        description:
+          "The image depicts a dynamic scene with several anime characters in action. The central figure, a boy with red hair, wields a large sword. Surrounding him are other characters, each with distinct appearances and weapons. The background is dark, with hints of a forest, suggesting a nighttime setting. The characters' expressions are intense, indicating a battle or confrontation. The colors are vibrant, with contrasting shades enhancing the dramatic atmosphere.",
+        guidingQuestions: [
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            "dynamic scene",
+            "anime characters",
+            "action",
+            "central figure",
+            "boy",
+            "red hair",
+            "large sword",
+            "surrounding characters",
+            "distinct appearances",
+            "weapons",
+            "dark background",
+            "forest",
+            "nighttime setting",
+            "intense expressions",
+            "battle",
+            "confrontation",
+            "vibrant colors",
+            "contrasting shades",
+            "dramatic atmosphere",
+          ],
+          detailedDescription:
+            "The image depicts a dynamic scene with several anime characters in action. The central figure, a boy with red hair, wields a large sword. Surrounding him are other characters, each with distinct appearances and weapons. The background is dark, with hints of a forest, suggesting a nighttime setting. The characters' expressions are intense, indicating a battle or confrontation. The colors are vibrant, with contrasting shades enhancing the dramatic atmosphere.",
+        },
+      },
+      {
+        imageId: "pic_9",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_9.png",
+        description:
+          "Three cartoon characters are standing close to each other. They are standing near a glass door. The character on the left has purple hair and is wearing a pink hoodie. The character in the middle has pink hair and is wearing glasses and a black cap. The character on the right is wearing a yellow hat. Behind them, there are trees and a blue sky.",
+        guidingQuestions: [
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            "three cartoon characters",
+            "standing close",
+            "glass door",
+            "purple hair",
+            "pink hoodie",
+            "pink hair",
+            "glasses",
+            "black cap",
+            "yellow hat",
+            "trees",
+            "blue sky",
+          ],
+          detailedDescription:
+            "Three cartoon characters are standing close to each other. They are standing near a glass door. The character on the left has purple hair and is wearing a pink hoodie. The character in the middle has pink hair and is wearing glasses and a black cap. The character on the right is wearing a yellow hat. Behind them, there are trees and a blue sky.",
+        },
+      },
+    ],
+  },
+  {
+    id: "animal",
+    name: "Animal",
+    description: "Animals and wildlife scenes",
+    images: [
+      {
+        imageId: "pic_10",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_10.jpeg",
+        description:
+          "A person is sitting on the street, feeding a cat with a red and pink treat. The cat is eagerly reaching up with its mouth open. The person is wearing a gray hoodie and shorts. The cat is orange with a fluffy tail. In the background, there is a building with many windows and a parked car. The street is empty, and the sky is clear.",
+        guidingQuestions: [
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            "person",
+            "sitting",
+            "street",
+            "feeding",
+            "cat",
+            "red and pink treat",
+            "eagerly reaching",
+            "mouth open",
+            "gray hoodie",
+            "shorts",
+            "orange cat",
+            "fluffy tail",
+            "building",
+            "many windows",
+            "parked car",
+            "empty street",
+            "clear sky",
+          ],
+          detailedDescription:
+            "A person is sitting on the street, feeding a cat with a red and pink treat. The cat is eagerly reaching up with its mouth open. The person is wearing a gray hoodie and shorts. The cat is orange with a fluffy tail. In the background, there is a building with many windows and a parked car. The street is empty, and the sky is clear.",
+        },
+      },
+    ],
+  },
+  {
+    id: "AWS",
+    name: "AWS",
+    description: "Cloud computing and technology scenes",
+    images: [
+      {
+        imageId: "pic_12",
+        url: "https://d1d6oeec7imlh5.cloudfront.net/pic_12.jpeg",
+        description:
+          "Two men are standing next to each other in front of a white door. The man on the left is wearing an orange shirt and holding a laptop. The man on the right is wearing a black shirt and holding a can of Coca-Cola. Behind them is a projector screen and a whiteboard with a poster on it. The wall is painted in a light beige color.",
+        guidingQuestions: [
+          "What features do you notice in this scene?",
+          "What colors can you see?",
+          "How does this image make you feel?",
+          "What stands out to you the most?",
+        ],
+        evaluationCriteria: {
+          keyElements: [
+            "two men",
+            "standing",
+            "white door",
+            "orange shirt",
+            "laptop",
+            "black shirt",
+            "Coca-Cola",
+            "projector screen",
+            "whiteboard",
+            "poster",
+            "light beige wall",
+          ],
+          detailedDescription:
+            "Two men are standing next to each other in front of a white door. The man on the left is wearing an orange shirt and holding a laptop. The man on the right is wearing a black shirt and holding a can of Coca-Cola. Behind them is a projector screen and a whiteboard with a poster on it. The wall is painted in a light beige color.",
+        },
+      },
+    ],
+  },
 ];
 
 // 평가 기준 및 피드백 템플릿
@@ -383,11 +610,11 @@ Provide response in this JSON format:
   ],
   "feedback": "Overall assessment with specific examples"
 }`,
-  
+
   scoreCalculation: {
-    accuracy: 'How factually correct compared to reference image (0-100)',
-    completeness: 'How much of the key elements were covered (0-100)', 
-    vocabulary: 'Quality and variety of vocabulary used (0-100)',
-    detail: 'Level of specific details provided (0-100)'
-  }
+    accuracy: "How factually correct compared to reference image (0-100)",
+    completeness: "How much of the key elements were covered (0-100)",
+    vocabulary: "Quality and variety of vocabulary used (0-100)",
+    detail: "Level of specific details provided (0-100)",
+  },
 };

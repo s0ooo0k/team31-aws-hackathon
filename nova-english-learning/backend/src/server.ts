@@ -8,6 +8,7 @@ import {
   BedrockRuntimeClient,
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
+import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { NovaSonicBidirectionalStreamClient } from "./client";
 import { ImageCategories, EnglishTutorPrompt, createEvidenceBasedPrompt } from "./consts";
 import { Buffer } from "node:buffer";
@@ -53,6 +54,11 @@ const bedrockRuntimeClient = new BedrockRuntimeClient({
   },
 });
 
+// DynamoDB 클라이언트 생성
+const dynamoClient = new DynamoDBClient({
+  region: process.env.AWS_REGION || "us-east-1",
+});
+
 // 세션 정리 (5분 비활성 시 자동 종료)
 setInterval(() => {
   console.log("Session cleanup check");
@@ -83,20 +89,43 @@ app.get("/health", (req, res) => {
 });
 
 // 카테고리 목록 조회
-app.get("/api/categories", (req, res) => {
-  res.json({
-    success: true,
-    data: ImageCategories.map((cat) => ({
-      id: cat.id,
-      name: cat.name,
-      description: cat.description,
-      imageCount: cat.images.length,
-    })),
-  });
+app.get("/api/categories", async (req, res) => {
+  try {
+    const scanCommand = new ScanCommand({
+      TableName: "nova-english-Images",
+      FilterExpression: "imageType = :imageType",
+      ExpressionAttributeValues: {
+        ":imageType": { S: "original" }
+      }
+    });
+    
+    const result = await dynamoClient.send(scanCommand);
+    const imageCounts: Record<string, number> = {};
+    
+    result.Items?.forEach((item: any) => {
+      const categoryId = item.categoryId?.S;
+      if (categoryId) {
+        imageCounts[categoryId] = (imageCounts[categoryId] || 0) + 1;
+      }
+    });
+
+    res.json({
+      success: true,
+      data: ImageCategories.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        imageCount: imageCounts[cat.id] || 0,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch categories" });
+  }
 });
 
 // 카테고리별 이미지 조회
-app.get("/api/categories/:categoryId/images", (req, res) => {
+app.get("/api/categories/:categoryId/images", async (req, res) => {
   const { categoryId } = req.params;
   const category = ImageCategories.find((cat) => cat.id === categoryId);
 
@@ -107,13 +136,45 @@ app.get("/api/categories/:categoryId/images", (req, res) => {
     });
   }
 
-  res.json({
-    success: true,
-    data: {
-      category: category.name,
-      images: category.images,
-    },
-  });
+  try {
+    const scanCommand = new ScanCommand({
+      TableName: "nova-english-Images",
+      FilterExpression: "categoryId = :categoryId AND imageType = :imageType",
+      ExpressionAttributeValues: {
+        ":categoryId": { S: categoryId },
+        ":imageType": { S: "original" }
+      }
+    });
+    
+    const result = await dynamoClient.send(scanCommand);
+    const images = result.Items || [];
+    
+    if (images.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "No images found for this category",
+      });
+    }
+
+    // 랜덤 이미지 선택
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    
+    res.json({
+      success: true,
+      data: {
+        category: category.name,
+        image: {
+          imageId: randomImage.imageId?.S,
+          s3ImageKey: randomImage.s3ImageKey?.S,
+          description: randomImage.description?.S,
+          difficulty: randomImage.difficulty?.S,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching category images:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch images" });
+  }
 });
 
 // 랜덤 이미지 선택
@@ -139,10 +200,10 @@ app.post('/api/evaluate', async (req, res) => {
   try {
     const { imageId, userMessages, conversationHistory } = req.body;
     
-    if (!imageId || !userMessages) {
+    if (!imageId || !userMessages || !Array.isArray(userMessages)) {
       return res.status(400).json({
         success: false,
-        error: 'Image ID and user messages are required'
+        error: 'Image ID and user messages (array) are required'
       });
     }
 
@@ -177,7 +238,7 @@ Reference Image Description:
 ${imageData.evaluationCriteria.detailedDescription}
 
 Key Elements to Look For:
-${imageData.evaluationCriteria.keyElements.join(', ')}
+${(imageData.evaluationCriteria.keyElements || []).join(', ')}
 
 Analyze what the user mentioned vs. what they missed, and provide specific evidence for each point.
 
@@ -704,8 +765,7 @@ io.on("connection", (socket) => {
         const contextualPrompt =
           EnglishTutorPrompt +
           `\n\nImage Context: ${imageData.description}\n` +
-          `Expected Vocabulary: ${imageData.expectedVocabulary.join(", ")}\n` +
-          `Guiding Questions: ${imageData.guidingQuestions.join(", ")}\n\n` +
+          `Guiding Questions: ${imageData.guidingQuestions ? imageData.guidingQuestions.join(", ") : "What do you see in this image?"}\n\n` +
           `Start by encouraging the user to describe what they see in the image.`;
 
         socket.emit("contextSet", { success: true });
